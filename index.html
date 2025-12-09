@@ -2,830 +2,548 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Watchlist Ultimate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Our Watchlist Premium</title>
     <style>
-        /* --- CSS STYLES --- */
+        /* --- CSS RESET & VARIABLES --- */
         :root {
-            --bg-color: #0a0a0a;
-            --card-bg: #1a1a1a;
+            --bg-color: #000000;
+            --card-bg: #141414;
             --text-color: #ffffff;
-            --accent: #e50914; /* Netflix Red */
+            --accent: #e50914;
             --gold: #ffd700;
+            --row-height: 280px;
+            --card-width: 160px;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            padding-bottom: 80px; /* Space for bottom scroll */
             overflow-x: hidden;
         }
 
-        /* --- HEADER & CONTROLS --- */
-        h1 {
-            text-align: center;
-            font-weight: 800;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            letter-spacing: -1px;
-            color: #fff;
-            text-transform: uppercase;
+        /* --- HEADER --- */
+        header {
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        .controls-container {
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+
+        /* --- CONTROLS --- */
+        .controls {
+            padding: 0 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             gap: 15px;
-            margin-bottom: 40px;
-            z-index: 10;
-            position: relative;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .category-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ddd;
-            padding: 8px 20px;
-            cursor: pointer;
-            border-radius: 50px;
-            transition: all 0.2s;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-        }
-
-        button:hover, button.active {
-            background: white;
-            color: black;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
-        }
-
-        /* ROULETTE BUTTON */
-        #btn-roulette {
-            background: linear-gradient(45deg, #e50914, #ff5f6d);
+        .btn-roulette {
+            background: linear-gradient(135deg, #e50914, #b20710);
             border: none;
             color: white;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            box-shadow: 0 0 20px rgba(229, 9, 20, 0.5);
-            margin-bottom: 10px;
+            padding: 12px 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+            transition: transform 0.2s;
+            cursor: pointer;
         }
-        #btn-roulette:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(229, 9, 20, 0.8);
+        .btn-roulette:active { transform: scale(0.95); }
+
+        .filter-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            width: 100%;
+            padding-bottom: 10px;
+            /* Hide Scrollbar */
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+
+        .chip {
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .chip.active {
+            background: white;
+            color: black;
+            border-color: white;
+            font-weight: bold;
         }
 
         select {
-            background-color: #222;
+            background: #222;
             color: white;
             border: 1px solid #444;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
-            cursor: pointer;
+            font-size: 0.9rem;
+            outline: none;
         }
 
-        /* --- NETFLIX STYLE CARDS --- */
-        .media-grid {
+        /* --- LAYOUTS (Row vs Grid) --- */
+        
+        /* 1. HORIZONTAL ROWS (Netflix Style) */
+        .section-title {
+            padding: 0 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: #e5e5e5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .row-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding: 0 20px 20px 20px; /* Bottom padding for shadow */
+            scroll-snap-type: x mandatory; /* The "Snap" feel */
+            scroll-behavior: smooth;
+            /* Hide Scrollbar */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .row-container::-webkit-scrollbar { display: none; }
+
+        /* 2. GRID (For Filters) */
+        .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 15px;
-            padding-bottom: 50px;
+            padding: 20px;
         }
 
+        /* --- CARD DESIGN --- */
         .card {
-            position: relative;
-            aspect-ratio: 2 / 3; /* Standard Movie Poster Ratio */
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            flex: 0 0 var(--card-width); /* Fixed width for rows */
+            aspect-ratio: 2 / 3;
             background-color: #222;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            scroll-snap-align: start; /* Snap alignment */
+            cursor: pointer;
+            transition: transform 0.2s;
         }
+        
+        .card:active { transform: scale(0.97); }
 
-        .card:hover {
-            transform: scale(1.05);
-            z-index: 5;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            outline: 2px solid white;
-        }
-
-        /* Full Background Image */
-        .card-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+        .card-image {
+            width: 100%; height: 100%;
             background-size: cover;
             background-position: center;
         }
 
-        /* Gradient Overlay */
         .card-overlay {
             position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             padding: 10px;
-            box-sizing: border-box;
         }
 
-        .imdb-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: #f5c518;
-            color: black;
+        .card-cat-badge {
+            font-size: 0.6rem;
             font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            z-index: 2;
+            letter-spacing: 1px;
+            color: #aaa;
+            text-transform: uppercase;
+            margin-bottom: 2px;
         }
 
         .card-title {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            line-height: 1.2;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        /* Status Colors */
-        .status-new { color: #46d369; } .dot-new { background: #46d369; }
-        .status-paused { color: #ffa00a; } .dot-paused { background: #ffa00a; }
-        .status-me { color: #a55eea; } .dot-me { background: #a55eea; }
-        .status-her { color: #fd79a8; } .dot-her { background: #fd79a8; }
-        .status-done { color: #777; } .dot-done { background: #777; }
-
-        /* --- MODALS (Popup & Roulette) --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
-        }
-
-        /* INFO POPUP */
-        .info-popup {
-            background: #181818;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            border: 1px solid #333;
-            animation: fadeIn 0.3s;
-            position: relative;
-        }
-
-        .info-header {
-            height: 250px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-        .info-header::after {
-            content:''; position:absolute; inset:0;
-            background: linear-gradient(to top, #181818, transparent);
-        }
-
-        .info-content {
-            padding: 25px;
-        }
-
-        .info-title { font-size: 2rem; font-weight: bold; margin-bottom: 10px; line-height: 1.1; }
-        .info-meta { color: #aaa; margin-bottom: 20px; font-size: 0.9rem; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;}
-        
-        .info-desc {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-
-        .info-note { 
-            background: #222; 
-            padding: 15px; 
-            border-left: 4px solid var(--accent); 
-            border-radius: 4px;
-            font-style: italic; 
-            color: #bbb;
             font-size: 0.9rem;
-            line-height: 1.5;
-        }
-        .close-btn { 
-            margin-top: 20px; 
-            width: 100%; 
-            padding: 12px;
-            background: #333;
-            border: none;
+            font-weight: 700;
+            line-height: 1.2;
             color: white;
-            cursor: pointer;
-            font-weight: bold;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
         }
-        .close-btn:hover { background: #444; }
 
-        /* ROULETTE */
-        .roulette-container {
-            width: 90%; max-width: 800px; height: 250px;
-            background: #111; border: 2px solid #333;
-            border-radius: 10px; position: relative; overflow: hidden;
+        .card-status {
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
-        .roulette-card {
-            width: 160px; height: 100%; flex-shrink: 0;
-            border-right: 2px solid #222; background-size: cover;
-            background-position: center; position: relative;
-            display: flex; align-items: flex-end; justify-content: center;
-        }
-        .roulette-card-title { background: rgba(0,0,0,0.8); width: 100%; text-align: center; padding: 10px; font-weight: bold; font-size: 0.9rem;}
-        .selector-line {
-            position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
-            background: var(--gold); transform: translateX(-50%); z-index: 10;
-            box-shadow: 0 0 10px var(--gold);
-        }
+
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
         
-        @keyframes fadeIn { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
+        /* Status Colors */
+        .s-new { color: #46d369; } .d-new { background: #46d369; }
+        .s-paused { color: #ffa00a; } .d-paused { background: #ffa00a; }
+        .s-me { color: #a55eea; } .d-me { background: #a55eea; }
+        .s-her { color: #fd79a8; } .d-her { background: #fd79a8; }
+        .s-done { color: #777; } .d-done { background: #777; }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 100; display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); padding: 20px;
+        }
+
+        .info-card {
+            background: #1a1a1a; width: 100%; max-width: 450px;
+            border-radius: 12px; overflow: hidden; border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .info-hero { height: 220px; background-size: cover; background-position: center; position: relative; }
+        .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #1a1a1a, transparent); }
+        
+        .info-body { padding: 20px; }
+        .info-title { font-size: 1.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px; }
+        .info-tags { display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc; }
+        .info-desc { color: #bbb; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
+        .info-note { background: #252525; padding: 15px; border-left: 3px solid var(--accent); border-radius: 4px; font-style: italic; color: #ddd; font-size: 0.9rem;}
+        
+        .close-btn { 
+            width: 100%; padding: 15px; background: #333; border: none; 
+            color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* --- ROULETTE --- */
+        .roulette-wrapper { width: 100%; overflow: hidden; position: relative; height: 220px; border: 2px solid #333; border-radius: 8px; background: #000; }
+        .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
+        .r-card { width: 140px; height: 100%; background-size: cover; border-right: 1px solid #111; flex-shrink: 0; }
+        .r-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--gold); transform: translateX(-50%); z-index: 10; box-shadow: 0 0 15px var(--gold); }
 
     </style>
 </head>
 <body>
 
-    <h1>Our Watchlist</h1>
-    
-    <div class="controls-container">
-        <button id="btn-roulette" onclick="openRoulette()">🎲 Spin the Wheel</button>
+    <header>
+        <h1>Our List</h1>
+    </header>
 
-        <div class="category-buttons" id="cat-buttons">
-            <button onclick="setCategory('all')" class="active" id="btn-all">All</button>
-            <button onclick="setCategory('ANIME')" id="btn-ANIME">Anime</button>
-            <button onclick="setCategory('MOVIE')" id="btn-MOVIE">Movies</button>
-            <button onclick="setCategory('SHOW')" id="btn-SHOW">Shows</button>
-            <button onclick="setCategory('YOUTUBE')" id="btn-YOUTUBE">YouTube</button>
+    <div class="controls">
+        <button class="btn-roulette" onclick="startRoulette()">🎲 Spin & Pick</button>
+        
+        <div class="filter-scroll">
+            <div class="chip active" onclick="setFilter('all', this)">Home</div>
+            <div class="chip" onclick="setFilter('ANIME', this)">Anime</div>
+            <div class="chip" onclick="setFilter('MOVIE', this)">Movies</div>
+            <div class="chip" onclick="setFilter('SHOW', this)">Shows</div>
+            <div class="chip" onclick="setFilter('YOUTUBE', this)">YouTube</div>
         </div>
 
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-            <select id="statusFilter" onchange="updateView()">
-                <option value="all">Show: Everything</option>
-                <option value="new">✨ New (Both Unwatched)</option>
-                <option value="paused">⏸️ Paused / Stopped</option>
-                <option value="me">👤 Only I Watched</option>
-                <option value="her">💕 Only She Watched</option>
-                <option value="done">✅ Completed Together</option>
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <select id="statusFilter" onchange="updateUI()" style="flex:1;">
+                <option value="all">Status: All</option>
+                <option value="new">✨ New</option>
+                <option value="paused">⏳ Paused</option>
+                <option value="me">👤 Me</option>
+                <option value="her">💕 Her</option>
             </select>
-
-            <select id="sortOrder" onchange="updateView()">
-                <option value="default">Sort: Default</option>
-                <option value="imdb">⭐ Highest Rated</option>
-                <option value="az">🔤 Name (A-Z)</option>
+            <select id="sortOrder" onchange="updateUI()" style="flex:1;">
+                <option value="default">Default</option>
+                <option value="imdb">Rating</option>
+                <option value="az">A-Z</option>
             </select>
         </div>
     </div>
 
-    <div class="media-grid" id="grid"></div>
+    <div id="mainContent"></div>
 
-    <div class="modal-overlay" id="infoModal" onclick="closeInfo(event)">
-        <div class="info-popup" id="infoPopup">
-            <div class="info-header" id="infoHeader"></div>
-            <div class="info-content">
-                <div class="info-title" id="infoTitle">Title</div>
-                <div class="info-meta" id="infoMeta"></div>
-                
-                <div class="info-desc" id="infoDesc">
-                    </div>
-
-                <div id="infoNoteContainer" style="display:none;">
-                    <p style="margin-bottom:5px; color:#888; font-size:0.8rem; font-weight:bold;">YOUR NOTES:</p>
-                    <div class="info-note" id="infoNote"></div>
-                </div>
-                <button class="close-btn" onclick="closeInfo(null)">Close</button>
+    <div class="modal-overlay" id="infoModal" onclick="closeModal(event)">
+        <div class="info-card">
+            <div class="info-hero" id="mHero"></div>
+            <div class="info-body">
+                <div class="info-title" id="mTitle"></div>
+                <div class="info-tags" id="mTags"></div>
+                <div class="info-desc" id="mDesc"></div>
+                <div id="mNoteBox" style="display:none;"><div class="info-note" id="mNote"></div></div>
             </div>
+            <button class="close-btn" onclick="closeModal(null)">Close</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="rouletteModal">
-        <div style="text-align: center; width: 100%;">
-            <div class="roulette-container" style="margin: 0 auto;">
-                <div class="selector-line"></div>
-                <div class="roulette-track" id="rouletteTrack"></div>
+        <div style="width: 100%; max-width: 600px; text-align: center;">
+            <h2 style="color: var(--gold); margin-bottom: 15px; text-transform: uppercase;">Spinning...</h2>
+            <div class="roulette-wrapper">
+                <div class="r-line"></div>
+                <div class="roulette-track" id="rTrack"></div>
             </div>
-            <div id="winnerDisplay" style="margin-top:20px; opacity:0; transition: opacity 0.5s;">
-                <div style="font-size: 2rem; font-weight: bold; color: var(--gold);" id="winnerTitle">???</div>
-                <button class="close-btn" style="width: auto; margin-top: 10px;" onclick="closeRoulette()">Close</button>
-            </div>
+            <h1 id="rWinner" style="color: white; margin-top: 20px; opacity: 0; transition: opacity 0.5s;">???</h1>
+            <button class="close-btn" style="margin-top: 20px; border-radius: 30px;" onclick="document.getElementById('rouletteModal').style.display='none'">Close</button>
         </div>
     </div>
 
     <script>
         // --- DATA ---
-        // I have added a "desc" field with IMDb-style plots for everything.
-        // Status logic: "50/50" = Stopped/Partial. true = Watched. false = Unwatched.
-        
         const mediaList = [
-            // ANIME
-            { 
-                category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, 
-                image: "https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYi00YWZhLTweZGEtMjMzM2FlNmU5ZWE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "An elf mage sets out on a journey to understand humanity after the death of her former comrade from a hero's party.",
-                note: "" 
-            },
-            { 
-                category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, 
-                image: "https://m.media-amazon.com/images/M/MV5BNzc5MTczNDQtNDFjNi00ZDU5LWFkNzItOTE1NzQzMzdhNzMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "After his hometown is destroyed and his mother is killed, young Eren Yeager vows to cleanse the earth of the giant humanoid Titans that have brought humanity to the brink of extinction.",
-                note: "sky watched s1 but doesnt remember anything" 
-            },
-            { 
-                category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, 
-                image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "After his sister is eaten by a dragon, an adventurer and his party save money by cooking the monsters they find in the dungeon.",
-                note: "" 
-            },
-            { 
-                category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, 
-                image: "https://m.media-amazon.com/images/M/MV5BMjY5OTQ0Y2ItMzE0MC00Yzk4LWIxNzItODc1ZGE0OWFkODU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A sweeper who cleans up monster remains gets infected by a parasitic Kaiju and gains the power to turn into one himself.",
-                note: "we both saw season1" 
-            },
-            { 
-                category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, 
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Crunchyroll_Logo.png/640px-Crunchyroll_Logo.png", 
-                desc: "A collection of various unwatched anime series currently sitting in the queue.",
-                note: "Other Animes on my crunchy" 
-            },
-            { 
-                category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, 
-                image: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1MDAtNDA0Y2JjMGNiMDZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Feature films from the One Piece universe, including Baron Omatsuri, Film Z, Stampede, Gold, and Red.",
-                note: "Baron-Z-Stampede-Gold-Red" 
-            },
-            { 
-                category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, 
-                image: "https://m.media-amazon.com/images/M/MV5BN2IzY2RlZDYtMTQxZi00ZmFmLTgzOWEtYjNjY2UxNTNmYjFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Thousands of years after humanity was petrified, a genius boy awakens and begins rebuilding civilization with science.",
-                note: "cool anime about rebuilding the world" 
-            },
-            { 
-                category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, 
-                image: "https://m.media-amazon.com/images/M/MV5BN2NlM2Y5Y2MtYjU5Min00M2M4LWE2YGYtYjA2ODNiYDY4NWJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Subaru Natsuki is transported to another world where he gains the ability to rewind time by dying.",
-                note: "finished season 1" 
-            },
+             // ANIME
+            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYi00YWZhLTweZGEtMjMzM2FlNmU5ZWE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An elf mage sets out on a journey to understand humanity after the death of her former comrade.", note: "" },
+            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, image: "https://m.media-amazon.com/images/M/MV5BNzc5MTczNDQtNDFjNi00ZDU5LWFkNzItOTE1NzQzMzdhNzMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Young Eren Yeager vows to cleanse the earth of the giant humanoid Titans.", note: "sky watched s1 but doesnt remember anything" },
+            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An adventurer and his party save money by cooking the monsters they find in the dungeon.", note: "" },
+            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BMjY5OTQ0Y2ItMzE0MC00Yzk4LWIxNzItODc1ZGE0OWFkODU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A sweeper gets infected by a parasitic Kaiju and gains the power to turn into one.", note: "we both saw season1" },
+            { category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Crunchyroll_Logo.png/640px-Crunchyroll_Logo.png", desc: "Various unwatched anime series sitting in the queue.", note: "Other Animes on my crunchy" },
+            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, image: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1MDAtNDA0Y2JjMGNiMDZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Films: Baron Omatsuri, Film Z, Stampede, Gold, and Red.", note: "Baron-Z-Stampede-Gold-Red" },
+            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BN2IzY2RlZDYtMTQxZi00ZmFmLTgzOWEtYjNjY2UxNTNmYjFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A genius boy awakens thousands of years in the future to rebuild civilization with science.", note: "cool anime about rebuilding the world" },
+            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://m.media-amazon.com/images/M/MV5BN2NlM2Y5Y2MtYjU5Min00M2M4LWE2YGYtYjA2ODNiYDY4NWJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Subaru Natsuki is transported to another world where he can rewind time by dying.", note: "finished season 1" },
 
             // MOVIES
-            { 
-                category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, 
-                image: "https://m.media-amazon.com/images/M/MV5BNzIxMDQ2YTItNDM4Ny00NDc3LWE0ODItODQ4NmJkNDMwYjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, 
-                image: "https://m.media-amazon.com/images/M/MV5BODIyOTEyMzY3NV5BMl5BanBnXkFtZTcwZjQ5NDc2OA@@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A reluctant Hobbit, Bilbo Baggins, sets out to the Lonely Mountain with a spirited group of dwarves to reclaim their mountain home.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, 
-                image: "https://m.media-amazon.com/images/M/MV5BMTc0NTUwMTU5OV5BMl5BanBnXkFtZTcwNjAwNzQzMw@@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Four kids travel through a wardrobe to the land of Narnia and learn of their destiny to free it with the guidance of a mystical lion.",
-                note: "watched only 1st movie" 
-            },
-            { 
-                category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, 
-                image: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5YWQtNDQwMzQxNTRiM2Q1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "An orphaned boy enrolls in a school of wizardry, where he learns the truth about himself, his family and the terrible evil that haunts the magical world.",
-                note: "i dont remember much" 
-            },
-            { 
-                category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, 
-                image: "https://m.media-amazon.com/images/M/MV5BYzA2NzY2M2QtNTdkMi00NDM4LWIwNGUtZTM0ZWE0NWI1MmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Upcoming Ryan Coogler horror movie starring Michael B. Jordan.",
-                note: "Upcoming movie?" 
-            },
-            { 
-                category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, 
-                image: "https://m.media-amazon.com/images/M/MV5BNkVkZTY0MzMtYzE0YS00NzkzLTk2MjktOTVhOTM2NzE2YzRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Trapped in a time loop that constantly repeats the day of his murder, a former special forces agent must unlock the mystery behind his untimely demise.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, 
-                image: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjhhLWE1ODEtMWMzMWMzNDA0NmQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "In the summer of 1989, a group of bullied kids band together to destroy a shape-shifting monster, which disguises itself as a clown and preys on the children of Derry.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, 
-                image: "https://m.media-amazon.com/images/M/MV5BN2E2ZjdiZjktZTZkNi00YTNiLTk0YmQtYTgyMjMzYjExMjE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Young Henry V encounters deceit, war and treachery after becoming King of England in the 15th century, in the aftermath of his brother's death.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, 
-                image: "https://m.media-amazon.com/images/M/MV5BOTU5MDg3OGItZWQ1Ny00ZTZlLTE4YzktNTY2NDRmFDY0OTBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A grieving family is haunted by tragic and disturbing occurrences after the death of their secretive grandmother.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, 
-                image: "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzZi00YTY3LThjYWYtYzM2OWJlYWU1MGY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Street-smart Nathan Drake is recruited by seasoned treasure hunter Victor 'Sully' Sullivan to recover a fortune amassed by Ferdinand Magellan.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, 
-                image: "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Former United Nations employee Gerry Lane traverses the world in a race against time to stop a zombie pandemic that is toppling armies and governments.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, 
-                image: "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg", 
-                desc: "With the help of a German bounty-hunter, a freed slave sets out to rescue his wife from a brutal plantation owner in Mississippi.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, 
-                image: "https://m.media-amazon.com/images/M/MV5BMDU2ZmM2OTYtNzIxYy00NjM5LTliNGQtN2JmOWQzYTBmZWUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Five assassins aboard a swiftly-moving bullet train find out that their missions have something in common.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, 
-                image: "https://m.media-amazon.com/images/M/MV5BMTUyNzQ2NDI5MV5BMl5BanBnXkFtZTgwNjM4ODQ5OTE@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Seven gunmen from a variety of backgrounds are brought together by a vengeful young widow to protect her town from a private army.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, 
-                image: "https://m.media-amazon.com/images/M/MV5BODNmYTkxZmUtYzJmZi00YmQ4LTgyYmYtYjA4ZjYxY2YyZDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "An American expat tries to sell off his highly profitable marijuana empire in London, triggering plots, schemes, bribery and blackmail.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, 
-                image: "https://m.media-amazon.com/images/M/MV5BMTA2NDYxOGYtYjU1Mi00Y2QzLTgxMTQtMWI1MGI0ZGQ5MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Unscrupulous boxing promoters, violent bookmakers, a Russian gangster, incompetent amateur robbers and supposedly Jewish jewelers fight to track down a priceless stolen diamond.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, 
-                image: "https://m.media-amazon.com/images/M/MV5BMTY0MTIxNDU4M15BMl5BanBnXkFtZTcwNzU3ODUyMw@@._V1_FMjpg_UX1000_.jpg", 
-                desc: "An Air Force astronaut crash-lands on a mysterious planet where evolved, talking apes dominate a race of primitive humans.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, 
-                image: "https://m.media-amazon.com/images/M/MV5BNDE1NDExMTItNDg5MC00MThhLWJhY2MtMzQ5NDVkNTkzYTNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "In 1936, archaeologist and adventurer Indiana Jones is hired by the U.S. government to find the Ark of the Covenant before Adolf Hitler's Nazis can obtain its awesome powers.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, 
-                image: "https://m.media-amazon.com/images/M/MV5BNTI2YTI0MWEtNGQ4OS00ODIzLWE1MWEtZGJiN2E3ZDM1YzJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Garfield, the world-famous, Monday-hating, lasagna-loving indoor cat, is about to have a wild outdoor adventure.",
-                note: "" 
-            },
-            { 
-                category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, 
-                image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
-                note: "" 
-            },
+            { category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BNzIxMDQ2YTItNDM4Ny00NDc3LWE0ODItODQ4NmJkNDMwYjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A Hobbit and companions set out to destroy the One Ring.", note: "" },
+            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODIyOTEyMzY3NV5BMl5BanBnXkFtZTcwZjQ5NDc2OA@@._V1_FMjpg_UX1000_.jpg", desc: "Bilbo Baggins sets out to reclaim the Lonely Mountain.", note: "" },
+            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTc0NTUwMTU5OV5BMl5BanBnXkFtZTcwNjAwNzQzMw@@._V1_FMjpg_UX1000_.jpg", desc: "Four kids travel through a wardrobe to the land of Narnia.", note: "watched only 1st movie" },
+            { category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5YWQtNDQwMzQxNTRiM2Q1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An orphaned boy enrolls in a school of wizardry.", note: "i dont remember much" },
+            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, image: "https://m.media-amazon.com/images/M/MV5BYzA2NzY2M2QtNTdkMi00NDM4LWIwNGUtZTM0ZWE0NWI1MmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Upcoming Ryan Coogler horror movie.", note: "Upcoming movie?" },
+            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, image: "https://m.media-amazon.com/images/M/MV5BNkVkZTY0MzMtYzE0YS00NzkzLTk2MjktOTVhOTM2NzE2YzRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Trapped in a time loop repeating the day of his murder.", note: "" },
+            { category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjhhLWE1ODEtMWMzMWMzNDA0NmQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Kids band together to destroy a shape-shifting monster clown.", note: "" },
+            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BN2E2ZjdiZjktZTZkNi00YTNiLTk0YmQtYTgyMjMzYjExMjE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Young Henry V encounters deceit and war after becoming King.", note: "" },
+            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BOTU5MDg3OGItZWQ1Ny00ZTZlLTE4YzktNTY2NDRmFDY0OTBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A grieving family is haunted by tragic occurrences.", note: "" },
+            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, image: "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzZi00YTY3LThjYWYtYzM2OWJlYWU1MGY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Nathan Drake is recruited by Sully to recover a fortune.", note: "" },
+            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A race against time to stop a zombie pandemic.", note: "" },
+            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg", desc: "A freed slave sets out to rescue his wife from a plantation owner.", note: "" },
+            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMDU2ZmM2OTYtNzIxYy00NjM5LTliNGQtN2JmOWQzYTBmZWUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Five assassins aboard a bullet train find their missions connected.", note: "" },
+            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTUyNzQ2NDI5MV5BMl5BanBnXkFtZTgwNjM4ODQ5OTE@._V1_FMjpg_UX1000_.jpg", desc: "Seven gunmen protect a town from a private army.", note: "" },
+            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODNmYTkxZmUtYzJmZi00YmQ4LTgyYmYtYjA4ZjYxY2YyZDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An American expat tries to sell off his marijuana empire in London.", note: "" },
+            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMTA2NDYxOGYtYjU1Mi00Y2QzLTgxMTQtMWI1MGI0ZGQ5MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Promoters, bookmakers, and gangsters fight to track down a diamond.", note: "" },
+            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BMTY0MTIxNDU4M15BMl5BanBnXkFtZTcwNzU3ODUyMw@@._V1_FMjpg_UX1000_.jpg", desc: "An astronaut crash-lands on a planet dominated by apes.", note: "" },
+            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BNDE1NDExMTItNDg5MC00MThhLWJhY2MtMzQ5NDVkNTkzYTNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Indiana Jones races Nazis to find the Ark of the Covenant.", note: "" },
+            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://m.media-amazon.com/images/M/MV5BNTI2YTI0MWEtNGQ4OS00ODIzLWE1MWEtZGJiN2E3ZDM1YzJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Garfield is about to have a wild outdoor adventure.", note: "" },
+            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Explorers travel through a wormhole to ensure humanity's survival.", note: "" },
 
             // SHOWS
-            { 
-                category: "SHOW", title: "Star Wars (Shows)", me: "50/50", her: "50/50", imdb: 8.6, 
-                image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Various series set in the Star Wars universe, including The Mandalorian, Andor, and Ahsoka.",
-                note: "GUIDE STAR WARS, we not done yet" 
-            },
-            { 
-                category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, 
-                image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Unravel the mystery of a nightmarish town in middle America that traps all those who enter.",
-                note: "we both stopped mid season 1" 
-            },
-            { 
-                category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, 
-                image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives.",
-                note: "i didnt finish" 
-            },
-            { 
-                category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, 
-                image: "https://m.media-amazon.com/images/M/MV5BMjA3Y2YyOWItYjc5Mi00YmU3LWJhNDctM2RiYzdlZDQyMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A model student uses his intelligence to fight violence inside and outside his school.",
-                note: "i didnt finish" 
-            },
-            { 
-                category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, 
-                image: "https://m.media-amazon.com/images/M/MV5MmVhNGEwZDYtZTMzOS00YzU5LWE4ZjItMGQ1ZmU0MzZmYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "In a future, post-apocalyptic Los Angeles brought about by nuclear decimation, citizens must live in underground bunkers to protect themselves from radiation, mutants and bandits.",
-                note: "too much gore but we can try" 
-            },
-            { 
-                category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, 
-                image: "https://m.media-amazon.com/images/M/MV5BMTM5MjkwMTI0MV5BMl5BanBnXkFtZTcwODQwMTc0Mg@@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A forensic technician specializing in blood spatter analysis for the Miami Metro Police Department leads a double life as a serial killer.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, 
-                image: "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for millennia.",
-                note: "I stopped at season 6, alot of nudity" 
-            },
-            { 
-                category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, 
-                image: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00YWY3LThjMzItYjZjZjNhNDVmYjY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Lucifer Morningstar has decided he's had enough of being the dutiful servant in Hell and decides to spend some time on Earth to better understand humanity.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, 
-                image: "https://m.media-amazon.com/images/M/MV5BNDJlMjAyYjItYzRhOS00NzVhLTg2YjYtYWIzNjE2Y2RlY2YxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A man is able to choose his own afterlife after his premature death, by having his consciousness uploaded into a virtual world.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, 
-                image: "https://m.media-amazon.com/images/M/MV5BNzQ3OTY0OTQtMzY2Yy00ODFkLTgwYmEtZDRmYjBiYzE2YmVkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Six young ninjas are tasked with defending their island home, called Ninjago.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, 
-                image: "https://m.media-amazon.com/images/M/MV5BMjY2ZmMxNDYtODk3ZC00YzllLTk1OTQtYzY1MzNhNzZkNmIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "An apocalyptic thriller that takes place in a time in which infectious diseases have become the new normal.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, 
-                image: "https://m.media-amazon.com/images/M/MV5BMzY1ODIzMDItMjg5OS00NTUzLThlNmItZTQyNDFjODMzMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A family saga with a supernatural twist, set in a German town where the disappearance of two young children exposes the relationships among four families.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, 
-                image: "https://m.media-amazon.com/images/M/MV5BMjA5ODk4Njg2OV5BMl5BanBnXkFtZTgwNTc4MzMwMjE@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A mysterious viral outbreak with hallmarks of an ancient and evil strain of vampirism ravages the city of New York.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, 
-                image: "https://m.media-amazon.com/images/M/MV5BZjYzZDgzMDktMmU0NC00ZmI5LWJhZGYtZTRiYWNlNDY5NTA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "A gangster family epic set in 1900s England, centering on a gang who sew razor blades in the peaks of their caps, and their fierce boss Tommy Shelby.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, 
-                image: "https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "After a global pandemic destroys civilization, a hardened survivor takes charge of a 14-year-old girl who may be humanity's last hope.",
-                note: "" 
-            },
-            { 
-                category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, 
-                image: "https://m.media-amazon.com/images/M/MV5BYzZkMTkyYmQtNzYxMi00M2VhLWE2YzktMzhhNWY2NjBjNzA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
-                desc: "Seven years after the world has become a frozen wasteland, all remaining life lives aboard the massive, perpetually-moving Snowpiercer.",
-                note: "" 
-            },
+            { category: "SHOW", title: "Star Wars (Shows)", me: "50/50", her: "50/50", imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Mandalorian, Andor, Ahsoka and more.", note: "GUIDE STAR WARS, we not done yet" },
+            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A nightmarish town traps all those who enter.", note: "we both stopped mid season 1" },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Workers' memories are surgically divided between work and life.", note: "i didnt finish" },
+            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjA3Y2YyOWItYjc5Mi00YmU3LWJhNDctM2RiYzdlZDQyMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A model student uses his intelligence to fight violence.", note: "i didnt finish" },
+            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5MmVhNGEwZDYtZTMzOS00YzU5LWE4ZjItMGQ1ZmU0MzZmYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Citizens live in bunkers to protect themselves in a post-apocalyptic LA.", note: "too much gore but we can try" },
+            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BMTM5MjkwMTI0MV5BMl5BanBnXkFtZTcwODQwMTc0Mg@@._V1_FMjpg_UX1000_.jpg", desc: "A forensic technician leads a double life as a serial killer.", note: "" },
+            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, image: "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Nine noble families fight for control over Westeros.", note: "I stopped at season 6, alot of nudity" },
+            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00YWY3LThjMzItYjZjZjNhNDVmYjY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The Devil decides to spend some time on Earth.", note: "" },
+            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://m.media-amazon.com/images/M/MV5BNDJlMjAyYjItYzRhOS00NzVhLTg2YjYtYWIzNjE2Y2RlY2YxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Consciousness can be uploaded into a virtual afterlife.", note: "" },
+            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNzQ3OTY0OTQtMzY2Yy00ODFkLTgwYmEtZDRmYjBiYzE2YmVkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Six young ninjas defend their island home.", note: "" },
+            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMjY2ZmMxNDYtODk3ZC00YzllLTk1OTQtYzY1MzNhNzZkNmIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An apocalyptic thriller about infectious diseases.", note: "" },
+            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BMzY1ODIzMDItMjg5OS00NTUzLThlNmItZTQyNDFjODMzMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A family saga with a supernatural twist and time travel.", note: "" },
+            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMjA5ODk4Njg2OV5BMl5BanBnXkFtZTgwNTc4MzMwMjE@._V1_FMjpg_UX1000_.jpg", desc: "A viral outbreak of ancient vampirism ravages New York.", note: "" },
+            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://m.media-amazon.com/images/M/MV5BZjYzZDgzMDktMmU0NC00ZmI5LWJhZGYtZTRiYWNlNDY5NTA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A gangster family epic set in 1900s England.", note: "" },
+            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A survivor takes charge of a girl who may be humanity's last hope.", note: "" },
+            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BYzZkMTkyYmQtNzYxMi00M2VhLWE2YzktMzhhNWY2NjBjNzA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Life on a massive, perpetually-moving train in a frozen world.", note: "" },
 
             // YOUTUBE
-            { 
-                category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, 
-                image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", 
-                desc: "Compilation of funny moments or segments from John Oliver's show.",
-                note: "John Oliver?" 
-            },
-            { 
-                category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, 
-                image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", 
-                desc: "Ludwig's vlog adventures travelling through Japan.",
-                note: "stopped on like ep3" 
-            },
-            { 
-                category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, 
-                image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", 
-                desc: "Ryan Trahan's series crossing America to deliver a penny.",
-                note: "stopped on like ep.16?" 
-            }
+            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", desc: "Compilation of funny moments from John Oliver.", note: "John Oliver?" },
+            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", desc: "Ludwig's vlog adventures in Japan.", note: "stopped on like ep3" },
+            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", desc: "Ryan Trahan crosses America to deliver a penny.", note: "stopped on like ep.16?" }
         ];
 
         let currentCategory = 'all';
 
-        // --- LOGIC: STATUS CHECKER ---
+        // --- CORE LOGIC ---
         function getStatusInfo(me, her) {
-            // New = Neither has seen it
-            if (me === false && her === false) return { text: "New ✨", class: "status-new", dot: "dot-new", code: "new" };
-            
-            // Completed = Both finished
-            if (me === true && her === true) return { text: "Completed Together ✅", class: "status-done", dot: "dot-done", code: "done" };
-            
-            // Paused/Stopped/Partial (50/50 means stopped)
+            if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
+            if (me === true && her === true) return { text: "Done", class: "s-done", dot: "d-done", code: "done" };
             if ((me === "50/50" && her === "50/50") || (me === "50/50" && her === false) || (me === false && her === "50/50")) 
-                return { text: "Paused / In Progress ⏳", class: "status-paused", dot: "dot-paused", code: "paused" };
-            
-            // Only Me
-            if (me === true && her === false) return { text: "Only I Watched 👤", class: "status-me", dot: "dot-me", code: "me" };
-            
-            // Only Her
-            if (me === false && her === true) return { text: "Only She Watched 💕", class: "status-her", dot: "dot-her", code: "her" };
-
-            // Complex cases (One finished, one 50/50)
-            if (me === true && her === "50/50") return { text: "I finished, She paused", class: "status-me", dot: "dot-me", code: "me" };
-            if (me === "50/50" && her === true) return { text: "She finished, I paused", class: "status-her", dot: "dot-her", code: "her" };
-
+                return { text: "Paused", class: "s-paused", dot: "d-paused", code: "paused" };
+            if (me === true && her === false) return { text: "Only Me", class: "s-me", dot: "d-me", code: "me" };
+            if (me === false && her === true) return { text: "Only Her", class: "s-her", dot: "d-her", code: "her" };
             return { text: "Plan", class: "", dot: "", code: "other" };
         }
 
-        // --- RENDER LOGIC ---
-        function setCategory(cat) {
+        function setFilter(cat, btn) {
             currentCategory = cat;
-            document.querySelectorAll('.category-buttons button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('btn-' + cat).classList.add('active');
-            updateView();
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            updateUI();
         }
 
-        function updateView() {
+        // --- RENDERING ---
+        function updateUI() {
+            const main = document.getElementById('mainContent');
             const statusFilter = document.getElementById('statusFilter').value;
             const sortOrder = document.getElementById('sortOrder').value;
-            const grid = document.getElementById('grid');
 
-            // 1. Filter
+            main.innerHTML = "";
+
+            // 1. FILTER ITEMS
             let filtered = mediaList.filter(item => {
-                const status = getStatusInfo(item.me, item.her);
-
-                // Category Filter
+                const s = getStatusInfo(item.me, item.her);
+                if (statusFilter !== 'all' && s.code !== statusFilter) return false;
                 if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
-                
-                // Status Dropdown Filter
-                if (statusFilter === 'new' && status.code !== 'new') return false;
-                if (statusFilter === 'paused' && status.code !== 'paused') return false;
-                if (statusFilter === 'me' && status.code !== 'me') return false;
-                if (statusFilter === 'her' && status.code !== 'her') return false;
-                if (statusFilter === 'done' && status.code !== 'done') return false;
-                
                 return true;
             });
 
-            // 2. Sort
+            // 2. SORT
             if (sortOrder === 'imdb') {
                 filtered.sort((a, b) => (b.imdb || 0) - (a.imdb || 0));
             } else if (sortOrder === 'az') {
                 filtered.sort((a, b) => a.title.localeCompare(b.title));
             }
 
-            // 3. Render
-            grid.innerHTML = "";
-            filtered.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => openInfo(item); // Open Modal on Click
-                
-                const status = getStatusInfo(item.me, item.her);
-                const imdbHtml = item.imdb > 0 ? `<div class="imdb-badge">${item.imdb}</div>` : '';
-                
-                card.innerHTML = `
-                    <div class="card-bg" style="background-image: url('${item.image}');"></div>
-                    ${imdbHtml}
-                    <div class="card-overlay">
-                        <div class="card-title">${item.title}</div>
-                        <div>
-                            <span class="status-dot ${status.dot}"></span>
-                            <span style="font-size:0.7rem; color:#ccc; font-weight:bold;">${status.text}</span>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // --- INFO MODAL LOGIC ---
-        function openInfo(item) {
-            const modal = document.getElementById('infoModal');
-            const status = getStatusInfo(item.me, item.her);
-
-            document.getElementById('infoTitle').innerText = item.title;
-            document.getElementById('infoHeader').style.backgroundImage = `url('${item.image}')`;
+            // 3. DECIDE LAYOUT: Rows or Grid?
+            // If "All" category AND "All" status -> Show Rows (Home View)
+            // Else -> Show Grid (Search Results View)
             
-            // Set Meta info
-            document.getElementById('infoMeta').innerHTML = `
-                <div style="display:flex; align-items:center; margin-right:15px;">
-                    <span class="status-dot ${status.dot}"></span> 
-                    <span class="${status.class}" style="font-weight:bold;">${status.text}</span>
-                </div>
-                <div style="margin-right:15px;">${item.category}</div>
-                ${item.imdb > 0 ? `<div>⭐ ${item.imdb} / 10</div>` : ''}
-            `;
-            
-            // Set Description
-            document.getElementById('infoDesc').innerText = item.desc || "No description available.";
+            if (currentCategory === 'all' && statusFilter === 'all' && sortOrder === 'default') {
+                // RENDER ROWS (Netflix Style)
+                const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
+                categories.forEach(cat => {
+                    const rowItems = filtered.filter(i => i.category.includes(cat));
+                    if (rowItems.length > 0) {
+                        // Title
+                        const title = document.createElement('div');
+                        title.className = 'section-title';
+                        title.innerText = cat + 's';
+                        main.appendChild(title);
 
-            // Set Note (Only if exists)
-            const noteContainer = document.getElementById('infoNoteContainer');
-            if (item.note && item.note.trim() !== "") {
-                noteContainer.style.display = 'block';
-                document.getElementById('infoNote').innerText = item.note;
+                        // Scroll Container
+                        const row = document.createElement('div');
+                        row.className = 'row-container';
+                        
+                        rowItems.forEach(item => row.appendChild(createCard(item)));
+                        main.appendChild(row);
+                    }
+                });
             } else {
-                noteContainer.style.display = 'none';
+                // RENDER GRID
+                const grid = document.createElement('div');
+                grid.className = 'grid-container';
+                filtered.forEach(item => grid.appendChild(createCard(item)));
+                main.appendChild(grid);
+                
+                if (filtered.length === 0) {
+                    main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found 😔</div>";
+                }
             }
-
-            modal.style.display = 'flex';
         }
 
-        function closeInfo(e) {
-            if (e === null || e.target.id === 'infoModal') {
+        function createCard(item) {
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.onclick = () => openModal(item);
+            
+            const s = getStatusInfo(item.me, item.her);
+            
+            el.innerHTML = `
+                <div class="card-image" style="background-image: url('${item.image}')"></div>
+                <div class="card-overlay">
+                    <div class="card-cat-badge">${item.category}</div>
+                    <div class="card-title">${item.title}</div>
+                    <div class="card-status">
+                        <span class="status-dot ${s.dot}"></span>
+                        <span class="${s.class}">${s.text}</span>
+                    </div>
+                </div>
+            `;
+            return el;
+        }
+
+        // --- MODAL ---
+        function openModal(item) {
+            const s = getStatusInfo(item.me, item.her);
+            document.getElementById('mHero').style.backgroundImage = `url('${item.image}')`;
+            document.getElementById('mTitle').innerText = item.title;
+            document.getElementById('mTags').innerHTML = `
+                <span class="${s.class}" style="font-weight:bold;">${s.text}</span> • 
+                ${item.category} • 
+                ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}
+            `;
+            document.getElementById('mDesc').innerText = item.desc;
+            
+            if (item.note) {
+                document.getElementById('mNoteBox').style.display = 'block';
+                document.getElementById('mNote').innerText = item.note;
+            } else {
+                document.getElementById('mNoteBox').style.display = 'none';
+            }
+            
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (!e || e.target.id === 'infoModal') {
                 document.getElementById('infoModal').style.display = 'none';
             }
         }
 
-        // --- ROULETTE LOGIC ---
-        function openRoulette() {
-            // Only pick things that are NEW or PAUSED (Don't pick completed stuff)
+        // --- ROULETTE ---
+        function startRoulette() {
             const candidates = mediaList.filter(i => {
-                const code = getStatusInfo(i.me, i.her).code;
-                return code === 'new' || code === 'paused';
+                const c = getStatusInfo(i.me, i.her).code;
+                return c === 'new' || c === 'paused';
             });
-            
-            if (candidates.length === 0) { alert("Everything is watched! Reset the list!"); return; }
 
-            const modal = document.getElementById('rouletteModal');
-            const track = document.getElementById('rouletteTrack');
-            const winnerDisplay = document.getElementById('winnerDisplay');
-            const winnerTitle = document.getElementById('winnerTitle');
-            
-            modal.style.display = 'flex';
-            winnerDisplay.style.opacity = '0';
-            
-            track.innerHTML = '';
-            const totalItems = 50; 
-            const winnerIndex = 40; 
-            const winnerItem = candidates[Math.floor(Math.random() * candidates.length)];
-            
-            for (let i = 0; i < totalItems; i++) {
-                let item = (i === winnerIndex) ? winnerItem : candidates[Math.floor(Math.random() * candidates.length)];
-                const div = document.createElement('div');
-                div.className = 'roulette-card';
-                div.style.backgroundImage = `url('${item.image}')`;
-                div.innerHTML = `<div class="roulette-card-title">${item.title}</div>`;
-                track.appendChild(div);
-            }
+            if (candidates.length === 0) { alert("Nothing to watch!"); return; }
 
-            // Reset animation
+            document.getElementById('rouletteModal').style.display = 'flex';
+            document.getElementById('rWinner').style.opacity = '0';
+            
+            const track = document.getElementById('rTrack');
+            track.innerHTML = "";
             track.style.transition = 'none';
             track.style.transform = 'translateX(0)';
-            void track.offsetWidth;
+            
+            const total = 50;
+            const winIdx = 40;
+            const winner = candidates[Math.floor(Math.random() * candidates.length)];
+            
+            for(let i=0; i<total; i++) {
+                const it = (i===winIdx) ? winner : candidates[Math.floor(Math.random() * candidates.length)];
+                const d = document.createElement('div');
+                d.className = 'r-card';
+                d.style.backgroundImage = `url('${it.image}')`;
+                track.appendChild(d);
+            }
 
             // Animate
-            const cardWidth = 160;
-            const containerCenter = document.querySelector('.roulette-container').offsetWidth / 2;
-            const targetPos = (winnerIndex * cardWidth) + (cardWidth / 2);
-            const finalOffset = -(targetPos - containerCenter);
-            const jitter = Math.floor(Math.random() * 40) - 20;
-
             setTimeout(() => {
-                track.style.transition = 'transform 5s cubic-bezier(0.15, 0, 0.2, 1)';
-                track.style.transform = `translateX(${finalOffset + jitter}px)`;
+                const cardW = 140;
+                const offset = -((winIdx * cardW) + (cardW/2) - (track.parentElement.offsetWidth / 2));
+                const jitter = Math.floor(Math.random()*20) - 10;
+                
+                track.style.transition = 'transform 4.5s cubic-bezier(0.1, 0, 0.2, 1)';
+                track.style.transform = `translateX(${offset + jitter}px)`;
+                
+                setTimeout(() => {
+                    const wTitle = document.getElementById('rWinner');
+                    wTitle.innerText = winner.title;
+                    wTitle.style.opacity = '1';
+                }, 4500);
             }, 50);
-
-            setTimeout(() => {
-                winnerTitle.innerText = winnerItem.title;
-                winnerDisplay.style.opacity = '1';
-                // You can add confetti here if you want in V6 ;)
-            }, 5050);
         }
 
-        function closeRoulette() {
-            document.getElementById('rouletteModal').style.display = 'none';
-        }
-
-        // Run on load
-        updateView();
+        // Init
+        updateUI();
 
     </script>
 </body>
