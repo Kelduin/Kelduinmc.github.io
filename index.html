@@ -17,7 +17,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 20px;
             overflow-x: hidden;
@@ -27,12 +27,11 @@
         h1 {
             text-align: center;
             font-weight: 800;
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 20px;
             letter-spacing: -1px;
-            background: linear-gradient(to right, #fff, #aaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #fff;
+            text-transform: uppercase;
         }
 
         .controls-container {
@@ -71,7 +70,7 @@
             box-shadow: 0 5px 15px rgba(255,255,255,0.2);
         }
 
-        /* SPECIAL ROULETTE BUTTON */
+        /* ROULETTE BUTTON */
         #btn-roulette {
             background: linear-gradient(45deg, #e50914, #ff5f6d);
             border: none;
@@ -79,6 +78,7 @@
             padding: 12px 30px;
             font-size: 1.1rem;
             box-shadow: 0 0 20px rgba(229, 9, 20, 0.5);
+            margin-bottom: 10px;
         }
         #btn-roulette:hover {
             transform: scale(1.05);
@@ -97,7 +97,7 @@
         /* --- NETFLIX STYLE CARDS --- */
         .media-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 15px;
             padding-bottom: 50px;
         }
@@ -105,10 +105,10 @@
         .card {
             position: relative;
             aspect-ratio: 2 / 3; /* Standard Movie Poster Ratio */
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.3s ease;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             background-color: #222;
         }
@@ -126,54 +126,39 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover;
             background-position: center;
-            transition: filter 0.3s;
-        }
-        
-        .card:hover .card-bg {
-            filter: brightness(1.1); /* Brighter on hover */
         }
 
-        /* Gradient Overlay for Text Readability */
+        /* Gradient Overlay */
         .card-overlay {
             position: absolute;
             bottom: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 40%, transparent 100%);
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 15px;
+            padding: 10px;
             box-sizing: border-box;
-            opacity: 1; 
         }
 
         .imdb-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 5px;
+            right: 5px;
             background-color: #f5c518;
             color: black;
             font-weight: 800;
             padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             z-index: 2;
         }
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             margin-bottom: 5px;
             line-height: 1.2;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .card-meta {
-            font-size: 0.75rem;
-            color: #ccc;
-            margin-bottom: 8px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
         }
 
         .status-dot {
@@ -181,110 +166,95 @@
             height: 8px;
             border-radius: 50%;
             display: inline-block;
-        }
-
-        .status-text {
-            font-size: 0.75rem;
-            font-weight: 600;
+            margin-right: 5px;
         }
 
         /* Status Colors */
         .status-new { color: #46d369; } .dot-new { background: #46d369; }
-        .status-progress { color: #ffa00a; } .dot-progress { background: #ffa00a; }
+        .status-paused { color: #ffa00a; } .dot-paused { background: #ffa00a; }
         .status-me { color: #a55eea; } .dot-me { background: #a55eea; }
         .status-her { color: #fd79a8; } .dot-her { background: #fd79a8; }
         .status-done { color: #777; } .dot-done { background: #777; }
 
-        /* --- ROULETTE MODAL (CS:GO STYLE) --- */
+        /* --- MODALS (Popup & Roulette) --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
             z-index: 100;
-            display: none; /* Hidden by default */
-            flex-direction: column;
+            display: none;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
 
-        .roulette-container {
+        /* INFO POPUP */
+        .info-popup {
+            background: #181818;
             width: 90%;
-            max-width: 800px;
-            height: 250px;
-            background: #111;
-            border: 2px solid #333;
-            border-radius: 10px;
-            position: relative;
+            max-width: 500px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            border: 1px solid #333;
+            animation: fadeIn 0.3s;
         }
 
-        .roulette-track {
-            display: flex;
-            height: 100%;
-            position: absolute;
-            left: 0;
-            /* Animation logic handled in JS */
-        }
-
-        .roulette-card {
-            width: 160px;
-            height: 100%;
-            flex-shrink: 0;
-            border-right: 2px solid #222;
+        .info-header {
+            height: 200px;
             background-size: cover;
             background-position: center;
             position: relative;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
+        }
+        .info-header::after {
+            content:''; position:absolute; inset:0;
+            background: linear-gradient(to top, #181818, transparent);
+        }
+
+        .info-content {
+            padding: 25px;
+        }
+
+        .info-title { font-size: 2rem; font-weight: bold; margin-bottom: 10px; line-height: 1.1; }
+        .info-meta { color: #aaa; margin-bottom: 20px; font-size: 0.9rem; display: flex; gap: 10px; align-items: center;}
+        .info-note { 
+            background: #222; 
+            padding: 15px; 
+            border-left: 4px solid var(--accent); 
+            border-radius: 4px;
+            font-style: italic; 
+            color: #ddd;
+            line-height: 1.5;
+        }
+        .close-btn { 
+            margin-top: 20px; 
+            width: 100%; 
+            padding: 12px;
+            background: #333;
+            border: none;
+        }
+
+        /* ROULETTE */
+        .roulette-container {
+            width: 90%; max-width: 800px; height: 250px;
+            background: #111; border: 2px solid #333;
+            border-radius: 10px; position: relative; overflow: hidden;
+        }
+        .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
+        .roulette-card {
+            width: 160px; height: 100%; flex-shrink: 0;
+            border-right: 2px solid #222; background-size: cover;
+            background-position: center; position: relative;
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        .roulette-card-title { background: rgba(0,0,0,0.8); width: 100%; text-align: center; padding: 10px; font-weight: bold; font-size: 0.9rem;}
+        .selector-line {
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
+            background: var(--gold); transform: translateX(-50%); z-index: 10;
+            box-shadow: 0 0 10px var(--gold);
         }
         
-        .roulette-card-title {
-            background: rgba(0,0,0,0.8);
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        /* The Red Line in the Middle */
-        .selector-line {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #ffd700;
-            transform: translateX(-50%);
-            z-index: 10;
-            box-shadow: 0 0 10px #ffd700;
-        }
-
-        .winner-display {
-            margin-top: 20px;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        .winner-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .close-btn {
-            margin-top: 20px;
-            background: transparent;
-            border: 1px solid white;
-            color: white;
-            padding: 10px 30px;
-            display: none;
-        }
+        @keyframes fadeIn { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
 
     </style>
 </head>
@@ -293,7 +263,7 @@
     <h1>Our Watchlist</h1>
     
     <div class="controls-container">
-        <button id="btn-roulette" onclick="openRoulette()">🎲 Spin for Movie</button>
+        <button id="btn-roulette" onclick="openRoulette()">🎲 Spin the Wheel</button>
 
         <div class="category-buttons" id="cat-buttons">
             <button onclick="setCategory('all')" class="active" id="btn-all">All</button>
@@ -303,83 +273,108 @@
             <button onclick="setCategory('YOUTUBE')" id="btn-YOUTUBE">YouTube</button>
         </div>
 
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
             <select id="statusFilter" onchange="updateView()">
-                <option value="all">Everything</option>
-                <option value="new">✨ Unwatched (New)</option>
-                <option value="progress">⏳ In Progress</option>
+                <option value="all">Show: Everything</option>
+                <option value="new">✨ New (Unwatched)</option>
+                <option value="paused">⏸️ Paused / Partial</option>
+                <option value="me">👤 Only I Watched</option>
             </select>
 
             <select id="sortOrder" onchange="updateView()">
+                <option value="default">Sort: Default</option>
                 <option value="imdb">⭐ Highest Rated</option>
-                <option value="az">A-Z</option>
+                <option value="az">🔤 Name (A-Z)</option>
             </select>
         </div>
     </div>
 
     <div class="media-grid" id="grid"></div>
 
-    <div class="modal-overlay" id="rouletteModal">
-        <div class="roulette-container">
-            <div class="selector-line"></div>
-            <div class="roulette-track" id="rouletteTrack">
+    <div class="modal-overlay" id="infoModal" onclick="closeInfo(event)">
+        <div class="info-popup" id="infoPopup">
+            <div class="info-header" id="infoHeader"></div>
+            <div class="info-content">
+                <div class="info-title" id="infoTitle">Title</div>
+                <div class="info-meta" id="infoMeta"></div>
+                <div id="infoNoteContainer">
+                    <p style="margin-bottom:5px; color:#888; font-size:0.8rem;">NOTES:</p>
+                    <div class="info-note" id="infoNote"></div>
                 </div>
+                <button class="close-btn" onclick="closeInfo(null)">Close</button>
+            </div>
         </div>
-        <div class="winner-display" id="winnerDisplay">
-            <div>We are watching:</div>
-            <div class="winner-title" id="winnerTitle">???</div>
-            <button class="close-btn" onclick="closeRoulette()" style="display: inline-block; margin-top: 15px;">Close</button>
+    </div>
+
+    <div class="modal-overlay" id="rouletteModal">
+        <div style="text-align: center; width: 100%;">
+            <div class="roulette-container" style="margin: 0 auto;">
+                <div class="selector-line"></div>
+                <div class="roulette-track" id="rouletteTrack"></div>
+            </div>
+            <div id="winnerDisplay" style="margin-top:20px; opacity:0; transition: opacity 0.5s;">
+                <div style="font-size: 2rem; font-weight: bold; color: var(--gold);" id="winnerTitle">???</div>
+                <button class="close-btn" style="width: auto; margin-top: 10px;" onclick="closeRoulette()">Close</button>
+            </div>
         </div>
     </div>
 
     <script>
         // --- DATA ---
-        // Same list as before, just ensuring we have it loaded.
+        // "50/50" now interpreted as Paused/Stopped/Partial.
+        // Images sourced from IMDb/Amazon/Wikidata/Youtube.
         const mediaList = [
-            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://upload.wikimedia.org/wikipedia/en/d/dc/Sousou_no_Frieren_Vol_1.png", note: "" },
-            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, image: "https://upload.wikimedia.org/wikipedia/en/d/d6/Shingeki_no_Kyojin_manga_volume_1.jpg", note: "sky watched s1 but doesnt remember anything" },
-            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://upload.wikimedia.org/wikipedia/en/7/73/Dungeon_Meshi_volume_1_cover.jpg", note: "" },
-            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://upload.wikimedia.org/wikipedia/en/2/22/Kaiju_No._8_volume_1.jpg", note: "we both saw season1" },
+            // ANIME
+            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYi00YWZhLTweZGEtMjMzM2FlNmU5ZWE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, image: "https://m.media-amazon.com/images/M/MV5BNzc5MTczNDQtNDFjNi00ZDU5LWFkNzItOTE1NzQzMzdhNzMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "sky watched s1 but doesnt remember anything" },
+            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BMjY5OTQ0Y2ItMzE0MC00Yzk4LWIxNzItODc1ZGE0OWFkODU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "we both saw season1" },
             { category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Crunchyroll_Logo.png/640px-Crunchyroll_Logo.png", note: "Other Animes on my crunchy" },
-            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, image: "https://upload.wikimedia.org/wikipedia/en/9/90/One_Piece%2C_Volume_61_Cover_%28Japanese%29.jpg", note: "Baron-Z-Stampede-Gold-Red" },
-            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://upload.wikimedia.org/wikipedia/en/a/a2/Dr._Stone_volume_1_cover.jpg", note: "cool anime about rebuilding the world" },
-            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://upload.wikimedia.org/wikipedia/en/e/e9/Re_Zero_Volume_1_cover.jpg", note: "finished season 1" },
-            { category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, image: "https://upload.wikimedia.org/wikipedia/en/3/30/The_Lord_of_the_Rings_The_Fellowship_of_the_Ring_poster.jpg", note: "" },
-            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, image: "https://upload.wikimedia.org/wikipedia/en/b/b3/The_Hobbit_An_Unexpected_Journey_theatrical_poster.jpg", note: "" },
-            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, image: "https://upload.wikimedia.org/wikipedia/en/1/10/The_Chronicles_of_Narnia_-_The_Lion%2C_the_Witch_and_the_Wardrobe.jpg", note: "watched only 1st movie" },
-            { category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, image: "https://upload.wikimedia.org/wikipedia/en/c/c0/Harry_Potter_and_the_Philosopher%27s_Stone_posters.JPG", note: "i dont remember much" },
-            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/en/8/8c/Sinners_2025_poster.jpg", note: "Upcoming movie?" },
-            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, image: "https://upload.wikimedia.org/wikipedia/en/2/23/Boss_Level_poster.jpg", note: "" },
-            { category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, image: "https://upload.wikimedia.org/wikipedia/en/5/5a/It_%282017%29_poster.jpg", note: "" },
-            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, image: "https://upload.wikimedia.org/wikipedia/en/a/a2/The_King_%282019%29_poster.jpg", note: "" },
-            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, image: "https://upload.wikimedia.org/wikipedia/en/d/d9/Hereditary.png", note: "" },
-            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, image: "https://upload.wikimedia.org/wikipedia/en/d/d4/Uncharted_Official_Poster.jpg", note: "" },
-            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, image: "https://upload.wikimedia.org/wikipedia/en/d/dc/World_War_Z_poster.jpg", note: "" },
-            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, image: "https://upload.wikimedia.org/wikipedia/en/8/8b/Django_Unchained_Poster.jpg", note: "" },
-            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, image: "https://upload.wikimedia.org/wikipedia/en/1/13/Bullet_Train_%28poster%29.jpeg", note: "" },
-            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://upload.wikimedia.org/wikipedia/en/3/30/The_Magnificent_Seven_%282016_film%29.png", note: "" },
-            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://upload.wikimedia.org/wikipedia/en/0/06/The_Gentlemen_poster.jpg", note: "" },
-            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://upload.wikimedia.org/wikipedia/en/a/a7/Snatch_ver4.jpg", note: "" },
-            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, image: "https://upload.wikimedia.org/wikipedia/en/8/82/Planet_of_the_Apes_%282001_US_theatrical_poster%29.jpg", note: "" },
-            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, image: "https://upload.wikimedia.org/wikipedia/en/4/4c/Raiders_of_the_Lost_Ark.jpg", note: "" },
-            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://upload.wikimedia.org/wikipedia/en/f/f0/The_Garfield_Movie_poster.jpg", note: "" },
-            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", note: "" },
-            { category: "SHOW", title: "Star Wars (Shows)", me: "50/50", her: "50/50", imdb: 8.6, image: "https://upload.wikimedia.org/wikipedia/en/3/36/The_Mandalorian_S1_Poster.jpg", note: "GUIDE STAR WARS, we not done yet" },
-            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://upload.wikimedia.org/wikipedia/en/3/36/From_TV_series_poster.jpg", note: "we both stopped mid season 1" },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://upload.wikimedia.org/wikipedia/en/3/3b/Severance_TV_series.jpg", note: "i didnt finish" },
-            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://upload.wikimedia.org/wikipedia/en/9/90/Weak_Hero_Class_1.jpg", note: "i didnt finish" },
-            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://upload.wikimedia.org/wikipedia/en/d/d4/Fallout_%28TV_series%29_poster.jpg", note: "too much gore but we can try" },
-            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://upload.wikimedia.org/wikipedia/en/7/77/Dexter_Season_1_DVD_poster.png", note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, image: "https://upload.wikimedia.org/wikipedia/en/d/d8/Game_of_Thrones_title_card.jpg", note: "I stopped at season 6, alot of nudity" },
-            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://upload.wikimedia.org/wikipedia/en/thumb/0/05/Lucifer_season_1.png/250px-Lucifer_season_1.png", note: "" },
-            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://upload.wikimedia.org/wikipedia/en/0/0d/Upload_TV_series_poster.jpg", note: "" },
-            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://upload.wikimedia.org/wikipedia/en/d/d5/Ninjago_Dragons_Rising_poster.jpg", note: "" },
-            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, image: "https://upload.wikimedia.org/wikipedia/en/e/e0/Happiness_%28South_Korean_TV_series%29.jpg", note: "" },
-            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://upload.wikimedia.org/wikipedia/en/2/20/DarkNetflixPoster.jpg", note: "" },
-            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://upload.wikimedia.org/wikipedia/en/b/b3/The_Strain_season_1_poster.jpg", note: "" },
-            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://upload.wikimedia.org/wikipedia/en/5/52/Peaky_Blinders_title_card.jpg", note: "" },
-            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, image: "https://upload.wikimedia.org/wikipedia/en/4/46/The_Last_of_Us_TV_series_poster.jpg", note: "" },
-            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://upload.wikimedia.org/wikipedia/en/a/a2/Snowpiercer_TV_series_Title_Card.png", note: "" },
+            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, image: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1MDAtNDA0Y2JjMGNiMDZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "Baron-Z-Stampede-Gold-Red" },
+            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BN2IzY2RlZDYtMTQxZi00ZmFmLTgzOWEtYjNjY2UxNTNmYjFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "cool anime about rebuilding the world" },
+            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://m.media-amazon.com/images/M/MV5BN2NlM2Y5Y2MtYjU5Min00M2M4LWE2YGYtYjA2ODNiYDY4NWJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "finished season 1" },
+
+            // MOVIES
+            { category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BNzIxMDQ2YTItNDM4Ny00NDc3LWE0ODItODQ4NmJkNDMwYjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODIyOTEyMzY3NV5BMl5BanBnXkFtZTcwZjQ5NDc2OA@@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTc0NTUwMTU5OV5BMl5BanBnXkFtZTcwNjAwNzQzMw@@._V1_FMjpg_UX1000_.jpg", note: "watched only 1st movie" },
+            { category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5YWQtNDQwMzQxNTRiM2Q1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "i dont remember much" },
+            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, image: "https://m.media-amazon.com/images/M/MV5BYzA2NzY2M2QtNTdkMi00NDM4LWIwNGUtZTM0ZWE0NWI1MmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "Upcoming movie?" },
+            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, image: "https://m.media-amazon.com/images/M/MV5BNkVkZTY0MzMtYzE0YS00NzkzLTk2MjktOTVhOTM2NzE2YzRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjhhLWE1ODEtMWMzMWMzNDA0NmQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BN2E2ZjdiZjktZTZkNi00YTNiLTk0YmQtYTgyMjMzYjExMjE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BOTU5MDg3OGItZWQ1Ny00ZTZlLTE4YzktNTY2NDRmFDY0OTBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, image: "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzZi00YTY3LThjYWYtYzM2OWJlYWU1MGY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMDU2ZmM2OTYtNzIxYy00NjM5LTliNGQtN2JmOWQzYTBmZWUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTUyNzQ2NDI5MV5BMl5BanBnXkFtZTgwNjM4ODQ5OTE@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODNmYTkxZmUtYzJmZi00YmQ4LTgyYmYtYjA4ZjYxY2YyZDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMTA2NDYxOGYtYjU1Mi00Y2QzLTgxMTQtMWI1MGI0ZGQ5MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BMTY0MTIxNDU4M15BMl5BanBnXkFtZTcwNzU3ODUyMw@@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BNDE1NDExMTItNDg5MC00MThhLWJhY2MtMzQ5NDVkNTkzYTNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://m.media-amazon.com/images/M/MV5BNTI2YTI0MWEtNGQ4OS00ODIzLWE1MWEtZGJiN2E3ZDM1YzJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+
+            // SHOWS
+            { category: "SHOW", title: "Star Wars (Shows)", me: "50/50", her: "50/50", imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "GUIDE STAR WARS, we not done yet" },
+            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "we both stopped mid season 1" },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "i didnt finish" },
+            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjA3Y2YyOWItYjc5Mi00YmU3LWJhNDctM2RiYzdlZDQyMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "i didnt finish" },
+            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5MmVhNGEwZDYtZTMzOS00YzU5LWE4ZjItMGQ1ZmU0MzZmYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "too much gore but we can try" },
+            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BMTM5MjkwMTI0MV5BMl5BanBnXkFtZTcwODQwMTc0Mg@@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, image: "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "I stopped at season 6, alot of nudity" },
+            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00YWY3LThjMzItYjZjZjNhNDVmYjY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://m.media-amazon.com/images/M/MV5BNDJlMjAyYjItYzRhOS00NzVhLTg2YjYtYWIzNjE2Y2RlY2YxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNzQ3OTY0OTQtMzY2Yy00ODFkLTgwYmEtZDRmYjBiYzE2YmVkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMjY2ZmMxNDYtODk3ZC00YzllLTk1OTQtYzY1MzNhNzZkNmIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BMzY1ODIzMDItMjg5OS00NTUzLThlNmItZTQyNDFjODMzMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMjA5ODk4Njg2OV5BMl5BanBnXkFtZTgwNTc4MzMwMjE@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://m.media-amazon.com/images/M/MV5BZjYzZDgzMDktMmU0NC00ZmI5LWJhZGYtZTRiYWNlNDY5NTA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BYzZkMTkyYmQtNzYxMi00M2VhLWE2YzktMzhhNWY2NjBjNzA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+
+            // YOUTUBE
             { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", note: "John Oliver?" },
             { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", note: "stopped on like ep3" },
             { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", note: "stopped on like ep.16?" }
@@ -387,13 +382,25 @@
 
         let currentCategory = 'all';
 
+        // --- LOGIC: STATUS CHECKER ---
         function getStatusInfo(me, her) {
-            if (me === false && her === false) return { text: "New ✨", class: "status-new", dot: "dot-new" };
-            if (me === true && her === true) return { text: "Done ✅", class: "status-done", dot: "dot-done" };
-            if (me === "50/50" || her === "50/50") return { text: "InProgress ⏳", class: "status-progress", dot: "dot-progress" };
-            if (me === true && her === false) return { text: "Only Me 👤", class: "status-me", dot: "dot-me" };
-            if (me === false && her === true) return { text: "Only Her 💕", class: "status-her", dot: "dot-her" };
-            return { text: "Plan", class: "", dot: "" };
+            // New = Neither has seen it
+            if (me === false && her === false) return { text: "New ✨", class: "status-new", dot: "dot-new", code: "new" };
+            
+            // Completed = Both finished
+            if (me === true && her === true) return { text: "Completed ✅", class: "status-done", dot: "dot-done", code: "done" };
+            
+            // Paused/Stopped/Partial (50/50 means stopped)
+            if (me === "50/50" || her === "50/50") return { text: "Stopped/Paused ⏸️", class: "status-paused", dot: "dot-paused", code: "paused" };
+            
+            // Only Me
+            if (me === true && her === false) return { text: "Only I Watched 👤", class: "status-me", dot: "dot-me", code: "me" };
+            
+            // Only Her
+            if (me === false && her === true) return { text: "Only She Watched 💕", class: "status-her", dot: "dot-her", code: "her" };
+
+            // Default fallback
+            return { text: "Plan", class: "", dot: "", code: "other" };
         }
 
         // --- RENDER LOGIC ---
@@ -411,9 +418,14 @@
 
             // 1. Filter
             let filtered = mediaList.filter(item => {
+                const status = getStatusInfo(item.me, item.her);
+
                 if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
-                if (statusFilter === 'new') return (item.me === false && item.her === false);
-                if (statusFilter === 'progress') return (item.me === "50/50" || item.her === "50/50");
+                
+                if (statusFilter === 'new' && status.code !== 'new') return false;
+                if (statusFilter === 'paused' && status.code !== 'paused') return false;
+                if (statusFilter === 'me' && status.code !== 'me') return false;
+                
                 return true;
             });
 
@@ -426,25 +438,22 @@
 
             // 3. Render
             grid.innerHTML = "";
-            filtered.forEach(item => {
+            filtered.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
+                card.onclick = () => openInfo(item); // Open Modal on Click
                 
                 const status = getStatusInfo(item.me, item.her);
                 const imdbHtml = item.imdb > 0 ? `<div class="imdb-badge">${item.imdb}</div>` : '';
                 
-                // If no image, fallback to a dark grey
-                const bgImage = item.image ? `url('${item.image}')` : 'none';
-                const bgColor = item.image ? 'transparent' : '#333';
-
                 card.innerHTML = `
-                    <div class="card-bg" style="background-image: ${bgImage}; background-color: ${bgColor};"></div>
+                    <div class="card-bg" style="background-image: url('${item.image}');"></div>
                     ${imdbHtml}
                     <div class="card-overlay">
                         <div class="card-title">${item.title}</div>
-                        <div class="card-meta">
+                        <div>
                             <span class="status-dot ${status.dot}"></span>
-                            <span class="status-text ${status.class}">${status.text}</span>
+                            <span style="font-size:0.75rem; color:#ccc;">${status.text}</span>
                         </div>
                     </div>
                 `;
@@ -452,11 +461,48 @@
             });
         }
 
-        // --- ROULETTE LOGIC 🎲 ---
+        // --- INFO MODAL LOGIC ---
+        function openInfo(item) {
+            const modal = document.getElementById('infoModal');
+            const status = getStatusInfo(item.me, item.her);
+
+            document.getElementById('infoTitle').innerText = item.title;
+            document.getElementById('infoHeader').style.backgroundImage = `url('${item.image}')`;
+            document.getElementById('infoMeta').innerHTML = `
+                <span class="status-dot ${status.dot}"></span> 
+                <span class="${status.class}">${status.text}</span>
+                <span>•</span>
+                <span>${item.category}</span>
+                ${item.imdb > 0 ? `<span>• ⭐ ${item.imdb}</span>` : ''}
+            `;
+            
+            // Hide Note box if empty
+            const noteContainer = document.getElementById('infoNoteContainer');
+            if (item.note && item.note.trim() !== "") {
+                noteContainer.style.display = 'block';
+                document.getElementById('infoNote').innerText = item.note;
+            } else {
+                noteContainer.style.display = 'none';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeInfo(e) {
+            if (e === null || e.target.id === 'infoModal') {
+                document.getElementById('infoModal').style.display = 'none';
+            }
+        }
+
+        // --- ROULETTE LOGIC ---
         function openRoulette() {
-            // Get candidate list (only uncompleted things ideally)
-            const candidates = mediaList.filter(i => !(i.me === true && i.her === true)); 
-            if (candidates.length === 0) { alert("Nothing left to watch!"); return; }
+            // Only pick things that are NEW or PAUSED (Don't pick completed stuff)
+            const candidates = mediaList.filter(i => {
+                const code = getStatusInfo(i.me, i.her).code;
+                return code === 'new' || code === 'paused';
+            });
+            
+            if (candidates.length === 0) { alert("Nothing new to watch!"); return; }
 
             const modal = document.getElementById('rouletteModal');
             const track = document.getElementById('rouletteTrack');
@@ -466,69 +512,41 @@
             modal.style.display = 'flex';
             winnerDisplay.style.opacity = '0';
             
-            // Generate the visual strip (Fake items + WINNER + Fake items)
-            // We need a lot of items to scroll past
             track.innerHTML = '';
-            const totalItems = 50; // How many cards scroll by
-            const winnerIndex = 40; // The item we stop on (must be consistent with CSS calculation)
-            
-            // Randomly pick a winner
+            const totalItems = 50; 
+            const winnerIndex = 40; 
             const winnerItem = candidates[Math.floor(Math.random() * candidates.length)];
             
             for (let i = 0; i < totalItems; i++) {
-                let item;
-                if (i === winnerIndex) {
-                    item = winnerItem;
-                } else {
-                    item = candidates[Math.floor(Math.random() * candidates.length)];
-                }
-                
+                let item = (i === winnerIndex) ? winnerItem : candidates[Math.floor(Math.random() * candidates.length)];
                 const div = document.createElement('div');
                 div.className = 'roulette-card';
-                const bg = item.image ? `url('${item.image}')` : 'none';
-                div.style.backgroundImage = bg;
+                div.style.backgroundImage = `url('${item.image}')`;
                 div.innerHTML = `<div class="roulette-card-title">${item.title}</div>`;
                 track.appendChild(div);
             }
 
-            // --- THE ANIMATION ---
-            // Card width is 160px.
-            // We want to land on index 40.
-            // Center of container is ~400px.
-            // We need to shift the track left.
-            
-            // Reset animation
             track.style.transition = 'none';
             track.style.transform = 'translateX(0)';
-            
-            // Force reflow
             void track.offsetWidth;
 
-            // Calculate landing position
-            // We want the CENTER of card 40 to align with the center line (400px)
-            // Card 40 starts at: 40 * 160 = 6400px
-            // Card 40 center is at: 6480px
-            // We want 6480px to move to 400px (center of screen)
-            // So we translate -6080px (with some randomness to make it look real)
-            
             const cardWidth = 160;
-            const targetPos = (winnerIndex * cardWidth) + (cardWidth / 2);
             const containerCenter = document.querySelector('.roulette-container').offsetWidth / 2;
+            // Center of card 40
+            const targetPos = (winnerIndex * cardWidth) + (cardWidth / 2);
+            // Translate amount
             const finalOffset = -(targetPos - containerCenter);
-            
-            // Add a little random jitter so it doesn't land perfectly center every time
+            // Add jitter
             const jitter = Math.floor(Math.random() * 40) - 20;
 
             setTimeout(() => {
-                track.style.transition = 'transform 5s cubic-bezier(0.15, 0, 0.2, 1)'; // The "Slow Down" effect
+                track.style.transition = 'transform 5s cubic-bezier(0.15, 0, 0.2, 1)';
                 track.style.transform = `translateX(${finalOffset + jitter}px)`;
             }, 50);
 
-            // Show winner name after animation
             setTimeout(() => {
                 winnerTitle.innerText = winnerItem.title;
                 winnerDisplay.style.opacity = '1';
-                // Trigger confetti here if we could! 🎉
             }, 5050);
         }
 
@@ -536,9 +554,7 @@
             document.getElementById('rouletteModal').style.display = 'none';
         }
 
-        // Run on load
         updateView();
-
     </script>
 </body>
 </html>
