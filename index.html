@@ -1,7 +1,375 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Watchlist V2</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #141414;
+            --card-bg: #2f2f2f;
+            --text-color: #e5e5e5;
+            --accent: #e50914; /* Netflix Red */
+            --green: #46d369;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- CONTROLS SECTION --- */
+        .controls-container {
+            background-color: #1f1f1f;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .category-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Pretty Dropdowns */
+        select {
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: transparent;
+            border: 1px solid #666;
+            color: #aaa;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 20px; /* Pill shape */
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover, button.active {
+            background-color: white;
+            color: black;
+            border-color: white;
+        }
+
+        /* --- CARD GRID --- */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            height: 340px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid transparent;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            z-index: 10;
+            border-color: #777;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .card-header {
+            height: 140px;
+            background: linear-gradient(135deg, #4b4b4b, #2f2f2f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+        }
+
+        .imdb-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #f5c518; /* IMDb Yellow */
+            color: black;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .card-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .card-meta {
+            font-size: 0.8rem;
+            color: #a3a3a3;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Status Colors */
+        .tag.new { background-color: var(--green); color: black; }
+        .tag.progress { background-color: #ffa00a; color: black; }
+        .tag.me-watched { background-color: #6c5ce7; color: white; }
+        .tag.completed { background-color: #333; color: #fff; border: 1px solid #fff;}
+
+        .note {
+            font-size: 0.85rem;
+            color: #ffcccc;
+            margin-top: 8px;
+            font-style: italic;
+            border-left: 2px solid var(--accent);
+            padding-left: 8px;
+        }
+
+    </style>
+</head>
 <body>
-  <h1>Hello World! (PwP)</h1>
-  <p>My website is alive!</p>
+
+    <h1>🍿 Our Watchlist V2 🎬</h1>
+    
+    <div class="controls-container">
+        <div class="category-buttons" id="cat-buttons">
+            <button onclick="setCategory('all')" class="active" id="btn-all">All</button>
+            <button onclick="setCategory('ANIME')" id="btn-ANIME">Anime</button>
+            <button onclick="setCategory('MOVIE')" id="btn-MOVIE">Movies</button>
+            <button onclick="setCategory('SHOW')" id="btn-SHOW">Shows</button>
+            <button onclick="setCategory('YOUTUBE')" id="btn-YOUTUBE">YouTube</button>
+        </div>
+
+        <div class="filter-options">
+            <select id="statusFilter" onchange="updateView()">
+                <option value="all">👀 Show: Everything</option>
+                <option value="new">✨ For Tonight (Both Unwatched)</option>
+                <option value="progress">⏳ Finish It (In Progress)</option>
+                <option value="me">👤 Only I Watched</option>
+                <option value="her">💕 Only She Watched</option>
+            </select>
+
+            <select id="sortOrder" onchange="updateView()">
+                <option value="default">🔢 Sort: Default</option>
+                <option value="imdb">⭐ Highest Rated</option>
+                <option value="az">🔤 Title (A-Z)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="media-grid" id="grid">
+        </div>
+
+    <script>
+        // --- YOUR DATA (Now with IMDb!) ---
+        // I added 'imdb: 0' where I didn't know the score. You can edit them!
+        const mediaList = [
+           // --- ANIME ---
+            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, note: "" },
+            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, note: "sky watched s1 but doesnt remember anything" },
+            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, note: "" },
+            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, note: "we both saw season1" },
+            { category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, note: "Other Animes on my crunchy" },
+            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, note: "Baron-Z-Stampede-Gold-Red" },
+            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, note: "cool anime about rebuilding the world" },
+            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, note: "finished season 1" },
+
+            // --- MOVIES ---
+            { category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, note: "" },
+            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, note: "" },
+            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, note: "watched only 1st movie" },
+            { category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, note: "i dont remember much" },
+            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, note: "Upcoming movie?" },
+            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, note: "" },
+            { category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, note: "" },
+            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, note: "" },
+            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, note: "" },
+            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, note: "" },
+            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, note: "" },
+            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, note: "" },
+            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, note: "" },
+            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, note: "" },
+            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, note: "" },
+            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, note: "" },
+            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, note: "" },
+            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, note: "" },
+            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, note: "" },
+            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, note: "" },
+
+            // --- SHOWS ---
+            { category: "SHOW", title: "Star Wars", me: "50/50", her: "50/50", imdb: 8.6, note: "GUIDE STAR WARS, we not done yet" },
+            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, note: "we both stopped mid season 1" },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, note: "i didnt finish" },
+            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, note: "i didnt finish" },
+            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, note: "too much gore but we can try" },
+            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, note: "" },
+            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, note: "I stopped at season 6, alot of nudity" },
+            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, note: "" },
+            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, note: "" },
+            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, note: "" },
+            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, note: "" },
+            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, note: "" },
+            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, note: "" },
+            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, note: "" },
+            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, note: "" },
+            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, note: "" },
+
+            // --- YOUTUBE ---
+            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, note: "" },
+            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, note: "stopped on like ep3" },
+            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, note: "stopped on like ep.16?" }
+        ];
+
+        let currentCategory = 'all';
+
+        function getEmoji(category) {
+            if (category.includes("ANIME")) return "🍙";
+            if (category.includes("MOVIE")) return "🎬";
+            if (category.includes("SHOW")) return "📺";
+            if (category.includes("YOUTUBE")) return "▶️";
+            return "📁";
+        }
+
+        function getStatusTag(me, her) {
+            if (me === false && her === false) return '<span class="tag new">New ✨</span>';
+            if (me === true && her === true) return '<span class="tag completed">Done ✅</span>';
+            if (me === "50/50" || her === "50/50") return '<span class="tag progress">In Progress ⏳</span>';
+            if (me === true && her === false) return '<span class="tag me-watched">I Watched It 👤</span>';
+            if (me === false && her === true) return '<span class="tag me-watched">She Watched It 💕</span>';
+            return '<span class="tag">Plan</span>';
+        }
+
+        // --- FILTER & SORT LOGIC ---
+        function setCategory(cat) {
+            currentCategory = cat;
+            
+            // Update button styles
+            document.querySelectorAll('.category-buttons button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + cat).classList.add('active');
+            
+            updateView();
+        }
+
+        function updateView() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sortOrder = document.getElementById('sortOrder').value;
+            const grid = document.getElementById('grid');
+
+            // 1. Filter the list
+            let filtered = mediaList.filter(item => {
+                // Category Filter
+                if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
+
+                // Status Dropdown Filter
+                if (statusFilter === 'new') return (item.me === false && item.her === false);
+                if (statusFilter === 'progress') return (item.me === "50/50" || item.her === "50/50");
+                if (statusFilter === 'me') return (item.me === true && item.her !== true);
+                if (statusFilter === 'her') return (item.me !== true && item.her === true);
+                
+                return true; // 'all' passes everything
+            });
+
+            // 2. Sort the list
+            if (sortOrder === 'imdb') {
+                filtered.sort((a, b) => (b.imdb || 0) - (a.imdb || 0)); // High to Low
+            } else if (sortOrder === 'az') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title)); // A-Z
+            }
+
+            // 3. Render
+            grid.innerHTML = "";
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                const emoji = getEmoji(item.category);
+                const statusHtml = getStatusTag(item.me, item.her);
+                const noteHtml = item.note ? `<div class="note">"${item.note}"</div>` : '';
+                const imdbHtml = item.imdb > 0 ? `<div class="imdb-badge">${item.imdb}</div>` : '';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        ${emoji}
+                        ${imdbHtml}
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-meta">${item.category}</div>
+                        ${noteHtml}
+                        <div class="tags">
+                            ${statusHtml}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Run on load
+        updateView();
+
+    </script>
 </body>
 </html>
