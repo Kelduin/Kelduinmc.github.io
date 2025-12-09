@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Our Watchlist Premium</title>
+    <title>Our Watchlist Ultimate</title>
     <style>
         /* --- CSS RESET & VARIABLES --- */
         :root {
-            --bg-color: #000000;
+            --bg-color: #050505;
             --card-bg: #141414;
             --text-color: #ffffff;
             --accent: #e50914;
             --gold: #ffd700;
-            --row-height: 280px;
-            --card-width: 160px;
+            --card-width: 150px;
+            --card-height: 225px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -24,7 +24,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            padding-bottom: 80px; /* Space for bottom scroll */
+            padding-bottom: 80px;
             overflow-x: hidden;
         }
 
@@ -35,17 +35,10 @@
             position: sticky;
             top: 0;
             z-index: 50;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
             text-align: center;
         }
+
+        h1 { margin: 0; font-size: 1.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
 
         /* --- CONTROLS --- */
         .controls {
@@ -66,184 +59,142 @@
             font-weight: bold;
             border-radius: 30px;
             box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
-            transition: transform 0.2s;
             cursor: pointer;
         }
-        .btn-roulette:active { transform: scale(0.95); }
 
+        /* Filter Chips */
         .filter-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            width: 100%;
-            padding-bottom: 10px;
-            /* Hide Scrollbar */
-            scrollbar-width: none; 
-            -ms-overflow-style: none;
+            display: flex; gap: 10px; overflow-x: auto; width: 100%; padding-bottom: 5px;
+            scrollbar-width: none;
         }
         .filter-scroll::-webkit-scrollbar { display: none; }
 
         .chip {
-            background: #333;
-            color: #ccc;
-            border: 1px solid #555;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: #222; color: #aaa; border: 1px solid #444;
+            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem;
+            white-space: nowrap; cursor: pointer; transition: 0.2s;
         }
-        .chip.active {
-            background: white;
-            color: black;
-            border-color: white;
-            font-weight: bold;
-        }
+        .chip.active { background: white; color: black; font-weight: bold; border-color: white; }
 
+        /* Dropdowns */
+        .dropdown-row { display: flex; gap: 10px; width: 100%; max-width: 600px; }
         select {
-            background: #222;
-            color: white;
-            border: 1px solid #444;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
+            flex: 1; background: #222; color: white; border: 1px solid #444;
+            padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none;
         }
 
-        /* --- LAYOUTS (Row vs Grid) --- */
-        
-        /* 1. HORIZONTAL ROWS (Netflix Style) */
-        .section-title {
-            padding: 0 20px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            color: #e5e5e5;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* --- LAYOUTS --- */
+        /* Section Title (Anime, Movies, etc.) */
+        .section-header {
+            padding: 0 20px; margin-top: 20px; margin-bottom: 10px;
+            display: flex; align-items: center; justify-content: space-between;
         }
+        .section-title { font-size: 1.2rem; font-weight: 700; color: #e5e5e5; }
         
+        /* PC Arrows */
+        .scroll-arrows { display: none; gap: 5px; }
+        @media (hover: hover) { .scroll-arrows { display: flex; } }
+        
+        .arrow-btn {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .arrow-btn:hover { background: white; color: black; }
+
+        /* Rows */
+        .row-wrapper { position: relative; }
         .row-container {
-            display: flex;
-            overflow-x: auto;
-            gap: 12px;
-            padding: 0 20px 20px 20px; /* Bottom padding for shadow */
-            scroll-snap-type: x mandatory; /* The "Snap" feel */
-            scroll-behavior: smooth;
-            /* Hide Scrollbar */
+            display: flex; overflow-x: auto; gap: 12px;
+            padding: 0 20px 20px 20px;
+            scroll-snap-type: x mandatory; scroll-behavior: smooth;
             scrollbar-width: none;
-            -ms-overflow-style: none;
         }
         .row-container::-webkit-scrollbar { display: none; }
 
-        /* 2. GRID (For Filters) */
+        /* Grid (Search Results) */
         .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-            padding: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px; padding: 20px;
         }
 
-        /* --- CARD DESIGN --- */
+        /* --- CARD --- */
         .card {
-            flex: 0 0 var(--card-width); /* Fixed width for rows */
-            aspect-ratio: 2 / 3;
-            background-color: #222;
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-            scroll-snap-align: start; /* Snap alignment */
-            cursor: pointer;
-            transition: transform 0.2s;
+            flex: 0 0 var(--card-width); height: var(--card-height);
+            background-color: #222; border-radius: 6px; overflow: hidden;
+            position: relative; scroll-snap-align: start; cursor: pointer;
+            transition: transform 0.2s, opacity 0.3s;
         }
-        
         .card:active { transform: scale(0.97); }
-
-        .card-image {
-            width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .card-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 10px;
-        }
-
-        .card-cat-badge {
-            font-size: 0.6rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #aaa;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            line-height: 1.2;
-            color: white;
-            margin-bottom: 4px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-        }
-
-        .card-status {
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
         
-        /* Status Colors */
+        /* Gray Out "Done" items */
+        .card.dimmed { opacity: 0.3; filter: grayscale(80%); }
+        .card.dimmed:hover { opacity: 1; filter: grayscale(0%); }
+
+        .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; }
+        .card-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 10px;
+        }
+        .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; text-shadow: 0 2px 4px black; }
+        .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+        /* Colors */
         .s-new { color: #46d369; } .d-new { background: #46d369; }
         .s-paused { color: #ffa00a; } .d-paused { background: #ffa00a; }
         .s-me { color: #a55eea; } .d-me { background: #a55eea; }
         .s-her { color: #fd79a8; } .d-her { background: #fd79a8; }
-        .s-done { color: #777; } .d-done { background: #777; }
+        .s-done { color: #888; } .d-done { background: #888; }
 
-        /* --- MODAL --- */
+        /* --- INFO MODAL (Lightbox) --- */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 100; display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px); padding: 20px;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 100; display: none; flex-direction: column; 
+            align-items: center; justify-content: center;
         }
+
+        /* Navigation Zones for Swipe/Click */
+        .nav-zone {
+            position: absolute; top: 0; bottom: 0; width: 15%;
+            z-index: 101; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: rgba(255,255,255,0.3); cursor: pointer;
+        }
+        .nav-left { left: 0; } .nav-right { right: 0; }
+        .nav-zone:hover { color: white; background: linear-gradient(to right, rgba(0,0,0,0.5), transparent); }
 
         .info-card {
-            background: #1a1a1a; width: 100%; max-width: 450px;
-            border-radius: 12px; overflow: hidden; border: 1px solid #333;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            max-height: 90vh; overflow-y: auto;
+            width: 100%; max-width: 500px; height: 100%; max-height: 100vh;
+            background: #111; display: flex; flex-direction: column;
+            overflow-y: auto; position: relative;
         }
 
-        .info-hero { height: 220px; background-size: cover; background-position: center; position: relative; }
-        .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #1a1a1a, transparent); }
-        
-        .info-body { padding: 20px; }
+        .info-hero {
+            flex-shrink: 0; height: 50vh; width: 100%;
+            background-size: cover; background-position: center;
+            position: relative;
+        }
+        .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #111, transparent); }
+
+        .info-content { padding: 25px; }
         .info-title { font-size: 1.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px; }
-        .info-tags { display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc; }
-        .info-desc { color: #bbb; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
-        .info-note { background: #252525; padding: 15px; border-left: 3px solid var(--accent); border-radius: 4px; font-style: italic; color: #ddd; font-size: 0.9rem;}
-        
-        .close-btn { 
-            width: 100%; padding: 15px; background: #333; border: none; 
-            color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+        .info-tags { display: flex; gap: 10px; color: #aaa; font-size: 0.9rem; margin-bottom: 15px; }
+        .info-desc { color: #ccc; line-height: 1.6; margin-bottom: 20px; }
+        .info-note { background: #222; padding: 15px; border-left: 3px solid var(--accent); color: #ddd; font-style: italic; border-radius: 4px; }
+
+        .close-btn-float {
+            position: absolute; top: 20px; right: 20px; z-index: 102;
+            background: rgba(0,0,0,0.6); color: white; border: 1px solid white;
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
+            font-weight: bold;
         }
 
         /* --- ROULETTE --- */
-        .roulette-wrapper { width: 100%; overflow: hidden; position: relative; height: 220px; border: 2px solid #333; border-radius: 8px; background: #000; }
+        #rouletteModal { background: rgba(0,0,0,0.95); }
+        .roulette-wrapper { width: 90%; max-width: 600px; height: 200px; border: 2px solid #333; background: #000; overflow: hidden; position: relative; margin: 0 auto; border-radius: 10px;}
         .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
-        .r-card { width: 140px; height: 100%; background-size: cover; border-right: 1px solid #111; flex-shrink: 0; }
+        .r-card { width: 140px; height: 100%; background-size: cover; border-right: 1px solid #222; flex-shrink: 0; }
         .r-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--gold); transform: translateX(-50%); z-index: 10; box-shadow: 0 0 15px var(--gold); }
 
     </style>
@@ -251,30 +202,31 @@
 <body>
 
     <header>
-        <h1>Our List</h1>
+        <h1>Our Watchlist</h1>
     </header>
 
     <div class="controls">
-        <button class="btn-roulette" onclick="startRoulette()">🎲 Spin & Pick</button>
+        <button class="btn-roulette" onclick="startRoulette()">🎲 Spin the Wheel</button>
         
         <div class="filter-scroll">
-            <div class="chip active" onclick="setFilter('all', this)">Home</div>
+            <div class="chip active" onclick="setFilter('all', this)">All</div>
             <div class="chip" onclick="setFilter('ANIME', this)">Anime</div>
             <div class="chip" onclick="setFilter('MOVIE', this)">Movies</div>
             <div class="chip" onclick="setFilter('SHOW', this)">Shows</div>
             <div class="chip" onclick="setFilter('YOUTUBE', this)">YouTube</div>
         </div>
 
-        <div style="display: flex; gap: 10px; width: 100%;">
-            <select id="statusFilter" onchange="updateUI()" style="flex:1;">
-                <option value="all">Status: All</option>
+        <div class="dropdown-row">
+            <select id="statusFilter" onchange="updateUI()">
+                <option value="all">Status: Everything</option>
                 <option value="new">✨ New</option>
-                <option value="paused">⏳ Paused</option>
-                <option value="me">👤 Me</option>
-                <option value="her">💕 Her</option>
+                <option value="paused">⏸️ Paused</option>
+                <option value="me">👤 Only Me</option>
+                <option value="her">💕 Only Her</option>
+                <option value="done">✅ Completed</option>
             </select>
-            <select id="sortOrder" onchange="updateUI()" style="flex:1;">
-                <option value="default">Default</option>
+            <select id="sortOrder" onchange="updateUI()">
+                <option value="default">Sort: Default</option>
                 <option value="imdb">Rating</option>
                 <option value="az">A-Z</option>
             </select>
@@ -283,101 +235,139 @@
 
     <div id="mainContent"></div>
 
-    <div class="modal-overlay" id="infoModal" onclick="closeModal(event)">
-        <div class="info-card">
+    <div class="modal-overlay" id="infoModal">
+        <button class="close-btn-float" onclick="closeModal()">X</button>
+        
+        <div class="nav-zone nav-left" onclick="navigateModal(-1)">&#10094;</div>
+        <div class="nav-zone nav-right" onclick="navigateModal(1)">&#10095;</div>
+
+        <div class="info-card" id="infoCard">
             <div class="info-hero" id="mHero"></div>
-            <div class="info-body">
+            <div class="info-content">
                 <div class="info-title" id="mTitle"></div>
                 <div class="info-tags" id="mTags"></div>
                 <div class="info-desc" id="mDesc"></div>
                 <div id="mNoteBox" style="display:none;"><div class="info-note" id="mNote"></div></div>
             </div>
-            <button class="close-btn" onclick="closeModal(null)">Close</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="rouletteModal">
-        <div style="width: 100%; max-width: 600px; text-align: center;">
-            <h2 style="color: var(--gold); margin-bottom: 15px; text-transform: uppercase;">Spinning...</h2>
+        <div style="text-align:center; width: 100%;">
+            <h2 style="color:var(--gold); text-transform:uppercase; margin-bottom:20px;">Rolling...</h2>
             <div class="roulette-wrapper">
                 <div class="r-line"></div>
                 <div class="roulette-track" id="rTrack"></div>
             </div>
-            <h1 id="rWinner" style="color: white; margin-top: 20px; opacity: 0; transition: opacity 0.5s;">???</h1>
-            <button class="close-btn" style="margin-top: 20px; border-radius: 30px;" onclick="document.getElementById('rouletteModal').style.display='none'">Close</button>
+            <h1 id="rWinner" style="color:white; margin-top:20px; opacity:0; transition:0.5s;">???</h1>
+            <button class="chip" style="margin-top:20px; padding: 10px 30px;" onclick="document.getElementById('rouletteModal').style.display='none'">Close</button>
         </div>
     </div>
 
     <script>
         // --- DATA ---
+        // STAR WARS LIVE ACTION ONLY + Full HP + Full LOTR + Full IT
         const mediaList = [
-             // ANIME
-            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYi00YWZhLTweZGEtMjMzM2FlNmU5ZWE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An elf mage sets out on a journey to understand humanity after the death of her former comrade.", note: "" },
-            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, image: "https://m.media-amazon.com/images/M/MV5BNzc5MTczNDQtNDFjNi00ZDU5LWFkNzItOTE1NzQzMzdhNzMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Young Eren Yeager vows to cleanse the earth of the giant humanoid Titans.", note: "sky watched s1 but doesnt remember anything" },
-            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An adventurer and his party save money by cooking the monsters they find in the dungeon.", note: "" },
-            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BMjY5OTQ0Y2ItMzE0MC00Yzk4LWIxNzItODc1ZGE0OWFkODU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A sweeper gets infected by a parasitic Kaiju and gains the power to turn into one.", note: "we both saw season1" },
-            { category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Crunchyroll_Logo.png/640px-Crunchyroll_Logo.png", desc: "Various unwatched anime series sitting in the queue.", note: "Other Animes on my crunchy" },
-            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, image: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1MDAtNDA0Y2JjMGNiMDZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Films: Baron Omatsuri, Film Z, Stampede, Gold, and Red.", note: "Baron-Z-Stampede-Gold-Red" },
-            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BN2IzY2RlZDYtMTQxZi00ZmFmLTgzOWEtYjNjY2UxNTNmYjFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A genius boy awakens thousands of years in the future to rebuild civilization with science.", note: "cool anime about rebuilding the world" },
-            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://m.media-amazon.com/images/M/MV5BN2NlM2Y5Y2MtYjU5Min00M2M4LWE2YGYtYjA2ODNiYDY4NWJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Subaru Natsuki is transported to another world where he can rewind time by dying.", note: "finished season 1" },
+            // --- ANIME ---
+            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYi00YWZhLTweZGEtMjMzM2FlNmU5ZWE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An elf mage sets out on a journey to understand humanity.", note: "" },
+            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, image: "https://m.media-amazon.com/images/M/MV5BNzc5MTczNDQtNDFjNi00ZDU5LWFkNzItOTE1NzQzMzdhNzMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Humanity fights against giant humanoid Titans.", note: "sky watched s1 but forgot" },
+            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Cooking monsters in a dungeon.", note: "" },
+            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BMjY5OTQ0Y2ItMzE0MC00Yzk4LWIxNzItODc1ZGE0OWFkODU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A cleaner becomes a Kaiju.", note: "we both saw s1" },
+            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, image: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1MDAtNDA0Y2JjMGNiMDZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Baron Omatsuri, Film Z, Stampede, Gold, Red.", note: "Baron-Z-Stampede-Gold-Red" },
+            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BN2IzY2RlZDYtMTQxZi00ZmFmLTgzOWEtYjNjY2UxNTNmYjFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Rebuilding the world with science.", note: "" },
+            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://m.media-amazon.com/images/M/MV5BN2NlM2Y5Y2MtYjU5Min00M2M4LWE2YGYtYjA2ODNiYDY4NWJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Time loop fantasy.", note: "finished s1" },
 
-            // MOVIES
-            { category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BNzIxMDQ2YTItNDM4Ny00NDc3LWE0ODItODQ4NmJkNDMwYjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A Hobbit and companions set out to destroy the One Ring.", note: "" },
-            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODIyOTEyMzY3NV5BMl5BanBnXkFtZTcwZjQ5NDc2OA@@._V1_FMjpg_UX1000_.jpg", desc: "Bilbo Baggins sets out to reclaim the Lonely Mountain.", note: "" },
-            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTc0NTUwMTU5OV5BMl5BanBnXkFtZTcwNjAwNzQzMw@@._V1_FMjpg_UX1000_.jpg", desc: "Four kids travel through a wardrobe to the land of Narnia.", note: "watched only 1st movie" },
-            { category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5YWQtNDQwMzQxNTRiM2Q1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An orphaned boy enrolls in a school of wizardry.", note: "i dont remember much" },
-            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, image: "https://m.media-amazon.com/images/M/MV5BYzA2NzY2M2QtNTdkMi00NDM4LWIwNGUtZTM0ZWE0NWI1MmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Upcoming Ryan Coogler horror movie.", note: "Upcoming movie?" },
-            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, image: "https://m.media-amazon.com/images/M/MV5BNkVkZTY0MzMtYzE0YS00NzkzLTk2MjktOTVhOTM2NzE2YzRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Trapped in a time loop repeating the day of his murder.", note: "" },
-            { category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjhhLWE1ODEtMWMzMWMzNDA0NmQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Kids band together to destroy a shape-shifting monster clown.", note: "" },
-            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BN2E2ZjdiZjktZTZkNi00YTNiLTk0YmQtYTgyMjMzYjExMjE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Young Henry V encounters deceit and war after becoming King.", note: "" },
-            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BOTU5MDg3OGItZWQ1Ny00ZTZlLTE4YzktNTY2NDRmFDY0OTBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A grieving family is haunted by tragic occurrences.", note: "" },
-            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, image: "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzZi00YTY3LThjYWYtYzM2OWJlYWU1MGY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Nathan Drake is recruited by Sully to recover a fortune.", note: "" },
-            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A race against time to stop a zombie pandemic.", note: "" },
-            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg", desc: "A freed slave sets out to rescue his wife from a plantation owner.", note: "" },
-            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMDU2ZmM2OTYtNzIxYy00NjM5LTliNGQtN2JmOWQzYTBmZWUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Five assassins aboard a bullet train find their missions connected.", note: "" },
-            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTUyNzQ2NDI5MV5BMl5BanBnXkFtZTgwNjM4ODQ5OTE@._V1_FMjpg_UX1000_.jpg", desc: "Seven gunmen protect a town from a private army.", note: "" },
-            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODNmYTkxZmUtYzJmZi00YmQ4LTgyYmYtYjA4ZjYxY2YyZDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An American expat tries to sell off his marijuana empire in London.", note: "" },
-            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMTA2NDYxOGYtYjU1Mi00Y2QzLTgxMTQtMWI1MGI0ZGQ5MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Promoters, bookmakers, and gangsters fight to track down a diamond.", note: "" },
-            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BMTY0MTIxNDU4M15BMl5BanBnXkFtZTcwNzU3ODUyMw@@._V1_FMjpg_UX1000_.jpg", desc: "An astronaut crash-lands on a planet dominated by apes.", note: "" },
-            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BNDE1NDExMTItNDg5MC00MThhLWJhY2MtMzQ5NDVkNTkzYTNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Indiana Jones races Nazis to find the Ark of the Covenant.", note: "" },
-            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://m.media-amazon.com/images/M/MV5BNTI2YTI0MWEtNGQ4OS00ODIzLWE1MWEtZGJiN2E3ZDM1YzJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Garfield is about to have a wild outdoor adventure.", note: "" },
-            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Explorers travel through a wormhole to ensure humanity's survival.", note: "" },
+            // --- STAR WARS (LIVE ACTION CHRONOLOGICAL) ---
+            { category: "SHOW", title: "The Acolyte", me: false, her: false, imdb: 6.0, image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "100 years before the Empire, Jedi investigate a crime spree.", note: "" },
+            { category: "MOVIE", title: "SW Ep 1: Phantom Menace", me: true, her: true, imdb: 6.5, image: "https://m.media-amazon.com/images/M/MV5BODIyMDdhNTgtNDlmOC00MjUxLWE2NDItODA5MTdkNzIwZTBhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Jedi discover a young slave boy strong in the Force.", note: "Completed Together" },
+            { category: "MOVIE", title: "SW Ep 2: Attack of Clones", me: true, her: true, imdb: 6.6, image: "https://m.media-amazon.com/images/M/MV5BNTc4MTc3NTQ5OF5BMl5BanBnXkFtZTcwOTg0NjI4NA@@._V1_FMjpg_UX1000_.jpg", desc: "Anakin and Padme fall in love while the Clone Wars begin.", note: "Completed Together" },
+            { category: "MOVIE", title: "SW Ep 3: Revenge of Sith", me: true, her: true, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BNTc5NTgwODEyNl5BMl5BanBnXkFtZTcwNTkwMDQ3OA@@._V1_FMjpg_UX1000_.jpg", desc: "Anakin turns to the dark side and the Jedi fall.", note: "Completed Together" },
+            { category: "SHOW", title: "Obi-Wan Kenobi", me: true, her: true, imdb: 7.1, image: "https://m.media-amazon.com/images/M/MV5BOTAxOTlmOTYtYTSmMS00YjI5LWE0ZGEtNjg5ZDVkNmY1NTdmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Jedi Master Obi-Wan Kenobi watches over young Luke Skywalker.", note: "Completed Together" },
+            { category: "MOVIE", title: "Solo: Star Wars Story", me: true, her: true, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BOTMyMjEyNzYzMV5BMl5BanBnXkFtZTgwNzIyNjU0NTM@._V1_FMjpg_UX1000_.jpg", desc: "Young Han Solo meets Chewbacca and Lando.", note: "Completed Together" },
+            { category: "SHOW", title: "Andor S1", me: true, her: true, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Cassian Andor's journey to becoming a rebel hero.", note: "Completed Together" },
+            { category: "SHOW", title: "Andor S2", me: false, her: false, imdb: 0, image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Upcoming Season 2.", note: "Needs to start when out" },
+            { category: "MOVIE", title: "Rogue One", me: false, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BMjEwMzMxODIzOV5BMl5BanBnXkFtZTgwNzg3OTAzMDI@._V1_FMjpg_UX1000_.jpg", desc: "Rebels steal plans to the Death Star.", note: "" },
+            { category: "MOVIE", title: "SW Ep 4: A New Hope", me: false, her: false, imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BOGUwMDk0Y2MtNjBlNi00NmJiLTg1NTAtZjZiY2IzYmVkMDIwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Luke Skywalker begins his journey.", note: "" },
+            { category: "MOVIE", title: "SW Ep 5: Empire Strikes Back", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BMTkxNzI3ODI4Nl5BMl5BanBnXkFtZTgwNjQwMTk0OTE@._V1_FMjpg_UX1000_.jpg", desc: "Luke trains with Yoda.", note: "" },
+            { category: "MOVIE", title: "SW Ep 6: Return of Jedi", me: false, her: false, imdb: 8.3, image: "https://m.media-amazon.com/images/M/MV5BMjQ2NzM3MTIzN15BMl5BanBnXkFtZTgwMjYTRTMwOTE@._V1_FMjpg_UX1000_.jpg", desc: "The final battle against the Empire.", note: "" },
+            { category: "SHOW", title: "The Mandalorian S1-3", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A bounty hunter protects a child.", note: "" },
+            { category: "SHOW", title: "Book of Boba Fett", me: false, her: false, imdb: 7.2, image: "https://m.media-amazon.com/images/M/MV5BZjY5MjY0ZTItMWM2Ny00YzhhLWEyMzYtOTQ2ZDA4MzVhZTA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Boba Fett takes over Jabba's territory.", note: "" },
+            { category: "SHOW", title: "Ahsoka", me: false, her: false, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BZmU2NzQ5OTItNTNmNC00MTc4LWEzNjYtOTkzYjgzZDE1YjYyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Ahsoka Tano investigates an emerging threat.", note: "" },
+            { category: "SHOW", title: "Skeleton Crew", me: false, her: false, imdb: 0, image: "https://m.media-amazon.com/images/M/MV5BNDNlYzM2YjEtYmIwOC00YzlhLTg0MGItNDUxZNjM4YjliOTc2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Kids lost in the galaxy.", note: "Upcoming" },
+            { category: "MOVIE", title: "SW Ep 7: Force Awakens", me: false, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BOTAzODEzNDAzMl5BMl5BanBnXkFtZTgwMDU1MTgzNzE@._V1_FMjpg_UX1000_.jpg", desc: "A new threat rises from the ashes of the Empire.", note: "" },
+            { category: "MOVIE", title: "SW Ep 8: Last Jedi", me: false, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMjQ1MzcxNjg4N15BMl5BanBnXkFtZTgwNzgwMjY4MzI@._V1_FMjpg_UX1000_.jpg", desc: "Rey seeks out Luke Skywalker.", note: "" },
+            { category: "MOVIE", title: "SW Ep 9: Rise of Skywalker", me: false, her: false, imdb: 6.5, image: "https://m.media-amazon.com/images/M/MV5BMDljNTQ5ODItZmQIYi00MDQ3LTkwNjctNTNxYVIwODJkMDg1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The final chapter of the Skywalker saga.", note: "" },
 
-            // SHOWS
-            { category: "SHOW", title: "Star Wars (Shows)", me: "50/50", her: "50/50", imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Mandalorian, Andor, Ahsoka and more.", note: "GUIDE STAR WARS, we not done yet" },
-            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A nightmarish town traps all those who enter.", note: "we both stopped mid season 1" },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Workers' memories are surgically divided between work and life.", note: "i didnt finish" },
-            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjA3Y2YyOWItYjc5Mi00YmU3LWJhNDctM2RiYzdlZDQyMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A model student uses his intelligence to fight violence.", note: "i didnt finish" },
-            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5MmVhNGEwZDYtZTMzOS00YzU5LWE4ZjItMGQ1ZmU0MzZmYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Citizens live in bunkers to protect themselves in a post-apocalyptic LA.", note: "too much gore but we can try" },
-            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BMTM5MjkwMTI0MV5BMl5BanBnXkFtZTcwODQwMTc0Mg@@._V1_FMjpg_UX1000_.jpg", desc: "A forensic technician leads a double life as a serial killer.", note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, image: "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Nine noble families fight for control over Westeros.", note: "I stopped at season 6, alot of nudity" },
-            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00YWY3LThjMzItYjZjZjNhNDVmYjY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The Devil decides to spend some time on Earth.", note: "" },
-            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://m.media-amazon.com/images/M/MV5BNDJlMjAyYjItYzRhOS00NzVhLTg2YjYtYWIzNjE2Y2RlY2YxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Consciousness can be uploaded into a virtual afterlife.", note: "" },
-            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNzQ3OTY0OTQtMzY2Yy00ODFkLTgwYmEtZDRmYjBiYzE2YmVkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Six young ninjas defend their island home.", note: "" },
-            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMjY2ZmMxNDYtODk3ZC00YzllLTk1OTQtYzY1MzNhNzZkNmIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An apocalyptic thriller about infectious diseases.", note: "" },
-            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BMzY1ODIzMDItMjg5OS00NTUzLThlNmItZTQyNDFjODMzMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A family saga with a supernatural twist and time travel.", note: "" },
-            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMjA5ODk4Njg2OV5BMl5BanBnXkFtZTgwNTc4MzMwMjE@._V1_FMjpg_UX1000_.jpg", desc: "A viral outbreak of ancient vampirism ravages New York.", note: "" },
-            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://m.media-amazon.com/images/M/MV5BZjYzZDgzMDktMmU0NC00ZmI5LWJhZGYtZTRiYWNlNDY5NTA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A gangster family epic set in 1900s England.", note: "" },
-            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A survivor takes charge of a girl who may be humanity's last hope.", note: "" },
-            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BYzZkMTkyYmQtNzYxMi00M2VhLWE2YzktMzhhNWY2NjBjNzA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Life on a massive, perpetually-moving train in a frozen world.", note: "" },
+            // --- HARRY POTTER ---
+            { category: "MOVIE", title: "HP 1: Sorcerer's Stone", me: "50/50", her: true, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5YWQtNDQwMzQxNTRiM2Q1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Harry discovers he is a wizard.", note: "I dont remember much" },
+            { category: "MOVIE", title: "HP 2: Chamber of Secrets", me: "50/50", her: true, imdb: 7.4, image: "https://m.media-amazon.com/images/M/MV5BMjE0YjUzNDUtMjc5OS00MTU3LTgxMmUtODhkOThkMzdjNWI4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Harry ignores warnings not to return to Hogwarts.", note: "" },
+            { category: "MOVIE", title: "HP 3: Prisoner of Azkaban", me: "50/50", her: true, imdb: 7.9, image: "https://m.media-amazon.com/images/M/MV5BMTY4NTIwODg0N15BMl5BanBnXkFtZTcwOTc0MjEzMw@@._V1_FMjpg_UX1000_.jpg", desc: "Sirius Black escapes prison.", note: "" },
+            { category: "MOVIE", title: "HP 4: Goblet of Fire", me: "50/50", her: true, imdb: 7.7, image: "https://m.media-amazon.com/images/M/MV5BMTI1NDMyMjExOF5BMl5BanBnXkFtZTcwOTc4MjQzMw@@._V1_FMjpg_UX1000_.jpg", desc: "Harry competes in the Triwizard Tournament.", note: "" },
+            { category: "MOVIE", title: "HP 5: Order of Phoenix", me: "50/50", her: true, imdb: 7.5, image: "https://m.media-amazon.com/images/M/MV5BMTM0NTczMTUzOV5BMl5BanBnXkFtZTYwMzIxNTg3._V1_FMjpg_UX1000_.jpg", desc: "Harry forms a secret group to fight Voldemort.", note: "" },
+            { category: "MOVIE", title: "HP 6: Half-Blood Prince", me: "50/50", her: true, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BNzU3NDg4NTAyNV5BMl5BanBnXkFtZTcwOTg2ODg1Mg@@._V1_FMjpg_UX1000_.jpg", desc: "Harry discovers an old book and dark secrets.", note: "" },
+            { category: "MOVIE", title: "HP 7: Deathly Hallows 1", me: "50/50", her: true, imdb: 7.7, image: "https://m.media-amazon.com/images/M/MV5BMTQ2OTE1Mjk0N15BMl5BanBnXkFtZTcwODE3MDAwNA@@._V1_FMjpg_UX1000_.jpg", desc: "Harry races to destroy Horcruxes.", note: "" },
+            { category: "MOVIE", title: "HP 8: Deathly Hallows 2", me: "50/50", her: true, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BMTY4NTE3NDg1OV5BMl5BanBnXkFtZTcwODMwMTY0NA@@._V1_FMjpg_UX1000_.jpg", desc: "The final battle against Voldemort.", note: "" },
 
-            // YOUTUBE
-            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", desc: "Compilation of funny moments from John Oliver.", note: "John Oliver?" },
-            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", desc: "Ludwig's vlog adventures in Japan.", note: "stopped on like ep3" },
-            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", desc: "Ryan Trahan crosses America to deliver a penny.", note: "stopped on like ep.16?" }
+            // --- LOTR & IT ---
+            { category: "MOVIE", title: "LOTR: Fellowship", me: true, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BNzIxMDQ2YTItNDM4Ny00NDc3LWE0ODItODQ4NmJkNDMwYjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The journey begins.", note: "" },
+            { category: "MOVIE", title: "LOTR: Two Towers", me: true, her: false, imdb: 8.8, image: "https://m.media-amazon.com/images/M/MV5BZGMxZTdjZmYtMmE2Ni00ZWJkLWI2MmZiZTgyODIyNzM2OWQ0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Frodo and Sam continue to Mordor.", note: "" },
+            { category: "MOVIE", title: "LOTR: Return of King", me: true, her: false, imdb: 9.0, image: "https://m.media-amazon.com/images/M/MV5BNDgwY2YyNjctZTMxNS00ZGI5LWFkZWMtNmI4Yzk3ZTU3ZWJkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The final battle for Middle-earth.", note: "" },
+            { category: "MOVIE", title: "IT: Chapter One", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjhhLWE1ODEtMWMzMWMzNDA0NmQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Kids fight a clown.", note: "" },
+            { category: "MOVIE", title: "IT: Chapter Two", me: false, her: false, imdb: 6.5, image: "https://m.media-amazon.com/images/M/MV5BYTJlNjlkZTktNjEwOS00NzI5LTlkNDAtYzE0Zjc3Yjg1ZTNlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The losers club returns as adults.", note: "" },
+
+            // --- OTHER MOVIES ---
+            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODIyOTEyMzY3NV5BMl5BanBnXkFtZTcwZjQ5NDc2OA@@._V1_FMjpg_UX1000_.jpg", desc: "Bilbo Baggins' adventure.", note: "" },
+            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTc0NTUwMTU5OV5BMl5BanBnXkFtZTcwNjAwNzQzMw@@._V1_FMjpg_UX1000_.jpg", desc: "Wardrobe to another world.", note: "watched only 1st movie" },
+            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, image: "https://m.media-amazon.com/images/M/MV5BYzA2NzY2M2QtNTdkMi00NDM4LWIwNGUtZTM0ZWE0NWI1MmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Upcoming Ryan Coogler horror.", note: "Upcoming" },
+            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, image: "https://m.media-amazon.com/images/M/MV5BNkVkZTY0MzMtYzE0YS00NzkzLTk2MjktOTVhOTM2NzE2YzRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Time loop action.", note: "" },
+            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BN2E2ZjdiZjktZTZkNi00YTNiLTk0YmQtYTgyMjMzYjExMjE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Henry V's reign.", note: "" },
+            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BOTU5MDg3OGItZWQ1Ny00ZTZlLTE4YzktNTY2NDRmFDY0OTBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Horror family drama.", note: "" },
+            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, image: "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzZi00YTY3LThjYWYtYzM2OWJlYWU1MGY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Treasure hunting adventure.", note: "" },
+            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Zombie pandemic.", note: "" },
+            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg", desc: "Bounty hunter western.", note: "" },
+            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMDU2ZmM2OTYtNzIxYy00NjM5LTliNGQtN2JmOWQzYTBmZWUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Assassins on a train.", note: "" },
+            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTUyNzQ2NDI5MV5BMl5BanBnXkFtZTgwNjM4ODQ5OTE@._V1_FMjpg_UX1000_.jpg", desc: "Cowboy team up.", note: "" },
+            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODNmYTkxZmUtYzJmZi00YmQ4LTgyYmYtYjA4ZjYxY2YyZDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "London drug empire.", note: "" },
+            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMTA2NDYxOGYtYjU1Mi00Y2QzLTgxMTQtMWI1MGI0ZGQ5MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "London crime caper.", note: "" },
+            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BMTY0MTIxNDU4M15BMl5BanBnXkFtZTcwNzU3ODUyMw@@._V1_FMjpg_UX1000_.jpg", desc: "Apes rule the planet.", note: "" },
+            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BNDE1NDExMTItNDg5MC00MThhLWJhY2MtMzQ5NDVkNTkzYTNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Archaeology adventure.", note: "" },
+            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://m.media-amazon.com/images/M/MV5BNTI2YTI0MWEtNGQ4OS00ODIzLWE1MWEtZGJiN2E3ZDM1YzJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Monday hating cat.", note: "" },
+            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Space travel to save earth.", note: "" },
+
+            // --- SHOWS ---
+            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Trapped in a town.", note: "we both stopped mid season 1" },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Work/Life balance horror.", note: "i didnt finish" },
+            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjA3Y2YyOWItYjc5Mi00YmU3LWJhNDctM2RiYzdlZDQyMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Korean school drama.", note: "i didnt finish" },
+            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5MmVhNGEwZDYtZTMzOS00YzU5LWE4ZjItMGQ1ZmU0MzZmYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Post-apocalyptic wasteland.", note: "too much gore but we can try" },
+            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BMTM5MjkwMTI0MV5BMl5BanBnXkFtZTcwODQwMTc0Mg@@._V1_FMjpg_UX1000_.jpg", desc: "Serial killer cop.", note: "" },
+            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, image: "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Westeros politics and dragons.", note: "I stopped at season 6" },
+            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00YWY3LThjMzItYjZjZjNhNDVmYjY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Devil solves crimes.", note: "" },
+            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://m.media-amazon.com/images/M/MV5BNDJlMjAyYjItYzRhOS00NzVhLTg2YjYtYWIzNjE2Y2RlY2YxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Digital afterlife.", note: "" },
+            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNzQ3OTY0OTQtMzY2Yy00ODFkLTgwYmEtZDRmYjBiYzE2YmVkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Ninjas.", note: "" },
+            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMjY2ZmMxNDYtODk3ZC00YzllLTk1OTQtYzY1MzNhNzZkNmIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Zombie apartment.", note: "" },
+            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BMzY1ODIzMDItMjg5OS00NTUzLThlNmItZTQyNDFjODMzMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "German time travel.", note: "" },
+            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMjA5ODk4Njg2OV5BMl5BanBnXkFtZTgwNTc4MzMwMjE@._V1_FMjpg_UX1000_.jpg", desc: "Vampire outbreak.", note: "" },
+            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://m.media-amazon.com/images/M/MV5BZjYzZDgzMDktMmU0NC00ZmI5LWJhZGYtZTRiYWNlNDY5NTA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "1900s Gangsters.", note: "" },
+            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Fungal zombie roadtrip.", note: "" },
+            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BYzZkMTkyYmQtNzYxMi00M2VhLWE2YzktMzhhNWY2NjBjNzA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Train world.", note: "" },
+
+            // --- YOUTUBE ---
+            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", desc: "John Oliver funny moments.", note: "John Oliver?" },
+            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", desc: "Vlogs in Japan.", note: "stopped on like ep3" },
+            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", desc: "Crossing US for a penny.", note: "stopped on like ep.16?" }
         ];
 
         let currentCategory = 'all';
+        let currentModalList = [];
+        let currentModalIndex = 0;
 
-        // --- CORE LOGIC ---
         function getStatusInfo(me, her) {
+            if (me === true && her === true) return { text: "Completed Together", class: "s-done", dot: "d-done", code: "done" };
             if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
-            if (me === true && her === true) return { text: "Done", class: "s-done", dot: "d-done", code: "done" };
-            if ((me === "50/50" && her === "50/50") || (me === "50/50" && her === false) || (me === false && her === "50/50")) 
-                return { text: "Paused", class: "s-paused", dot: "d-paused", code: "paused" };
             if (me === true && her === false) return { text: "Only Me", class: "s-me", dot: "d-me", code: "me" };
             if (me === false && her === true) return { text: "Only Her", class: "s-her", dot: "d-her", code: "her" };
-            return { text: "Plan", class: "", dot: "", code: "other" };
+            // Anything 50/50 implies Paused/Stopped/In Progress
+            return { text: "Paused / In Progress", class: "s-paused", dot: "d-paused", code: "paused" };
         }
 
         function setFilter(cat, btn) {
@@ -387,7 +377,6 @@
             updateUI();
         }
 
-        // --- RENDERING ---
         function updateUI() {
             const main = document.getElementById('mainContent');
             const statusFilter = document.getElementById('statusFilter').value;
@@ -395,7 +384,6 @@
 
             main.innerHTML = "";
 
-            // 1. FILTER ITEMS
             let filtered = mediaList.filter(item => {
                 const s = getStatusInfo(item.me, item.her);
                 if (statusFilter !== 'all' && s.code !== statusFilter) return false;
@@ -403,61 +391,64 @@
                 return true;
             });
 
-            // 2. SORT
-            if (sortOrder === 'imdb') {
-                filtered.sort((a, b) => (b.imdb || 0) - (a.imdb || 0));
-            } else if (sortOrder === 'az') {
-                filtered.sort((a, b) => a.title.localeCompare(b.title));
-            }
-
-            // 3. DECIDE LAYOUT: Rows or Grid?
-            // If "All" category AND "All" status -> Show Rows (Home View)
-            // Else -> Show Grid (Search Results View)
-            
+            // If we are in default sorting and not filtered by status/text, use Rows
             if (currentCategory === 'all' && statusFilter === 'all' && sortOrder === 'default') {
-                // RENDER ROWS (Netflix Style)
                 const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
                 categories.forEach(cat => {
                     const rowItems = filtered.filter(i => i.category.includes(cat));
                     if (rowItems.length > 0) {
-                        // Title
-                        const title = document.createElement('div');
-                        title.className = 'section-title';
-                        title.innerText = cat + 's';
-                        main.appendChild(title);
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'row-wrapper';
 
-                        // Scroll Container
+                        const header = document.createElement('div');
+                        header.className = 'section-header';
+                        
+                        // Capitalize category name nicely
+                        let displayName = cat === 'ANIME' ? 'Anime' : cat === 'MOVIE' ? 'Movies' : cat === 'SHOW' ? 'Shows' : 'YouTube';
+                        header.innerHTML = `
+                            <div class="section-title">${displayName}</div>
+                            <div class="scroll-arrows">
+                                <button class="arrow-btn" onclick="scrollRow(this, -300)">&#10094;</button>
+                                <button class="arrow-btn" onclick="scrollRow(this, 300)">&#10095;</button>
+                            </div>
+                        `;
+
                         const row = document.createElement('div');
                         row.className = 'row-container';
                         
-                        rowItems.forEach(item => row.appendChild(createCard(item)));
-                        main.appendChild(row);
+                        rowItems.forEach(item => row.appendChild(createCard(item, rowItems)));
+                        
+                        wrapper.appendChild(header);
+                        wrapper.appendChild(row);
+                        main.appendChild(wrapper);
                     }
                 });
             } else {
-                // RENDER GRID
+                // Grid View
+                if (sortOrder === 'imdb') filtered.sort((a, b) => (b.imdb || 0) - (a.imdb || 0));
+                else if (sortOrder === 'az') filtered.sort((a, b) => a.title.localeCompare(b.title));
+
                 const grid = document.createElement('div');
                 grid.className = 'grid-container';
-                filtered.forEach(item => grid.appendChild(createCard(item)));
+                filtered.forEach(item => grid.appendChild(createCard(item, filtered)));
                 main.appendChild(grid);
                 
-                if (filtered.length === 0) {
-                    main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found 😔</div>";
-                }
+                if (filtered.length === 0) main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found</div>";
             }
         }
 
-        function createCard(item) {
+        function createCard(item, sourceList) {
             const el = document.createElement('div');
-            el.className = 'card';
-            el.onclick = () => openModal(item);
-            
             const s = getStatusInfo(item.me, item.her);
+            
+            // GRAY OUT LOGIC: if code is 'done', add dimmed class
+            el.className = `card ${s.code === 'done' ? 'dimmed' : ''}`;
+            
+            el.onclick = () => openModal(item, sourceList);
             
             el.innerHTML = `
                 <div class="card-image" style="background-image: url('${item.image}')"></div>
                 <div class="card-overlay">
-                    <div class="card-cat-badge">${item.category}</div>
                     <div class="card-title">${item.title}</div>
                     <div class="card-status">
                         <span class="status-dot ${s.dot}"></span>
@@ -468,9 +459,36 @@
             return el;
         }
 
-        // --- MODAL ---
-        function openModal(item) {
+        function scrollRow(btn, amount) {
+            const row = btn.parentElement.parentElement.nextElementSibling;
+            row.scrollBy({ left: amount, behavior: 'smooth' });
+        }
+
+        // --- MODAL LOGIC (LIGHTBOX) ---
+        function openModal(item, list) {
+            currentModalList = list;
+            currentModalIndex = list.indexOf(item);
+            renderModalContent();
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function navigateModal(direction) {
+            const newIndex = currentModalIndex + direction;
+            if (newIndex >= 0 && newIndex < currentModalList.length) {
+                currentModalIndex = newIndex;
+                renderModalContent();
+            }
+        }
+
+        function renderModalContent() {
+            const item = currentModalList[currentModalIndex];
             const s = getStatusInfo(item.me, item.her);
+
+            // Animate transition slightly
+            const card = document.getElementById('infoCard');
+            card.style.opacity = '0.9';
+            setTimeout(() => card.style.opacity = '1', 50);
+
             document.getElementById('mHero').style.backgroundImage = `url('${item.image}')`;
             document.getElementById('mTitle').innerText = item.title;
             document.getElementById('mTags').innerHTML = `
@@ -480,24 +498,40 @@
             `;
             document.getElementById('mDesc').innerText = item.desc;
             
+            const noteBox = document.getElementById('mNoteBox');
             if (item.note) {
-                document.getElementById('mNoteBox').style.display = 'block';
+                noteBox.style.display = 'block';
                 document.getElementById('mNote').innerText = item.note;
             } else {
-                document.getElementById('mNoteBox').style.display = 'none';
+                noteBox.style.display = 'none';
             }
-            
-            document.getElementById('infoModal').style.display = 'flex';
         }
 
         function closeModal(e) {
-            if (!e || e.target.id === 'infoModal') {
+            if (!e || e.target.id === 'infoModal' || e.target.classList.contains('close-btn-float')) {
                 document.getElementById('infoModal').style.display = 'none';
             }
         }
 
+        // Swipe Detection for Modal
+        let touchstartX = 0;
+        let touchendX = 0;
+        const modalEl = document.getElementById('infoModal');
+
+        modalEl.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
+        modalEl.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchendX < touchstartX - 50) navigateModal(1); // Swipe Left -> Next
+            if (touchendX > touchstartX + 50) navigateModal(-1); // Swipe Right -> Prev
+        }
+
         // --- ROULETTE ---
         function startRoulette() {
+            // Only pick New or Paused items
             const candidates = mediaList.filter(i => {
                 const c = getStatusInfo(i.me, i.her).code;
                 return c === 'new' || c === 'paused';
@@ -525,7 +559,6 @@
                 track.appendChild(d);
             }
 
-            // Animate
             setTimeout(() => {
                 const cardW = 140;
                 const offset = -((winIdx * cardW) + (cardW/2) - (track.parentElement.offsetWidth / 2));
@@ -535,16 +568,13 @@
                 track.style.transform = `translateX(${offset + jitter}px)`;
                 
                 setTimeout(() => {
-                    const wTitle = document.getElementById('rWinner');
-                    wTitle.innerText = winner.title;
-                    wTitle.style.opacity = '1';
+                    document.getElementById('rWinner').innerText = winner.title;
+                    document.getElementById('rWinner').style.opacity = '1';
                 }, 4500);
             }, 50);
         }
 
-        // Init
         updateUI();
-
     </script>
 </body>
 </html>
