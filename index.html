@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Watchlist V2</title>
+    <title>Our Watchlist V3</title>
     <style>
         /* --- CSS STYLES --- */
         :root {
@@ -29,6 +29,7 @@
             color: var(--accent);
             text-transform: uppercase;
             letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         /* --- CONTROLS SECTION --- */
@@ -42,6 +43,7 @@
             gap: 15px;
             align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1px solid #333;
         }
 
         .category-buttons {
@@ -58,7 +60,6 @@
             justify-content: center;
         }
 
-        /* Pretty Dropdowns */
         select {
             background-color: #333;
             color: white;
@@ -75,7 +76,7 @@
             color: #aaa;
             padding: 8px 15px;
             cursor: pointer;
-            border-radius: 20px; /* Pill shape */
+            border-radius: 20px;
             transition: 0.3s;
             font-weight: bold;
         }
@@ -89,8 +90,8 @@
         /* --- CARD GRID --- */
         .media-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
             padding: 10px;
         }
 
@@ -98,62 +99,79 @@
             background-color: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             cursor: pointer;
-            height: 340px;
+            height: 380px; /* Taller for posters */
             display: flex;
             flex-direction: column;
-            border: 1px solid transparent;
+            border: 1px solid #333;
         }
 
         .card:hover {
-            transform: scale(1.03);
+            transform: scale(1.05);
             z-index: 10;
-            border-color: #777;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border-color: #999;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
         }
 
+        /* This handles the image now! */
         .card-header {
-            height: 140px;
-            background: linear-gradient(135deg, #4b4b4b, #2f2f2f);
+            height: 250px; /* Much taller for poster look */
+            background-color: #222;
+            background-size: cover;
+            background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
+            font-size: 4rem;
             position: relative;
+        }
+
+        /* Darken image slightly so badges pop */
+        .card-header::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, transparent 70%, rgba(0,0,0,0.8));
         }
 
         .imdb-badge {
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: #f5c518; /* IMDb Yellow */
+            background-color: #f5c518;
             color: black;
             font-weight: 900;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .card-content {
-            padding: 15px;
+            padding: 12px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            z-index: 2; /* Sit on top of gradient */
         }
 
         .card-title {
             font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            line-height: 1.3;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .card-meta {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #a3a3a3;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -176,22 +194,27 @@
         .tag.new { background-color: var(--green); color: black; }
         .tag.progress { background-color: #ffa00a; color: black; }
         .tag.me-watched { background-color: #6c5ce7; color: white; }
-        .tag.completed { background-color: #333; color: #fff; border: 1px solid #fff;}
+        .tag.her-watched { background-color: #fd79a8; color: black; }
+        .tag.completed { background-color: #555; color: #ccc; border: 1px solid #777;}
 
         .note {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #ffcccc;
             margin-top: 8px;
             font-style: italic;
             border-left: 2px solid var(--accent);
             padding-left: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
     </style>
 </head>
 <body>
 
-    <h1>🍿 Our Watchlist V2 🎬</h1>
+    <h1>🍿 Our Watchlist 🎬</h1>
     
     <div class="controls-container">
         <div class="category-buttons" id="cat-buttons">
@@ -223,63 +246,348 @@
         </div>
 
     <script>
-        // --- YOUR DATA (Now with IMDb!) ---
-        // I added 'imdb: 0' where I didn't know the score. You can edit them!
-        const mediaList = [
-           // --- ANIME ---
-            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, note: "" },
-            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, note: "sky watched s1 but doesnt remember anything" },
-            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, note: "" },
-            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, note: "we both saw season1" },
-            { category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, note: "Other Animes on my crunchy" },
-            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, note: "Baron-Z-Stampede-Gold-Red" },
-            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, note: "cool anime about rebuilding the world" },
-            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, note: "finished season 1" },
+        // --- YOUR DATA ---
+        // INSTRUCTIONS:
+        // To add a picture, paste a URL inside the quotes: image: "https://..."
+        // If image is "", it will show the emoji!
+        
+const mediaList = [
+            // --- ANIME ---
+            { 
+                category: "ANIME", 
+                title: "Frieren", 
+                me: false, her: false, imdb: 8.9, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/dc/Sousou_no_Frieren_Vol_1.png", 
+                note: "" 
+            },
+            { 
+                category: "ANIME", 
+                title: "Attack on Titan", 
+                me: true, her: "50/50", imdb: 9.1, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/d6/Shingeki_no_Kyojin_manga_volume_1.jpg", 
+                note: "sky watched s1 but doesnt remember anything" 
+            },
+            { 
+                category: "ANIME", 
+                title: "Delicious in Dungeon", 
+                me: false, her: false, imdb: 8.4, 
+                image: "https://upload.wikimedia.org/wikipedia/en/7/73/Dungeon_Meshi_volume_1_cover.jpg", 
+                note: "" 
+            },
+            { 
+                category: "ANIME", 
+                title: "Kaiju no 8 s2", 
+                me: false, her: false, imdb: 8.4, 
+                image: "https://upload.wikimedia.org/wikipedia/en/2/22/Kaiju_No._8_volume_1.jpg", 
+                note: "we both saw season1" 
+            },
+            { 
+                category: "ANIME", 
+                title: "Crunchyroll Backlog", 
+                me: false, her: false, imdb: 0, 
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Crunchyroll_Logo.png/640px-Crunchyroll_Logo.png", 
+                note: "Other Animes on my crunchy" 
+            },
+            { 
+                category: "ANIME", 
+                title: "One Piece Movies", 
+                me: "50/50", her: "50/50", imdb: 7.5, 
+                image: "https://upload.wikimedia.org/wikipedia/en/9/90/One_Piece%2C_Volume_61_Cover_%28Japanese%29.jpg", 
+                note: "Baron-Z-Stampede-Gold-Red" 
+            },
+            { 
+                category: "ANIME", 
+                title: "Dr. Stone", 
+                me: false, her: false, imdb: 8.1, 
+                image: "https://upload.wikimedia.org/wikipedia/en/a/a2/Dr._Stone_volume_1_cover.jpg", 
+                note: "cool anime about rebuilding the world" 
+            },
+            { 
+                category: "ANIME", 
+                title: "Re:Zero", 
+                me: "50/50", her: "50/50", imdb: 8.0, 
+                image: "https://upload.wikimedia.org/wikipedia/en/e/e9/Re_Zero_Volume_1_cover.jpg", 
+                note: "finished season 1" 
+            },
 
             // --- MOVIES ---
-            { category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, note: "" },
-            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, note: "" },
-            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, note: "watched only 1st movie" },
-            { category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, note: "i dont remember much" },
-            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, note: "Upcoming movie?" },
-            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, note: "" },
-            { category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, note: "" },
-            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, note: "" },
-            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, note: "" },
-            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, note: "" },
-            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, note: "" },
-            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, note: "" },
-            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, note: "" },
-            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, note: "" },
-            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, note: "" },
-            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, note: "" },
-            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, note: "" },
-            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, note: "" },
-            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, note: "" },
-            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, note: "" },
+            { 
+                category: "MOVIE", 
+                title: "Lord Of The Rings", 
+                me: true, her: false, imdb: 8.9, 
+                image: "https://upload.wikimedia.org/wikipedia/en/3/30/The_Lord_of_the_Rings_The_Fellowship_of_the_Ring_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "The Hobbit", 
+                me: true, her: false, imdb: 7.8, 
+                image: "https://upload.wikimedia.org/wikipedia/en/b/b3/The_Hobbit_An_Unexpected_Journey_theatrical_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Narnia", 
+                me: true, her: false, imdb: 6.9, 
+                image: "https://upload.wikimedia.org/wikipedia/en/1/10/The_Chronicles_of_Narnia_-_The_Lion%2C_the_Witch_and_the_Wardrobe.jpg", 
+                note: "watched only 1st movie" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Harry Potter", 
+                me: "50/50", her: true, imdb: 7.6, 
+                image: "https://upload.wikimedia.org/wikipedia/en/c/c0/Harry_Potter_and_the_Philosopher%27s_Stone_posters.JPG", 
+                note: "i dont remember much" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Sinners", 
+                me: false, her: false, imdb: 0, 
+                image: "https://upload.wikimedia.org/wikipedia/en/8/8c/Sinners_2025_poster.jpg", 
+                note: "Upcoming movie?" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Boss Level", 
+                me: true, her: false, imdb: 6.8, 
+                image: "https://upload.wikimedia.org/wikipedia/en/2/23/Boss_Level_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "IT Movies", 
+                me: false, her: false, imdb: 7.3, 
+                image: "https://upload.wikimedia.org/wikipedia/en/5/5a/It_%282017%29_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "The King", 
+                me: false, her: false, imdb: 7.3, 
+                image: "https://upload.wikimedia.org/wikipedia/en/a/a2/The_King_%282019%29_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Hereditary", 
+                me: false, her: false, imdb: 7.3, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/d9/Hereditary.png", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Uncharted", 
+                me: true, her: false, imdb: 6.3, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/d4/Uncharted_Official_Poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "World War Z", 
+                me: true, her: false, imdb: 7.0, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/dc/World_War_Z_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Django Unchained", 
+                me: true, her: false, imdb: 8.5, 
+                image: "https://upload.wikimedia.org/wikipedia/en/8/8b/Django_Unchained_Poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Bullet Train", 
+                me: false, her: false, imdb: 7.3, 
+                image: "https://upload.wikimedia.org/wikipedia/en/1/13/Bullet_Train_%28poster%29.jpeg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Magnificent Seven", 
+                me: true, her: false, imdb: 6.9, 
+                image: "https://upload.wikimedia.org/wikipedia/en/3/30/The_Magnificent_Seven_%282016_film%29.png", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "The Gentlemen", 
+                me: true, her: false, imdb: 7.8, 
+                image: "https://upload.wikimedia.org/wikipedia/en/0/06/The_Gentlemen_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Snatch", 
+                me: true, her: false, imdb: 8.2, 
+                image: "https://upload.wikimedia.org/wikipedia/en/a/a7/Snatch_ver4.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Planet of the Apes", 
+                me: true, her: false, imdb: 7.6, 
+                image: "https://upload.wikimedia.org/wikipedia/en/8/82/Planet_of_the_Apes_%282001_US_theatrical_poster%29.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Indiana Jones", 
+                me: "50/50", her: false, imdb: 8.2, 
+                image: "https://upload.wikimedia.org/wikipedia/en/4/4c/Raiders_of_the_Lost_Ark.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Garfield", 
+                me: false, her: false, imdb: 5.7, 
+                image: "https://upload.wikimedia.org/wikipedia/en/f/f0/The_Garfield_Movie_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "MOVIE", 
+                title: "Interstellar", 
+                me: true, her: false, imdb: 8.7, 
+                image: "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", 
+                note: "" 
+            },
 
             // --- SHOWS ---
-            { category: "SHOW", title: "Star Wars", me: "50/50", her: "50/50", imdb: 8.6, note: "GUIDE STAR WARS, we not done yet" },
-            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, note: "we both stopped mid season 1" },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, note: "i didnt finish" },
-            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, note: "i didnt finish" },
-            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, note: "too much gore but we can try" },
-            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, note: "I stopped at season 6, alot of nudity" },
-            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, note: "" },
-            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, note: "" },
-            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, note: "" },
-            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, note: "" },
-            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, note: "" },
-            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, note: "" },
-            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, note: "" },
-            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, note: "" },
-            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, note: "" },
+            { 
+                category: "SHOW", 
+                title: "Star Wars (Shows)", 
+                me: "50/50", her: "50/50", imdb: 8.6, 
+                image: "https://upload.wikimedia.org/wikipedia/en/3/36/The_Mandalorian_S1_Poster.jpg", 
+                note: "GUIDE STAR WARS, we not done yet" 
+            },
+            { 
+                category: "SHOW", 
+                title: "From", 
+                me: "50/50", her: "50/50", imdb: 7.8, 
+                image: "https://upload.wikimedia.org/wikipedia/en/3/36/From_TV_series_poster.jpg", 
+                note: "we both stopped mid season 1" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Severance", 
+                me: "50/50", her: false, imdb: 8.7, 
+                image: "https://upload.wikimedia.org/wikipedia/en/3/3b/Severance_TV_series.jpg", 
+                note: "i didnt finish" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Weak Hero", 
+                me: "50/50", her: false, imdb: 8.5, 
+                image: "https://upload.wikimedia.org/wikipedia/en/9/90/Weak_Hero_Class_1.jpg", 
+                note: "i didnt finish" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Fallout", 
+                me: false, her: false, imdb: 8.4, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/d4/Fallout_%28TV_series%29_poster.jpg", 
+                note: "too much gore but we can try" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Dexter", 
+                me: false, her: false, imdb: 8.6, 
+                image: "https://upload.wikimedia.org/wikipedia/en/7/77/Dexter_Season_1_DVD_poster.png", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Game Of Thrones", 
+                me: "50/50", her: false, imdb: 9.2, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/d8/Game_of_Thrones_title_card.jpg", 
+                note: "I stopped at season 6, alot of nudity" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Lucifer", 
+                me: true, her: false, imdb: 8.1, 
+                image: "https://upload.wikimedia.org/wikipedia/en/thumb/0/05/Lucifer_season_1.png/250px-Lucifer_season_1.png", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Upload", 
+                me: false, her: false, imdb: 7.9, 
+                image: "https://upload.wikimedia.org/wikipedia/en/0/0d/Upload_TV_series_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Lego Ninjago", 
+                me: true, her: false, imdb: 7.0, 
+                image: "https://upload.wikimedia.org/wikipedia/en/d/d5/Ninjago_Dragons_Rising_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Happiness", 
+                me: false, her: false, imdb: 8.2, 
+                image: "https://upload.wikimedia.org/wikipedia/en/e/e0/Happiness_%28South_Korean_TV_series%29.jpg", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Dark", 
+                me: false, her: false, imdb: 8.7, 
+                image: "https://upload.wikimedia.org/wikipedia/en/2/20/DarkNetflixPoster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "The Strain", 
+                me: false, her: false, imdb: 7.3, 
+                image: "https://upload.wikimedia.org/wikipedia/en/b/b3/The_Strain_season_1_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Peaky Blinders", 
+                me: false, her: false, imdb: 8.8, 
+                image: "https://upload.wikimedia.org/wikipedia/en/5/52/Peaky_Blinders_title_card.jpg", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "The Last of Us", 
+                me: "50/50", her: false, imdb: 8.7, 
+                image: "https://upload.wikimedia.org/wikipedia/en/4/46/The_Last_of_Us_TV_series_poster.jpg", 
+                note: "" 
+            },
+            { 
+                category: "SHOW", 
+                title: "Snowpiercer", 
+                me: false, her: false, imdb: 6.9, 
+                image: "https://upload.wikimedia.org/wikipedia/en/a/a2/Snowpiercer_TV_series_Title_Card.png", 
+                note: "" 
+            },
 
             // --- YOUTUBE ---
-            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, note: "" },
-            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, note: "stopped on like ep3" },
-            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, note: "stopped on like ep.16?" }
+            { 
+                category: "YOUTUBE", 
+                title: "Oliver Supercut", 
+                me: true, her: false, imdb: 0, 
+                image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", 
+                note: "John Oliver?" 
+            },
+            { 
+                category: "YOUTUBE", 
+                title: "Ludwig Japan Trip", 
+                me: true, her: "50/50", imdb: 0, 
+                image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", 
+                note: "stopped on like ep3" 
+            },
+            { 
+                category: "YOUTUBE", 
+                title: "Ryan 50 State Trip", 
+                me: "50/50", her: "50/50", imdb: 0, 
+                image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", 
+                note: "stopped on like ep.16?" 
+            }
         ];
 
         let currentCategory = 'all';
@@ -297,18 +605,15 @@
             if (me === true && her === true) return '<span class="tag completed">Done ✅</span>';
             if (me === "50/50" || her === "50/50") return '<span class="tag progress">In Progress ⏳</span>';
             if (me === true && her === false) return '<span class="tag me-watched">I Watched It 👤</span>';
-            if (me === false && her === true) return '<span class="tag me-watched">She Watched It 💕</span>';
+            if (me === false && her === true) return '<span class="tag her-watched">She Watched It 💕</span>';
             return '<span class="tag">Plan</span>';
         }
 
         // --- FILTER & SORT LOGIC ---
         function setCategory(cat) {
             currentCategory = cat;
-            
-            // Update button styles
             document.querySelectorAll('.category-buttons button').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + cat).classList.add('active');
-            
             updateView();
         }
 
@@ -317,25 +622,21 @@
             const sortOrder = document.getElementById('sortOrder').value;
             const grid = document.getElementById('grid');
 
-            // 1. Filter the list
+            // 1. Filter
             let filtered = mediaList.filter(item => {
-                // Category Filter
                 if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
-
-                // Status Dropdown Filter
                 if (statusFilter === 'new') return (item.me === false && item.her === false);
                 if (statusFilter === 'progress') return (item.me === "50/50" || item.her === "50/50");
                 if (statusFilter === 'me') return (item.me === true && item.her !== true);
                 if (statusFilter === 'her') return (item.me !== true && item.her === true);
-                
-                return true; // 'all' passes everything
+                return true;
             });
 
-            // 2. Sort the list
+            // 2. Sort
             if (sortOrder === 'imdb') {
-                filtered.sort((a, b) => (b.imdb || 0) - (a.imdb || 0)); // High to Low
+                filtered.sort((a, b) => (b.imdb || 0) - (a.imdb || 0));
             } else if (sortOrder === 'az') {
-                filtered.sort((a, b) => a.title.localeCompare(b.title)); // A-Z
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
             }
 
             // 3. Render
@@ -349,9 +650,18 @@
                 const noteHtml = item.note ? `<div class="note">"${item.note}"</div>` : '';
                 const imdbHtml = item.imdb > 0 ? `<div class="imdb-badge">${item.imdb}</div>` : '';
 
+                // IMAGE LOGIC: If url exists, use it. Else use emoji.
+                let headerStyle = '';
+                let headerContent = emoji;
+
+                if (item.image && item.image.trim() !== "") {
+                    headerStyle = `background-image: url('${item.image}');`;
+                    headerContent = ''; // Remove emoji if we have an image
+                }
+
                 card.innerHTML = `
-                    <div class="card-header">
-                        ${emoji}
+                    <div class="card-header" style="${headerStyle}">
+                        ${headerContent}
                         ${imdbHtml}
                     </div>
                     <div class="card-content">
