@@ -204,7 +204,7 @@
             <div class="chip" onclick="setFilter('ANIME', this)">Anime</div>
             <div class="chip" onclick="setFilter('MOVIE', this)">Movies</div>
             <div class="chip" onclick="setFilter('SHOW', this)">Shows</div>
-            <div class="chip" onclick="setFilter('ONE_PIECE_MOVIE', this)">OP Movies</div>
+            <div class="chip" onclick="setFilter('OP_Movies', this)">OP Movies</div>
             <div class="chip" onclick="setFilter('YOUTUBE', this)">YouTube</div>
         </div>
 
@@ -213,7 +213,7 @@
                 <option value="all">Status: Everything</option>
                 <option value="new">✨ New</option>
                 <option value="together">💞 Watching Together</option>
-                <option value="paused">⏸️ Paused</option>
+                <option value="paused">⏸️ Paused / In Progress</option>
                 <option value="me">👤 Only Me</option>
                 <option value="her">💕 Only Her</option>
                 <option value="done">✅ Completed</option>
@@ -266,13 +266,14 @@
             { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/u67Yc2lGZk2T31rA977x6aYjH5z.jpg", desc: "Cooking monsters in a dungeon.", note: "" },
             { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/abf8tO3F5f4N7D6o8r2k6j3.jpg", desc: "A cleaner becomes a Kaiju.", note: "we both saw s1" },
             { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/d6L75005e83BqC1p8a5.jpg", desc: "Rebuilding the world with science.", note: "" },
-            { category: "ANIME", title: "Re:Zero S1", me: true, her: true, imdb: 8.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/5e83BqC1p8a5.jpg", desc: "Time loop fantasy.", note: "Finished season 1." },
+            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/5e83BqC1p8a5.jpg", desc: "Time loop fantasy.", note: "Finished season 1. Need to continue to S2/S3." },
 
-            // --- ONE PIECE MOVIES (NEW CATEGORY) ---
-            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Film Z", me: false, her: false, imdb: 8.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/3Fv81eJ4qK2IqXJb1x8nKxNxtmE.jpg", desc: "Z's revenge.", note: "New to us.", group: "OP_Movies", chronology: 1 },
-            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Gold", me: false, her: false, imdb: 7.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/a7vE9G1cK1d0F1Rj0Gk2J9h49wW.jpg", desc: "Grand Tesoro.", note: "New to us.", group: "OP_Movies", chronology: 2 },
-            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Stampede", me: false, her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/36o7g5R6y1v2f47DkVwzG96s4bI.jpg", desc: "Pirate festival.", note: "New to us.", group: "OP_Movies", chronology: 3 },
-            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Red", me: false, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/bL4CKyWkY5DN1IrbdG7J6I2I6dJ.jpg", desc: "Uta's concert.", note: "New to us.", group: "OP_Movies", chronology: 4 },
+            // --- ONE PIECE MOVIES (MOVED TO MOVIE CATEGORY, grouped) ---
+            { category: "MOVIE", title: "OP Movie: Strong World", me: true, her: true, imdb: 7.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/lS997xUuX0v3T10bQd2f7U5o0R7.jpg", desc: "Shiki the Golden Lion.", note: "Completed Together.", group: "OP_Movies", chronology: 0 },
+            { category: "MOVIE", title: "OP Movie: Film Z", me: false, her: false, imdb: 8.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/3Fv81eJ4qK2IqXJb1x8nKxNxtmE.jpg", desc: "Z's revenge.", note: "New to us.", group: "OP_Movies", chronology: 1 },
+            { category: "MOVIE", title: "OP Movie: Gold", me: false, her: false, imdb: 7.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/a7vE9G1cK1d0F1Rj0Gk2J9h49wW.jpg", desc: "Grand Tesoro.", note: "New to us.", group: "OP_Movies", chronology: 2 },
+            { category: "MOVIE", title: "OP Movie: Stampede", me: false, her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/36o7g5R6y1v2f47DkVwzG96s4bI.jpg", desc: "Pirate festival.", note: "New to us.", group: "OP_Movies", chronology: 3 },
+            { category: "MOVIE", title: "OP Movie: Red", me: false, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/bL4CKyWkY5DN1IrbdG7J6I2I6dJ.jpg", desc: "Uta's concert.", note: "New to us.", group: "OP_Movies", chronology: 4 },
 
             // --- STAR WARS (GROUPED) ---
             { category: "SHOW", title: "The Acolyte", me: false, her: false, imdb: 6.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/mzfd4tldxStQ5hLq8Fq0.jpg", desc: "100 years before the Empire.", note: "", group: "StarWars", chronology: 100 },
@@ -317,8 +318,8 @@
             { category: "MOVIE", title: "LOTR: Return of King", me: true, her: false, imdb: 9.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", desc: "Final battle.", note: "", group: "LOTR", chronology: 3 },
             
             // --- IT (GROUPED) ---
-            { category: "MOVIE", title: "IT: Chapter One", me: false, her: true, imdb: 7.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/9E2y5Q7WlCVNEhP5GiVTJhEhx1o.jpg", desc: "Kids fight Pennywise.", note: "GF watched this, I didn't.", group: "IT", chronology: 2 },
-            { category: "MOVIE", title: "IT: Chapter Two", me: false, her: true, imdb: 6.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zfE0R94v1E8cuKAerbskfD3VfUt.jpg", desc: "Adults return to fight.", note: "GF watched this, I didn't.", group: "IT", chronology: 3 },
+            { category: "MOVIE", title: "IT: Chapter One", me: false, her: true, imdb: 7.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/9E2y5Q7WlCVNEhP5GiVTJhEhx1o.jpg", desc: "Kids fight Pennywise.", note: "GF watched this, I didn't. She also thinks she saw the movies, but not the show (upcoming)." },
+            { category: "MOVIE", title: "IT: Chapter Two", me: false, her: true, imdb: 6.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zfE0R94v1E8cuKAerbskfD3VfUt.jpg", desc: "Adults return to fight.", note: "GF watched this, I didn't. She also thinks she saw the movies, but not the show (upcoming)." },
 
             // --- PLANET OF APES (GROUPED) ---
             { category: "MOVIE", title: "Apes: Rise (2011)", me: true, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rj8l6C3R797x2v1e7j4yC1R8.jpg", desc: "Caesar is born.", note: "I watched all four, GF didn't.", group: "Apes", chronology: 1 },
@@ -352,11 +353,11 @@
             { category: "SHOW", title: "The Boys", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/vRijM26W2nL5lC46b5P7XlJ8zVb.jpg", desc: "Vigilantes fight corrupt superheroes.", note: "I have watched up to the second-to-last season." },
             { category: "SHOW", title: "IT: Welcome to Derry", me: false, her: false, imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7Lp6zF76T8r8Sj1c121e7W9n3Q.jpg", desc: "Prequel series to the IT movies.", note: "Upcoming" },
             { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/u3O3dK16r32rF0o31d6T4R6Nfr.jpg", desc: "Trapped in a town.", note: "We watched 4 episodes together." },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/l3gE5083k5y6X5o5.jpg", desc: "Work/Life horror.", note: "I watched half." },
-            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rLvs3gX1F25191zWn60o7v4G2jW.jpg", desc: "School drama.", note: "I watched half." },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/l3gE5083k5y6X5o5.jpg", desc: "Work/Life horror.", note: "I watched half of it." },
+            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rLvs3gX1F25191zWn60o7v4G2jW.jpg", desc: "School drama.", note: "I watched half of it." },
             { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/AnsSKR9LuK0W9b8WJCZiyHUf0rV.jpg", desc: "Wasteland survival.", note: "too much gore?" },
             { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/58H6CTxz9RZHnjTVPnomW1CtjI9.jpg", desc: "Serial killer cop.", note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "check", her: "check", imdb: 9.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/2jd8Y8yflj72J9lcfhL5uQ5kL5E.jpg", desc: "Westeros politics.", note: "I finished S6, we finished S3 together. Needs restarting from S4/where we stopped." },
+            { category: "SHOW", title: "Game Of Thrones", me: "check", her: "check", imdb: 9.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/2jd8Y8yflj72J9lcfhL5uQ5kL5E.jpg", desc: "Westeros politics.", note: "I finished S6, we finished on Episode 3 of an early season. Needs restarting from S4/where we stopped." },
             { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ekZobS8isE6mA53RAiGDG93hBxL.jpg", desc: "Devil solves crimes.", note: "" },
             { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/02YhB2v2hV74d53m1B5jV1P54v7.jpg", desc: "Digital afterlife.", note: "" },
             { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zF1R4K1jX82Uq0W76B0s05i58D4.jpg", desc: "Ninjas.", note: "" },
@@ -368,9 +369,9 @@
             { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/24V5zKx1vj5jUaO90WbO9C47Xp8.jpg", desc: "Train world.", note: "" },
 
             // --- YOUTUBE ---
-            { category: "YOUTUBE", title: "Random YouTube Pick", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/commons/e/ec/YouTube_logo_2017.svg", desc: "Pick a random video from the YouTube playlist.", note: "Random pick" },
+            { category: "YOUTUBE", title: "YouTube Random Pick", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/commons/e/ec/YouTube_logo_2017.svg", desc: "Pick a random video from the YouTube playlist.", note: "Random pick" },
             { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", desc: "John Oliver funny moments.", note: "John Oliver?" },
-            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", desc: "Vlogs in Japan.", note: "I finished, we stopped at episode 3 together." },
+            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: "check", her: "check", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", desc: "Vlogs in Japan.", note: "I finished, we stopped at episode 3 together." },
             { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", desc: "Crossing US for a penny.", note: "stopped on like ep.16?" }
         ];
 
@@ -379,13 +380,27 @@
         let currentModalIndex = 0;
 
         function getStatusInfo(me, her) {
+            // New Priority: Watching Together (Pink Dot)
             if (me === "together" || her === "together") return { text: "Watching Together 💞", class: "s-together", dot: "d-together", code: "together" };
+            
+            // New Priority: Check Note (Yellow Question Mark)
             if (me === "check" || her === "check") return { text: "Check Note ⚠️", class: "s-check", dot: "d-check", code: "check" };
+
+            // Paused/In Progress (The one you called 50/50)
+            if (me === "50/50" || her === "50/50") return { text: "Paused / In Progress ⏸️", class: "s-paused", dot: "d-paused", code: "paused" };
+
+            // Done Together (Completed)
             if (me === true && her === true) return { text: "Completed Together ✅", class: "s-done", dot: "d-done", code: "done" };
-            if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
-            if (me === true && her === false) return { text: "Only Me", class: "s-me", dot: "d-me", code: "me" };
-            if (me === false && her === true) return { text: "Only Her", class: "s-her", dot: "d-her", code: "her" };
-            return { text: "Paused / In Progress", class: "s-paused", dot: "d-paused", code: "paused" };
+            
+            // New (Brand new to both)
+            if (me === false && her === false) return { text: "New ✨", class: "s-new", dot: "d-new", code: "new" };
+            
+            // Only One
+            if (me === true && her === false) return { text: "Only Me 👤", class: "s-me", dot: "d-me", code: "me" };
+            if (me === false && her === true) return { text: "Only Her 💕", class: "s-her", dot: "d-her", code: "her" };
+
+            // Fallback (Shouldn't happen with clean data)
+            return { text: "Status Unknown", class: "s-paused", dot: "d-paused", code: "paused" };
         }
 
         function setFilter(cat, btn) {
@@ -407,7 +422,13 @@
             let filtered = mediaList.filter(item => {
                 const s = getStatusInfo(item.me, item.her);
                 if (statusFilter !== 'all' && s.code !== statusFilter) return false;
-                if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
+                
+                // Filtering logic for the main categories + OP_Movies group
+                if (currentCategory !== 'all') {
+                    if (item.category === currentCategory) return true;
+                    if (item.group === currentCategory) return true;
+                    return false;
+                }
                 return true;
             });
 
@@ -419,23 +440,23 @@
             // 3. DECIDE LAYOUT: Rows or Grid?
             if (statusFilter === 'all' && currentCategory === 'all') {
                 // HOME SCREEN VIEW: Stacked Category Rows
-                const categories = ["ANIME", "MOVIE", "SHOW", "ONE_PIECE_MOVIE", "YOUTUBE"];
+                const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
                 categories.forEach(cat => {
                     let rowItems = mediaList.filter(i => i.category.includes(cat));
                     if (sortFunction) rowItems.sort(sortFunction);
                     if (rowItems.length > 0) renderRow(cat, rowItems, main);
                 });
-            } else if (statusFilter === 'all' && currentCategory !== 'all') {
-                // CATEGORY VIEW: Grouped Franchises at top, then singles
+            } else if (statusFilter === 'all' && (currentCategory === 'MOVIE' || currentCategory === 'OP_Movies' || currentCategory === 'SHOW')) {
+                // CATEGORY/GROUP VIEW: Grouped Franchises first, then singles
                 
                 // Group items:
-                const franchiseItems = filtered.filter(i => i.group);
+                let franchiseItems = filtered.filter(i => i.group);
                 let singularItems = filtered.filter(i => !i.group);
 
                 // --- 3a. Render Singular/One-Shot Items ---
                 if (singularItems.length > 0) {
                     if (sortFunction) singularItems.sort(sortFunction);
-                    renderRow('One-Shot / Standalone', singularItems, main, false); // Use false to indicate custom title
+                    renderRow('One-Shot / Standalone', singularItems, main, false);
                 }
 
                 // --- 3b. Render Franchises ---
@@ -447,15 +468,15 @@
                             .filter(i => i.group === groupName)
                             .sort((a, b) => (a.chronology || 999) - (b.chronology || 999)); // Chronological sort by default
                         
-                        if (sortFunction) groupItems.sort(sortFunction); // Override with rating/A-Z sort if selected
-
+                        if (sortOrder === 'imdb' || sortOrder === 'az') groupItems.sort(sortFunction); // Override sort
+                        
                         if (groupItems.length > 0) {
                             renderRow(groupName, groupItems, main);
                         }
                     });
                 }
             } else {
-                // STATUS FILTER VIEW: Single Grid (Sorting is applied)
+                // STATUS FILTER / OTHER CATEGORIES VIEW: Single Grid (Sorting is applied)
                 if (sortFunction) filtered.sort(sortFunction);
                 const grid = document.createElement('div');
                 grid.className = 'grid-container';
@@ -474,7 +495,7 @@
             header.className = 'section-header';
             let displayName;
             if (isCategory) {
-                 displayName = title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title === 'ONE_PIECE_MOVIE' ? 'One Piece Movies' : title;
+                 displayName = title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title === 'OP_Movies' ? 'One Piece Movies' : title;
             } else {
                 displayName = title;
             }
@@ -504,9 +525,14 @@
             el.onclick = () => openModal(item, sourceList);
             
             const badge = item.imdb > 0 ? `<div class="imdb-badge">⭐ ${item.imdb}</div>` : '';
+            
+            // Check if it's a YouTube placeholder for the image
+            const imageStyle = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick' 
+                ? `background-image: url('${item.image}'); background-size: 80%; background-repeat: no-repeat; background-color: #ff0000;` 
+                : `background-image: url('${item.image}')`;
 
             el.innerHTML = `
-                <div class="card-image" style="background-image: url('${item.image}')"></div>
+                <div class="card-image" style="${imageStyle}"></div>
                 ${badge}
                 <div class="card-overlay">
                     <div class="card-title">${item.title}</div>
@@ -544,11 +570,20 @@
             const item = currentModalList[currentModalIndex];
             const s = getStatusInfo(item.me, item.her);
             
-            document.getElementById('mHero').style.backgroundImage = `url('${item.image}')`;
+            // Special handling for YouTube logo in modal hero
+            const heroStyle = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick'
+                ? `background-image: url('${item.image}'); background-size: 30%; background-repeat: no-repeat; background-color: #ff0000;`
+                : `background-image: url('${item.image}')`;
+
+            document.getElementById('mHero').style.cssText = heroStyle;
             document.getElementById('mTitle').innerText = item.title;
+            
+            let categoryText = item.category;
+            if (item.group === 'OP_Movies') categoryText = 'One Piece Movie';
+
             document.getElementById('mTags').innerHTML = `
                 <span class="${s.class}" style="font-weight:bold;">${s.text.replace(' ', ' ')}</span> • 
-                ${item.category === 'ONE_PIECE_MOVIE' ? 'OP MOVIE' : item.category} • 
+                ${categoryText} • 
                 ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}
             `;
             document.getElementById('mDesc').innerText = item.desc;
@@ -584,7 +619,7 @@
         function startRoulette() {
             // Get candidates based on current filter state
             const candidates = mediaList.filter(i => {
-                const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory);
+                const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory) || i.group === currentCategory;
                 const s = getStatusInfo(i.me, i.her).code;
                 const isWatchable = s === 'new' || s === 'paused' || s === 'check' || s === 'together';
                 
