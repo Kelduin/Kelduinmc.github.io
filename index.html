@@ -198,10 +198,11 @@
             box-shadow: 0 0 40px rgba(0,0,0,0.8);
             border: 1px solid #333;
             animation: fadeIn 0.3s;
+            position: relative;
         }
 
         .info-header {
-            height: 200px;
+            height: 250px;
             background-size: cover;
             background-position: center;
             position: relative;
@@ -216,14 +217,23 @@
         }
 
         .info-title { font-size: 2rem; font-weight: bold; margin-bottom: 10px; line-height: 1.1; }
-        .info-meta { color: #aaa; margin-bottom: 20px; font-size: 0.9rem; display: flex; gap: 10px; align-items: center;}
+        .info-meta { color: #aaa; margin-bottom: 20px; font-size: 0.9rem; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;}
+        
+        .info-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
         .info-note { 
             background: #222; 
             padding: 15px; 
             border-left: 4px solid var(--accent); 
             border-radius: 4px;
             font-style: italic; 
-            color: #ddd;
+            color: #bbb;
+            font-size: 0.9rem;
             line-height: 1.5;
         }
         .close-btn { 
@@ -232,7 +242,11 @@
             padding: 12px;
             background: #333;
             border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
         }
+        .close-btn:hover { background: #444; }
 
         /* ROULETTE */
         .roulette-container {
@@ -276,9 +290,11 @@
         <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
             <select id="statusFilter" onchange="updateView()">
                 <option value="all">Show: Everything</option>
-                <option value="new">✨ New (Unwatched)</option>
-                <option value="paused">⏸️ Paused / Partial</option>
+                <option value="new">✨ New (Both Unwatched)</option>
+                <option value="paused">⏸️ Paused / Stopped</option>
                 <option value="me">👤 Only I Watched</option>
+                <option value="her">💕 Only She Watched</option>
+                <option value="done">✅ Completed Together</option>
             </select>
 
             <select id="sortOrder" onchange="updateView()">
@@ -297,8 +313,12 @@
             <div class="info-content">
                 <div class="info-title" id="infoTitle">Title</div>
                 <div class="info-meta" id="infoMeta"></div>
-                <div id="infoNoteContainer">
-                    <p style="margin-bottom:5px; color:#888; font-size:0.8rem;">NOTES:</p>
+                
+                <div class="info-desc" id="infoDesc">
+                    </div>
+
+                <div id="infoNoteContainer" style="display:none;">
+                    <p style="margin-bottom:5px; color:#888; font-size:0.8rem; font-weight:bold;">YOUR NOTES:</p>
                     <div class="info-note" id="infoNote"></div>
                 </div>
                 <button class="close-btn" onclick="closeInfo(null)">Close</button>
@@ -321,63 +341,299 @@
 
     <script>
         // --- DATA ---
-        // "50/50" now interpreted as Paused/Stopped/Partial.
-        // Images sourced from IMDb/Amazon/Wikidata/Youtube.
+        // I have added a "desc" field with IMDb-style plots for everything.
+        // Status logic: "50/50" = Stopped/Partial. true = Watched. false = Unwatched.
+        
         const mediaList = [
             // ANIME
-            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYi00YWZhLTweZGEtMjMzM2FlNmU5ZWE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, image: "https://m.media-amazon.com/images/M/MV5BNzc5MTczNDQtNDFjNi00ZDU5LWFkNzItOTE1NzQzMzdhNzMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "sky watched s1 but doesnt remember anything" },
-            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5BMjY5OTQ0Y2ItMzE0MC00Yzk4LWIxNzItODc1ZGE0OWFkODU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "we both saw season1" },
-            { category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Crunchyroll_Logo.png/640px-Crunchyroll_Logo.png", note: "Other Animes on my crunchy" },
-            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, image: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1MDAtNDA0Y2JjMGNiMDZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "Baron-Z-Stampede-Gold-Red" },
-            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BN2IzY2RlZDYtMTQxZi00ZmFmLTgzOWEtYjNjY2UxNTNmYjFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "cool anime about rebuilding the world" },
-            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://m.media-amazon.com/images/M/MV5BN2NlM2Y5Y2MtYjU5Min00M2M4LWE2YGYtYjA2ODNiYDY4NWJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "finished season 1" },
+            { 
+                category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, 
+                image: "https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYi00YWZhLTweZGEtMjMzM2FlNmU5ZWE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "An elf mage sets out on a journey to understand humanity after the death of her former comrade from a hero's party.",
+                note: "" 
+            },
+            { 
+                category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, 
+                image: "https://m.media-amazon.com/images/M/MV5BNzc5MTczNDQtNDFjNi00ZDU5LWFkNzItOTE1NzQzMzdhNzMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "After his hometown is destroyed and his mother is killed, young Eren Yeager vows to cleanse the earth of the giant humanoid Titans that have brought humanity to the brink of extinction.",
+                note: "sky watched s1 but doesnt remember anything" 
+            },
+            { 
+                category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, 
+                image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "After his sister is eaten by a dragon, an adventurer and his party save money by cooking the monsters they find in the dungeon.",
+                note: "" 
+            },
+            { 
+                category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, 
+                image: "https://m.media-amazon.com/images/M/MV5BMjY5OTQ0Y2ItMzE0MC00Yzk4LWIxNzItODc1ZGE0OWFkODU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A sweeper who cleans up monster remains gets infected by a parasitic Kaiju and gains the power to turn into one himself.",
+                note: "we both saw season1" 
+            },
+            { 
+                category: "ANIME", title: "Crunchyroll Backlog", me: false, her: false, imdb: 0, 
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Crunchyroll_Logo.png/640px-Crunchyroll_Logo.png", 
+                desc: "A collection of various unwatched anime series currently sitting in the queue.",
+                note: "Other Animes on my crunchy" 
+            },
+            { 
+                category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, 
+                image: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1MDAtNDA0Y2JjMGNiMDZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Feature films from the One Piece universe, including Baron Omatsuri, Film Z, Stampede, Gold, and Red.",
+                note: "Baron-Z-Stampede-Gold-Red" 
+            },
+            { 
+                category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, 
+                image: "https://m.media-amazon.com/images/M/MV5BN2IzY2RlZDYtMTQxZi00ZmFmLTgzOWEtYjNjY2UxNTNmYjFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Thousands of years after humanity was petrified, a genius boy awakens and begins rebuilding civilization with science.",
+                note: "cool anime about rebuilding the world" 
+            },
+            { 
+                category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, 
+                image: "https://m.media-amazon.com/images/M/MV5BN2NlM2Y5Y2MtYjU5Min00M2M4LWE2YGYtYjA2ODNiYDY4NWJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Subaru Natsuki is transported to another world where he gains the ability to rewind time by dying.",
+                note: "finished season 1" 
+            },
 
             // MOVIES
-            { category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BNzIxMDQ2YTItNDM4Ny00NDc3LWE0ODItODQ4NmJkNDMwYjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODIyOTEyMzY3NV5BMl5BanBnXkFtZTcwZjQ5NDc2OA@@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTc0NTUwMTU5OV5BMl5BanBnXkFtZTcwNjAwNzQzMw@@._V1_FMjpg_UX1000_.jpg", note: "watched only 1st movie" },
-            { category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5YWQtNDQwMzQxNTRiM2Q1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "i dont remember much" },
-            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, image: "https://m.media-amazon.com/images/M/MV5BYzA2NzY2M2QtNTdkMi00NDM4LWIwNGUtZTM0ZWE0NWI1MmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "Upcoming movie?" },
-            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, image: "https://m.media-amazon.com/images/M/MV5BNkVkZTY0MzMtYzE0YS00NzkzLTk2MjktOTVhOTM2NzE2YzRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjhhLWE1ODEtMWMzMWMzNDA0NmQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BN2E2ZjdiZjktZTZkNi00YTNiLTk0YmQtYTgyMjMzYjExMjE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BOTU5MDg3OGItZWQ1Ny00ZTZlLTE4YzktNTY2NDRmFDY0OTBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, image: "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzZi00YTY3LThjYWYtYzM2OWJlYWU1MGY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMDU2ZmM2OTYtNzIxYy00NjM5LTliNGQtN2JmOWQzYTBmZWUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BMTUyNzQ2NDI5MV5BMl5BanBnXkFtZTgwNjM4ODQ5OTE@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BODNmYTkxZmUtYzJmZi00YmQ4LTgyYmYtYjA4ZjYxY2YyZDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMTA2NDYxOGYtYjU1Mi00Y2QzLTgxMTQtMWI1MGI0ZGQ5MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, image: "https://m.media-amazon.com/images/M/MV5BMTY0MTIxNDU4M15BMl5BanBnXkFtZTcwNzU3ODUyMw@@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BNDE1NDExMTItNDg5MC00MThhLWJhY2MtMzQ5NDVkNTkzYTNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://m.media-amazon.com/images/M/MV5BNTI2YTI0MWEtNGQ4OS00ODIzLWE1MWEtZGJiN2E3ZDM1YzJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { 
+                category: "MOVIE", title: "Lord Of The Rings", me: true, her: false, imdb: 8.9, 
+                image: "https://m.media-amazon.com/images/M/MV5BNzIxMDQ2YTItNDM4Ny00NDc3LWE0ODItODQ4NmJkNDMwYjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "The Hobbit", me: true, her: false, imdb: 7.8, 
+                image: "https://m.media-amazon.com/images/M/MV5BODIyOTEyMzY3NV5BMl5BanBnXkFtZTcwZjQ5NDc2OA@@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A reluctant Hobbit, Bilbo Baggins, sets out to the Lonely Mountain with a spirited group of dwarves to reclaim their mountain home.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Narnia", me: true, her: false, imdb: 6.9, 
+                image: "https://m.media-amazon.com/images/M/MV5BMTc0NTUwMTU5OV5BMl5BanBnXkFtZTcwNjAwNzQzMw@@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Four kids travel through a wardrobe to the land of Narnia and learn of their destiny to free it with the guidance of a mystical lion.",
+                note: "watched only 1st movie" 
+            },
+            { 
+                category: "MOVIE", title: "Harry Potter", me: "50/50", her: true, imdb: 7.6, 
+                image: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5YWQtNDQwMzQxNTRiM2Q1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "An orphaned boy enrolls in a school of wizardry, where he learns the truth about himself, his family and the terrible evil that haunts the magical world.",
+                note: "i dont remember much" 
+            },
+            { 
+                category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 0, 
+                image: "https://m.media-amazon.com/images/M/MV5BYzA2NzY2M2QtNTdkMi00NDM4LWIwNGUtZTM0ZWE0NWI1MmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Upcoming Ryan Coogler horror movie starring Michael B. Jordan.",
+                note: "Upcoming movie?" 
+            },
+            { 
+                category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, 
+                image: "https://m.media-amazon.com/images/M/MV5BNkVkZTY0MzMtYzE0YS00NzkzLTk2MjktOTVhOTM2NzE2YzRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Trapped in a time loop that constantly repeats the day of his murder, a former special forces agent must unlock the mystery behind his untimely demise.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "IT Movies", me: false, her: false, imdb: 7.3, 
+                image: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjhhLWE1ODEtMWMzMWMzNDA0NmQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "In the summer of 1989, a group of bullied kids band together to destroy a shape-shifting monster, which disguises itself as a clown and preys on the children of Derry.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, 
+                image: "https://m.media-amazon.com/images/M/MV5BN2E2ZjdiZjktZTZkNi00YTNiLTk0YmQtYTgyMjMzYjExMjE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Young Henry V encounters deceit, war and treachery after becoming King of England in the 15th century, in the aftermath of his brother's death.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, 
+                image: "https://m.media-amazon.com/images/M/MV5BOTU5MDg3OGItZWQ1Ny00ZTZlLTE4YzktNTY2NDRmFDY0OTBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A grieving family is haunted by tragic and disturbing occurrences after the death of their secretive grandmother.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, 
+                image: "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzZi00YTY3LThjYWYtYzM2OWJlYWU1MGY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Street-smart Nathan Drake is recruited by seasoned treasure hunter Victor 'Sully' Sullivan to recover a fortune amassed by Ferdinand Magellan.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, 
+                image: "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Former United Nations employee Gerry Lane traverses the world in a race against time to stop a zombie pandemic that is toppling armies and governments.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, 
+                image: "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg", 
+                desc: "With the help of a German bounty-hunter, a freed slave sets out to rescue his wife from a brutal plantation owner in Mississippi.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, 
+                image: "https://m.media-amazon.com/images/M/MV5BMDU2ZmM2OTYtNzIxYy00NjM5LTliNGQtN2JmOWQzYTBmZWUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Five assassins aboard a swiftly-moving bullet train find out that their missions have something in common.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, 
+                image: "https://m.media-amazon.com/images/M/MV5BMTUyNzQ2NDI5MV5BMl5BanBnXkFtZTgwNjM4ODQ5OTE@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Seven gunmen from a variety of backgrounds are brought together by a vengeful young widow to protect her town from a private army.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, 
+                image: "https://m.media-amazon.com/images/M/MV5BODNmYTkxZmUtYzJmZi00YmQ4LTgyYmYtYjA4ZjYxY2YyZDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "An American expat tries to sell off his highly profitable marijuana empire in London, triggering plots, schemes, bribery and blackmail.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, 
+                image: "https://m.media-amazon.com/images/M/MV5BMTA2NDYxOGYtYjU1Mi00Y2QzLTgxMTQtMWI1MGI0ZGQ5MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Unscrupulous boxing promoters, violent bookmakers, a Russian gangster, incompetent amateur robbers and supposedly Jewish jewelers fight to track down a priceless stolen diamond.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Planet of the Apes", me: true, her: false, imdb: 7.6, 
+                image: "https://m.media-amazon.com/images/M/MV5BMTY0MTIxNDU4M15BMl5BanBnXkFtZTcwNzU3ODUyMw@@._V1_FMjpg_UX1000_.jpg", 
+                desc: "An Air Force astronaut crash-lands on a mysterious planet where evolved, talking apes dominate a race of primitive humans.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Indiana Jones", me: "50/50", her: false, imdb: 8.2, 
+                image: "https://m.media-amazon.com/images/M/MV5BNDE1NDExMTItNDg5MC00MThhLWJhY2MtMzQ5NDVkNTkzYTNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "In 1936, archaeologist and adventurer Indiana Jones is hired by the U.S. government to find the Ark of the Covenant before Adolf Hitler's Nazis can obtain its awesome powers.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, 
+                image: "https://m.media-amazon.com/images/M/MV5BNTI2YTI0MWEtNGQ4OS00ODIzLWE1MWEtZGJiN2E3ZDM1YzJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Garfield, the world-famous, Monday-hating, lasagna-loving indoor cat, is about to have a wild outdoor adventure.",
+                note: "" 
+            },
+            { 
+                category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, 
+                image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+                note: "" 
+            },
 
             // SHOWS
-            { category: "SHOW", title: "Star Wars (Shows)", me: "50/50", her: "50/50", imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "GUIDE STAR WARS, we not done yet" },
-            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "we both stopped mid season 1" },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "i didnt finish" },
-            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://m.media-amazon.com/images/M/MV5BMjA3Y2YyOWItYjc5Mi00YmU3LWJhNDctM2RiYzdlZDQyMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "i didnt finish" },
-            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://m.media-amazon.com/images/M/MV5MmVhNGEwZDYtZTMzOS00YzU5LWE4ZjItMGQ1ZmU0MzZmYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "too much gore but we can try" },
-            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://m.media-amazon.com/images/M/MV5BMTM5MjkwMTI0MV5BMl5BanBnXkFtZTcwODQwMTc0Mg@@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, image: "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "I stopped at season 6, alot of nudity" },
-            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00YWY3LThjMzItYjZjZjNhNDVmYjY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://m.media-amazon.com/images/M/MV5BNDJlMjAyYjItYzRhOS00NzVhLTg2YjYtYWIzNjE2Y2RlY2YxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://m.media-amazon.com/images/M/MV5BNzQ3OTY0OTQtMzY2Yy00ODFkLTgwYmEtZDRmYjBiYzE2YmVkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, image: "https://m.media-amazon.com/images/M/MV5BMjY2ZmMxNDYtODk3ZC00YzllLTk1OTQtYzY1MzNhNzZkNmIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BMzY1ODIzMDItMjg5OS00NTUzLThlNmItZTQyNDFjODMzMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://m.media-amazon.com/images/M/MV5BMjA5ODk4Njg2OV5BMl5BanBnXkFtZTgwNTc4MzMwMjE@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://m.media-amazon.com/images/M/MV5BZjYzZDgzMDktMmU0NC00ZmI5LWJhZGYtZTRiYWNlNDY5NTA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
-            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://m.media-amazon.com/images/M/MV5BYzZkMTkyYmQtNzYxMi00M2VhLWE2YzktMzhhNWY2NjBjNzA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", note: "" },
+            { 
+                category: "SHOW", title: "Star Wars (Shows)", me: "50/50", her: "50/50", imdb: 8.6, 
+                image: "https://m.media-amazon.com/images/M/MV5BN2IyYzJiMGEtYTZiYi00ZDUxLTkyM2ItMjA1NzU0NWM0ZWJjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Various series set in the Star Wars universe, including The Mandalorian, Andor, and Ahsoka.",
+                note: "GUIDE STAR WARS, we not done yet" 
+            },
+            { 
+                category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, 
+                image: "https://m.media-amazon.com/images/M/MV5BNDUyNWEwODktMmJlMy00OGNiLTk0MGEtNjQ2ZmJkZGE4ZWIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Unravel the mystery of a nightmarish town in middle America that traps all those who enter.",
+                note: "we both stopped mid season 1" 
+            },
+            { 
+                category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, 
+                image: "https://m.media-amazon.com/images/M/MV5BODQ0ODAxYTEtNzdmMC00M2I4LWI2NzUtYzFjM2YyYWM2YWE1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives.",
+                note: "i didnt finish" 
+            },
+            { 
+                category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, 
+                image: "https://m.media-amazon.com/images/M/MV5BMjA3Y2YyOWItYjc5Mi00YmU3LWJhNDctM2RiYzdlZDQyMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A model student uses his intelligence to fight violence inside and outside his school.",
+                note: "i didnt finish" 
+            },
+            { 
+                category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, 
+                image: "https://m.media-amazon.com/images/M/MV5MmVhNGEwZDYtZTMzOS00YzU5LWE4ZjItMGQ1ZmU0MzZmYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "In a future, post-apocalyptic Los Angeles brought about by nuclear decimation, citizens must live in underground bunkers to protect themselves from radiation, mutants and bandits.",
+                note: "too much gore but we can try" 
+            },
+            { 
+                category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, 
+                image: "https://m.media-amazon.com/images/M/MV5BMTM5MjkwMTI0MV5BMl5BanBnXkFtZTcwODQwMTc0Mg@@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A forensic technician specializing in blood spatter analysis for the Miami Metro Police Department leads a double life as a serial killer.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, 
+                image: "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for millennia.",
+                note: "I stopped at season 6, alot of nudity" 
+            },
+            { 
+                category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, 
+                image: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00YWY3LThjMzItYjZjZjNhNDVmYjY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Lucifer Morningstar has decided he's had enough of being the dutiful servant in Hell and decides to spend some time on Earth to better understand humanity.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, 
+                image: "https://m.media-amazon.com/images/M/MV5BNDJlMjAyYjItYzRhOS00NzVhLTg2YjYtYWIzNjE2Y2RlY2YxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A man is able to choose his own afterlife after his premature death, by having his consciousness uploaded into a virtual world.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, 
+                image: "https://m.media-amazon.com/images/M/MV5BNzQ3OTY0OTQtMzY2Yy00ODFkLTgwYmEtZDRmYjBiYzE2YmVkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Six young ninjas are tasked with defending their island home, called Ninjago.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, 
+                image: "https://m.media-amazon.com/images/M/MV5BMjY2ZmMxNDYtODk3ZC00YzllLTk1OTQtYzY1MzNhNzZkNmIyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "An apocalyptic thriller that takes place in a time in which infectious diseases have become the new normal.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, 
+                image: "https://m.media-amazon.com/images/M/MV5BMzY1ODIzMDItMjg5OS00NTUzLThlNmItZTQyNDFjODMzMjY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A family saga with a supernatural twist, set in a German town where the disappearance of two young children exposes the relationships among four families.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, 
+                image: "https://m.media-amazon.com/images/M/MV5BMjA5ODk4Njg2OV5BMl5BanBnXkFtZTgwNTc4MzMwMjE@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A mysterious viral outbreak with hallmarks of an ancient and evil strain of vampirism ravages the city of New York.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, 
+                image: "https://m.media-amazon.com/images/M/MV5BZjYzZDgzMDktMmU0NC00ZmI5LWJhZGYtZTRiYWNlNDY5NTA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "A gangster family epic set in 1900s England, centering on a gang who sew razor blades in the peaks of their caps, and their fierce boss Tommy Shelby.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, 
+                image: "https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "After a global pandemic destroys civilization, a hardened survivor takes charge of a 14-year-old girl who may be humanity's last hope.",
+                note: "" 
+            },
+            { 
+                category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, 
+                image: "https://m.media-amazon.com/images/M/MV5BYzZkMTkyYmQtNzYxMi00M2VhLWE2YzktMzhhNWY2NjBjNzA5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", 
+                desc: "Seven years after the world has become a frozen wasteland, all remaining life lives aboard the massive, perpetually-moving Snowpiercer.",
+                note: "" 
+            },
 
             // YOUTUBE
-            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", note: "John Oliver?" },
-            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", note: "stopped on like ep3" },
-            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", note: "stopped on like ep.16?" }
+            { 
+                category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, 
+                image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", 
+                desc: "Compilation of funny moments or segments from John Oliver's show.",
+                note: "John Oliver?" 
+            },
+            { 
+                category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, 
+                image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", 
+                desc: "Ludwig's vlog adventures travelling through Japan.",
+                note: "stopped on like ep3" 
+            },
+            { 
+                category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, 
+                image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", 
+                desc: "Ryan Trahan's series crossing America to deliver a penny.",
+                note: "stopped on like ep.16?" 
+            }
         ];
 
         let currentCategory = 'all';
@@ -388,10 +644,11 @@
             if (me === false && her === false) return { text: "New ✨", class: "status-new", dot: "dot-new", code: "new" };
             
             // Completed = Both finished
-            if (me === true && her === true) return { text: "Completed ✅", class: "status-done", dot: "dot-done", code: "done" };
+            if (me === true && her === true) return { text: "Completed Together ✅", class: "status-done", dot: "dot-done", code: "done" };
             
             // Paused/Stopped/Partial (50/50 means stopped)
-            if (me === "50/50" || her === "50/50") return { text: "Stopped/Paused ⏸️", class: "status-paused", dot: "dot-paused", code: "paused" };
+            if ((me === "50/50" && her === "50/50") || (me === "50/50" && her === false) || (me === false && her === "50/50")) 
+                return { text: "Paused / In Progress ⏳", class: "status-paused", dot: "dot-paused", code: "paused" };
             
             // Only Me
             if (me === true && her === false) return { text: "Only I Watched 👤", class: "status-me", dot: "dot-me", code: "me" };
@@ -399,7 +656,10 @@
             // Only Her
             if (me === false && her === true) return { text: "Only She Watched 💕", class: "status-her", dot: "dot-her", code: "her" };
 
-            // Default fallback
+            // Complex cases (One finished, one 50/50)
+            if (me === true && her === "50/50") return { text: "I finished, She paused", class: "status-me", dot: "dot-me", code: "me" };
+            if (me === "50/50" && her === true) return { text: "She finished, I paused", class: "status-her", dot: "dot-her", code: "her" };
+
             return { text: "Plan", class: "", dot: "", code: "other" };
         }
 
@@ -420,11 +680,15 @@
             let filtered = mediaList.filter(item => {
                 const status = getStatusInfo(item.me, item.her);
 
+                // Category Filter
                 if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
                 
+                // Status Dropdown Filter
                 if (statusFilter === 'new' && status.code !== 'new') return false;
                 if (statusFilter === 'paused' && status.code !== 'paused') return false;
                 if (statusFilter === 'me' && status.code !== 'me') return false;
+                if (statusFilter === 'her' && status.code !== 'her') return false;
+                if (statusFilter === 'done' && status.code !== 'done') return false;
                 
                 return true;
             });
@@ -453,7 +717,7 @@
                         <div class="card-title">${item.title}</div>
                         <div>
                             <span class="status-dot ${status.dot}"></span>
-                            <span style="font-size:0.75rem; color:#ccc;">${status.text}</span>
+                            <span style="font-size:0.7rem; color:#ccc; font-weight:bold;">${status.text}</span>
                         </div>
                     </div>
                 `;
@@ -468,15 +732,21 @@
 
             document.getElementById('infoTitle').innerText = item.title;
             document.getElementById('infoHeader').style.backgroundImage = `url('${item.image}')`;
+            
+            // Set Meta info
             document.getElementById('infoMeta').innerHTML = `
-                <span class="status-dot ${status.dot}"></span> 
-                <span class="${status.class}">${status.text}</span>
-                <span>•</span>
-                <span>${item.category}</span>
-                ${item.imdb > 0 ? `<span>• ⭐ ${item.imdb}</span>` : ''}
+                <div style="display:flex; align-items:center; margin-right:15px;">
+                    <span class="status-dot ${status.dot}"></span> 
+                    <span class="${status.class}" style="font-weight:bold;">${status.text}</span>
+                </div>
+                <div style="margin-right:15px;">${item.category}</div>
+                ${item.imdb > 0 ? `<div>⭐ ${item.imdb} / 10</div>` : ''}
             `;
             
-            // Hide Note box if empty
+            // Set Description
+            document.getElementById('infoDesc').innerText = item.desc || "No description available.";
+
+            // Set Note (Only if exists)
             const noteContainer = document.getElementById('infoNoteContainer');
             if (item.note && item.note.trim() !== "") {
                 noteContainer.style.display = 'block';
@@ -502,7 +772,7 @@
                 return code === 'new' || code === 'paused';
             });
             
-            if (candidates.length === 0) { alert("Nothing new to watch!"); return; }
+            if (candidates.length === 0) { alert("Everything is watched! Reset the list!"); return; }
 
             const modal = document.getElementById('rouletteModal');
             const track = document.getElementById('rouletteTrack');
@@ -526,17 +796,16 @@
                 track.appendChild(div);
             }
 
+            // Reset animation
             track.style.transition = 'none';
             track.style.transform = 'translateX(0)';
             void track.offsetWidth;
 
+            // Animate
             const cardWidth = 160;
             const containerCenter = document.querySelector('.roulette-container').offsetWidth / 2;
-            // Center of card 40
             const targetPos = (winnerIndex * cardWidth) + (cardWidth / 2);
-            // Translate amount
             const finalOffset = -(targetPos - containerCenter);
-            // Add jitter
             const jitter = Math.floor(Math.random() * 40) - 20;
 
             setTimeout(() => {
@@ -547,6 +816,7 @@
             setTimeout(() => {
                 winnerTitle.innerText = winnerItem.title;
                 winnerDisplay.style.opacity = '1';
+                // You can add confetti here if you want in V6 ;)
             }, 5050);
         }
 
@@ -554,7 +824,9 @@
             document.getElementById('rouletteModal').style.display = 'none';
         }
 
+        // Run on load
         updateView();
+
     </script>
 </body>
 </html>
