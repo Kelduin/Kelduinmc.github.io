@@ -149,7 +149,7 @@
         .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; }
 
-        /* --- NEW STATUS COLORS --- */
+        /* --- STATUS COLORS --- */
         .s-new { color: #46d369; } .d-new { background: #46d369; }
         .s-paused { color: #ffa00a; } .d-paused { background: #ffa00a; }
         .s-me { color: #a55eea; } .d-me { background: #a55eea; }
@@ -257,12 +257,11 @@
     </div>
 
     <script>
-        // --- DATA (FINALIZED) ---
-        // Image sources reverted to TMDB CDN (w300) for better quality control.
+        // --- DATA (V12 - Custom Amazon Links Applied) ---
         const mediaList = [
             // --- ANIME ---
-            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/dqMONz7DiTGWFfZ6V8V4O0Y8V6.jpg", desc: "An elf mage sets out on a journey to understand humanity.", note: "" },
-            { category: "ANIME", title: "Attack on Titan", me: true, her: false, imdb: 9.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/hTP1DtLGFamjfu8WqjnuQdPuy61.jpg", desc: "Humanity fights against giant humanoid Titans.", note: "I have finished, GF has not watched." },
+            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://m.media-amazon.com/images/M/MV5BZTI4ZGMxN2UtODlkYS00MTBjLWE1YzctYzc3NDViMGI0ZmJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An elf mage sets out on a journey to understand humanity.", note: "" },
+            { category: "ANIME", title: "Attack on Titan", me: true, her: false, imdb: 9.1, image: "https://m.media-amazon.com/images/M/MV5BZjliODY5MzQtMmViZC00MTZmLWFhMWMtMjMwM2I3OGY1MTRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Humanity fights against giant humanoid Titans.", note: "I have finished, GF has not watched." },
             { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/u67Yc2lGZk2T31rA977x6aYjH5z.jpg", desc: "Cooking monsters in a dungeon.", note: "" },
             { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/abf8tO3F5f4N7D6o8r2k6j3.jpg", desc: "A cleaner becomes a Kaiju.", note: "we both saw s1" },
             { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/d6L75005e83BqC1p8a5.jpg", desc: "Rebuilding the world with science.", note: "" },
@@ -347,25 +346,25 @@
             { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/jtrhTYB7xSrxFhPBqvXppdmkLh.jpg", desc: "London drug empire.", note: "" },
             { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/56mOJth6DJ6PAxoXFQJ1wBuCNrF.jpg", desc: "London crime caper.", note: "" },
             { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/p6AbOJvMQhBm6cIeHVfP8656nJ0.jpg", desc: "Monday hating cat.", note: "" },
-            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", desc: "Space travel.", note: "" },
+            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Space travel.", note: "" },
 
             // --- SHOWS ---
             { category: "SHOW", title: "The Boys", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/vRijM26W2nL5lC46b5P7XlJ8zVb.jpg", desc: "Vigilantes fight corrupt superheroes.", note: "I have watched up to the second-to-last season." },
             { category: "SHOW", title: "IT: Welcome to Derry", me: false, her: false, imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7Lp6zF76T8r8Sj1c121e7W9n3Q.jpg", desc: "Prequel series to the IT movies.", note: "Upcoming" },
             { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/u3O3dK16r32rF0o31d6T4R6Nfr.jpg", desc: "Trapped in a town.", note: "We watched 4 episodes together." },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/l3gE5083k5y6X5o5.jpg", desc: "Work/Life horror.", note: "I watched half of it." },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BZDI5YzJhODQtMzQyNy00YWNmLWIxMjUtNDBjNjA5YWRjMzExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Work/Life horror.", note: "I watched half of it." },
             { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rLvs3gX1F25191zWn60o7v4G2jW.jpg", desc: "School drama.", note: "I watched half of it." },
             { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/AnsSKR9LuK0W9b8WJCZiyHUf0rV.jpg", desc: "Wasteland survival.", note: "too much gore?" },
             { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/58H6CTxz9RZHnjTVPnomW1CtjI9.jpg", desc: "Serial killer cop.", note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "check", her: "check", imdb: 9.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/2jd8Y8yflj72J9lcfhL5uQ5kL5E.jpg", desc: "Westeros politics.", note: "I finished S6, we finished on Episode 3 of an early season. Needs restarting from S4/where we stopped." },
+            { category: "SHOW", title: "Game Of Thrones", me: "check", her: "check", imdb: 9.2, image: "https://m.media-amazon.com/images/M/MV5BMTNhMDJmNmYtNDQ5OS00ODdlLWE0ZDAtZTgyYTIwNDY3OTU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Westeros politics.", note: "I finished S6, we finished on Episode 3 of an early season. Needs restarting from S4/where we stopped." },
             { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ekZobS8isE6mA53RAiGDG93hBxL.jpg", desc: "Devil solves crimes.", note: "" },
             { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/02YhB2v2hV74d53m1B5jV1P54v7.jpg", desc: "Digital afterlife.", note: "" },
             { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zF1R4K1jX82Uq0W76B0s05i58D4.jpg", desc: "Ninjas.", note: "" },
             { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/t8X1bI41w5hB03wBf5R261w18uK.jpg", desc: "Zombie apartment.", note: "" },
-            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zQhJ81Sg8E2VvF4E1V7U8oBf7cR.jpg", desc: "German time travel.", note: "" },
+            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BOWJjMGViY2UtNTAzNS00ZGFjLWFkNTMtMDBiMDMyZTM1NTY3XkEyXkFqcGc@._V1_.jpg", desc: "German time travel.", note: "" },
             { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/s4qPjKz367K8RjE6L38V12K6i3X.jpg", desc: "Vampire outbreak.", note: "" },
-            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/jJ62W0e7R5jT6E4P5S0C5302t9e.jpg", desc: "1900s Gangsters.", note: "" },
-            { category: "SHOW", title: "The Last of Us S1", me: true, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg", desc: "Fungal zombies.", note: "I finished Season 1." },
+            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://m.media-amazon.com/images/M/MV5BOGM0NGY3ZmItOGE2ZC00OWIxLTk0N2EtZWY4Yzg3ZDlhNGI3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "1900s Gangsters.", note: "" },
+            { category: "SHOW", title: "The Last of Us S1", me: true, her: false, imdb: 8.7, image: "https://m.media-amazon.com/images/M/MV5BYWI3ODJlMzktY2U5NC00ZjdlLWE1MGItNWQxZDk3NWNjN2RhXkEyXkFqcGc@._V1_.jpg", desc: "Fungal zombies.", note: "I finished Season 1." },
             { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/24V5zKx1vj5jUaO90WbO9C47Xp8.jpg", desc: "Train world.", note: "" },
 
             // --- YOUTUBE ---
@@ -380,26 +379,13 @@
         let currentModalIndex = 0;
 
         function getStatusInfo(me, her) {
-            // New Priority: Watching Together (Pink Dot)
             if (me === "together" || her === "together") return { text: "Watching Together 💞", class: "s-together", dot: "d-together", code: "together" };
-            
-            // New Priority: Check Note (Yellow Question Mark)
             if (me === "check" || her === "check") return { text: "Check Note ⚠️", class: "s-check", dot: "d-check", code: "check" };
-
-            // Paused/In Progress (The one you called 50/50)
             if (me === "50/50" || her === "50/50") return { text: "Paused / In Progress ⏸️", class: "s-paused", dot: "d-paused", code: "paused" };
-
-            // Done Together (Completed)
             if (me === true && her === true) return { text: "Completed Together ✅", class: "s-done", dot: "d-done", code: "done" };
-            
-            // New (Brand new to both)
             if (me === false && her === false) return { text: "New ✨", class: "s-new", dot: "d-new", code: "new" };
-            
-            // Only One
             if (me === true && her === false) return { text: "Only Me 👤", class: "s-me", dot: "d-me", code: "me" };
             if (me === false && her === true) return { text: "Only Her 💕", class: "s-her", dot: "d-her", code: "her" };
-
-            // Fallback (Shouldn't happen with clean data)
             return { text: "Status Unknown", class: "s-paused", dot: "d-paused", code: "paused" };
         }
 
@@ -423,52 +409,57 @@
                 const s = getStatusInfo(item.me, item.her);
                 if (statusFilter !== 'all' && s.code !== statusFilter) return false;
                 
-                // Filtering logic for the main categories + OP_Movies group
                 if (currentCategory !== 'all') {
+                    // Check if category matches OR if group matches (for movies moved out)
                     if (item.category === currentCategory) return true;
                     if (item.group === currentCategory) return true;
                     return false;
                 }
                 return true;
+            }).sort((a, b) => {
+                // Keep the default order stable unless specified
+                if (sortOrder === 'imdb') return (b.imdb || 0) - (a.imdb || 0);
+                if (sortOrder === 'az') return a.title.localeCompare(b.title);
+                return 0; // Maintain original list order
             });
 
-            // 2. SORT FUNCTION
-            let sortFunction = null;
-            if (sortOrder === 'imdb') sortFunction = (a, b) => (b.imdb || 0) - (a.imdb || 0);
-            else if (sortOrder === 'az') sortFunction = (a, b) => a.title.localeCompare(b.title);
-
-            // 3. DECIDE LAYOUT: Rows or Grid?
+            // 2. RENDERING LOGIC
             if (statusFilter === 'all' && currentCategory === 'all') {
                 // HOME SCREEN VIEW: Stacked Category Rows
                 const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
                 categories.forEach(cat => {
-                    let rowItems = mediaList.filter(i => i.category.includes(cat));
-                    if (sortFunction) rowItems.sort(sortFunction);
+                    let rowItems = filtered.filter(i => i.category.includes(cat));
                     if (rowItems.length > 0) renderRow(cat, rowItems, main);
                 });
             } else if (statusFilter === 'all' && (currentCategory === 'MOVIE' || currentCategory === 'OP_Movies' || currentCategory === 'SHOW')) {
-                // CATEGORY/GROUP VIEW: Grouped Franchises first, then singles
+                // CATEGORY VIEW: Grouped Franchises first, then singles
                 
                 // Group items:
-                let franchiseItems = filtered.filter(i => i.group);
-                let singularItems = filtered.filter(i => !i.group);
+                let franchiseItems = filtered.filter(i => i.group && i.category.includes(currentCategory));
+                if (currentCategory === 'OP_Movies') {
+                    // When filtering specifically by OP_Movies, grab all OP movies regardless of their parent category (which is MOVIE)
+                    franchiseItems = filtered.filter(i => i.group === 'OP_Movies');
+                    singularItems = []; // No standalone movies when filtering specifically by OP group
+                } else {
+                    // For MOVIE or SHOW filter, singular items are those without a group
+                    singularItems = filtered.filter(i => !i.group && i.category.includes(currentCategory));
+                }
 
-                // --- 3a. Render Singular/One-Shot Items ---
+                // --- Render Singular/One-Shot Items (in grid mode for density) ---
                 if (singularItems.length > 0) {
-                    if (sortFunction) singularItems.sort(sortFunction);
                     renderRow('One-Shot / Standalone', singularItems, main, false);
                 }
 
-                // --- 3b. Render Franchises ---
+                // --- Render Franchises ---
                 if (franchiseItems.length > 0) {
-                    const franchises = Array.from(new Set(franchiseItems.map(i => i.group)));
+                    const franchises = Array.from(new Set(franchiseItems.map(i => i.group))).filter(g => g !== undefined);
                     
                     franchises.forEach(groupName => {
                         let groupItems = franchiseItems
                             .filter(i => i.group === groupName)
-                            .sort((a, b) => (a.chronology || 999) - (b.chronology || 999)); // Chronological sort by default
+                            .sort((a, b) => (a.chronology || 999) - (b.chronology || 999)); 
                         
-                        if (sortOrder === 'imdb' || sortOrder === 'az') groupItems.sort(sortFunction); // Override sort
+                        if (sortOrder === 'imdb' || sortOrder === 'az') groupItems.sort(sortFunction);
                         
                         if (groupItems.length > 0) {
                             renderRow(groupName, groupItems, main);
@@ -477,7 +468,6 @@
                 }
             } else {
                 // STATUS FILTER / OTHER CATEGORIES VIEW: Single Grid (Sorting is applied)
-                if (sortFunction) filtered.sort(sortFunction);
                 const grid = document.createElement('div');
                 grid.className = 'grid-container';
                 filtered.forEach(item => grid.appendChild(createCard(item, filtered)));
@@ -509,12 +499,19 @@
             `;
 
             const row = document.createElement('div');
-            row.className = 'row-container';
-            items.forEach(item => row.appendChild(createCard(item, items)));
-            
-            wrapper.appendChild(header);
-            wrapper.appendChild(row);
-            mainElement.appendChild(wrapper);
+            // Use grid layout for standalone section, row for franchise/category rows
+            if (title === 'One-Shot / Standalone') {
+                row.className = 'grid-container';
+                items.forEach(item => row.appendChild(createCard(item, items)));
+                mainElement.appendChild(header);
+                mainElement.appendChild(row);
+            } else {
+                row.className = 'row-container';
+                items.forEach(item => row.appendChild(createCard(item, items)));
+                wrapper.appendChild(header);
+                wrapper.appendChild(row);
+                mainElement.appendChild(wrapper);
+            }
         }
 
         function createCard(item, sourceList) {
@@ -526,8 +523,8 @@
             
             const badge = item.imdb > 0 ? `<div class="imdb-badge">⭐ ${item.imdb}</div>` : '';
             
-            // Check if it's a YouTube placeholder for the image
-            const imageStyle = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick' 
+            const isYouTubeLogo = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick';
+            const imageStyle = isYouTubeLogo
                 ? `background-image: url('${item.image}'); background-size: 80%; background-repeat: no-repeat; background-color: #ff0000;` 
                 : `background-image: url('${item.image}')`;
 
@@ -570,8 +567,8 @@
             const item = currentModalList[currentModalIndex];
             const s = getStatusInfo(item.me, item.her);
             
-            // Special handling for YouTube logo in modal hero
-            const heroStyle = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick'
+            const isYouTubeLogo = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick';
+            const heroStyle = isYouTubeLogo
                 ? `background-image: url('${item.image}'); background-size: 30%; background-repeat: no-repeat; background-color: #ff0000;`
                 : `background-image: url('${item.image}')`;
 
@@ -617,7 +614,6 @@
 
         // --- ROULETTE ---
         function startRoulette() {
-            // Get candidates based on current filter state
             const candidates = mediaList.filter(i => {
                 const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory) || i.group === currentCategory;
                 const s = getStatusInfo(i.me, i.her).code;
