@@ -11,6 +11,8 @@
             --card-bg: #141414;
             --text-color: #ffffff;
             --accent: #e50914;
+            --pink: #ff69b4; /* Watching Together */
+            --yellow: #fdd835; /* Check Note */
             --gold: #ffd700;
             --card-width: 150px;
             --card-height: 225px;
@@ -147,12 +149,15 @@
         .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; }
 
-        /* Colors */
+        /* --- NEW STATUS COLORS --- */
         .s-new { color: #46d369; } .d-new { background: #46d369; }
         .s-paused { color: #ffa00a; } .d-paused { background: #ffa00a; }
         .s-me { color: #a55eea; } .d-me { background: #a55eea; }
         .s-her { color: #fd79a8; } .d-her { background: #fd79a8; }
         .s-done { color: #888; } .d-done { background: #888; }
+        
+        .s-together { color: var(--pink); } .d-together { background: var(--pink); }
+        .s-check { color: var(--yellow); } .d-check { background: var(--yellow); }
 
         /* --- MODAL (Lightbox) --- */
         .modal-overlay {
@@ -199,6 +204,7 @@
             <div class="chip" onclick="setFilter('ANIME', this)">Anime</div>
             <div class="chip" onclick="setFilter('MOVIE', this)">Movies</div>
             <div class="chip" onclick="setFilter('SHOW', this)">Shows</div>
+            <div class="chip" onclick="setFilter('ONE_PIECE_MOVIE', this)">OP Movies</div>
             <div class="chip" onclick="setFilter('YOUTUBE', this)">YouTube</div>
         </div>
 
@@ -206,10 +212,12 @@
             <select id="statusFilter" onchange="updateUI()">
                 <option value="all">Status: Everything</option>
                 <option value="new">✨ New</option>
+                <option value="together">💞 Watching Together</option>
                 <option value="paused">⏸️ Paused</option>
                 <option value="me">👤 Only Me</option>
                 <option value="her">💕 Only Her</option>
                 <option value="done">✅ Completed</option>
+                <option value="check">⚠️ Check Note</option>
             </select>
             <select id="sortOrder" onchange="updateUI()">
                 <option value="default">Sort: Default</option>
@@ -250,16 +258,21 @@
 
     <script>
         // --- DATA (FINALIZED) ---
-        // Image sources switched to TMDB CDN (w300) for quality, Chronology updated, The Boys added.
+        // Image sources reverted to TMDB CDN (w300) for better quality control.
         const mediaList = [
             // --- ANIME ---
             { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/dqMONz7DiTGWFfZ6V8V4O0Y8V6.jpg", desc: "An elf mage sets out on a journey to understand humanity.", note: "" },
-            { category: "ANIME", title: "Attack on Titan", me: true, her: "50/50", imdb: 9.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/hTP1DtLGFamjfu8WqjnuQdPuy61.jpg", desc: "Humanity fights against giant humanoid Titans.", note: "sky watched s1 but forgot" },
+            { category: "ANIME", title: "Attack on Titan", me: true, her: false, imdb: 9.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/hTP1DtLGFamjfu8WqjnuQdPuy61.jpg", desc: "Humanity fights against giant humanoid Titans.", note: "I have finished, GF has not watched." },
             { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/u67Yc2lGZk2T31rA977x6aYjH5z.jpg", desc: "Cooking monsters in a dungeon.", note: "" },
             { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/abf8tO3F5f4N7D6o8r2k6j3.jpg", desc: "A cleaner becomes a Kaiju.", note: "we both saw s1" },
-            { category: "ANIME", title: "One Piece Movies", me: "50/50", her: "50/50", imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ogO8LLoCa96e79n9P5Cq8M8p1.jpg", desc: "Baron Omatsuri, Film Z, Stampede, Gold, Red.", note: "Baron-Z-Stampede-Gold-Red" },
             { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/d6L75005e83BqC1p8a5.jpg", desc: "Rebuilding the world with science.", note: "" },
-            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/5e83BqC1p8a5.jpg", desc: "Time loop fantasy.", note: "finished s1" },
+            { category: "ANIME", title: "Re:Zero S1", me: true, her: true, imdb: 8.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/5e83BqC1p8a5.jpg", desc: "Time loop fantasy.", note: "Finished season 1." },
+
+            // --- ONE PIECE MOVIES (NEW CATEGORY) ---
+            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Film Z", me: false, her: false, imdb: 8.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/3Fv81eJ4qK2IqXJb1x8nKxNxtmE.jpg", desc: "Z's revenge.", note: "New to us.", group: "OP_Movies", chronology: 1 },
+            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Gold", me: false, her: false, imdb: 7.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/a7vE9G1cK1d0F1Rj0Gk2J9h49wW.jpg", desc: "Grand Tesoro.", note: "New to us.", group: "OP_Movies", chronology: 2 },
+            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Stampede", me: false, her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/36o7g5R6y1v2f47DkVwzG96s4bI.jpg", desc: "Pirate festival.", note: "New to us.", group: "OP_Movies", chronology: 3 },
+            { category: "ONE_PIECE_MOVIE", title: "OP Movie: Red", me: false, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/bL4CKyWkY5DN1IrbdG7J6I2I6dJ.jpg", desc: "Uta's concert.", note: "New to us.", group: "OP_Movies", chronology: 4 },
 
             // --- STAR WARS (GROUPED) ---
             { category: "SHOW", title: "The Acolyte", me: false, her: false, imdb: 6.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/mzfd4tldxStQ5hLq8Fq0.jpg", desc: "100 years before the Empire.", note: "", group: "StarWars", chronology: 100 },
@@ -270,32 +283,33 @@
             { category: "MOVIE", title: "Solo: Star Wars Story", me: true, her: true, imdb: 6.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/3IGbjc5ZC5yxim5W0.jpg", desc: "Young Han Solo.", note: "Completed Together", group: "StarWars", chronology: 5 },
             { category: "SHOW", title: "Andor S1", me: true, her: true, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/59SVNwPG8Q2M.jpg", desc: "Cassian Andor's journey.", note: "Completed Together", group: "StarWars", chronology: 6 },
             { category: "SHOW", title: "Andor S2", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/59SVNwPG8Q2M.jpg", desc: "Upcoming Season 2.", note: "Needs to start when out", group: "StarWars", chronology: 7 },
-            { category: "MOVIE", title: "Rogue One", me: false, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/iEOuB2r46M.jpg", desc: "Rebels steal plans.", note: "", group: "StarWars", chronology: 8 },
-            { category: "MOVIE", title: "SW Ep 4: A New Hope", me: false, her: false, imdb: 8.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/6FfCtAuVAW8XJjZ7eE.jpg", desc: "Luke begins his journey.", note: "", group: "StarWars", chronology: 9 },
-            { category: "MOVIE", title: "SW Ep 5: Empire Strikes Back", me: false, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7BuH8itoSrLExs2YZCsBt.jpg", desc: "Luke trains with Yoda.", note: "", group: "StarWars", chronology: 10 },
-            { category: "MOVIE", title: "SW Ep 6: Return of Jedi", me: false, her: false, imdb: 8.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/mDCExtpMdCvH5.jpg", desc: "Final battle.", note: "", group: "StarWars", chronology: 11 },
-            { category: "SHOW", title: "The Mandalorian S1-3", me: false, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sWgBv7LV2PRoQgkxwlibd.jpg", desc: "Bounty hunter protects child.", note: "", group: "StarWars", chronology: 12 },
-            { category: "SHOW", title: "Book of Boba Fett", me: false, her: false, imdb: 7.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gNbdjDi1HamTCrfvM.jpg", desc: "Boba Fett's territory.", note: "", group: "StarWars", chronology: 13 },
+            { category: "MOVIE", title: "Rogue One", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/iEOuB2r46M.jpg", desc: "Rebels steal plans.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 8 },
+            { category: "MOVIE", title: "SW Ep 4: A New Hope", me: true, her: false, imdb: 8.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/6FfCtAuVAW8XJjZ7eE.jpg", desc: "Luke begins his journey.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 9 },
+            { category: "MOVIE", title: "SW Ep 5: Empire Strikes Back", me: true, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7BuH8itoSrLExs2YZCsBt.jpg", desc: "Luke trains with Yoda.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 10 },
+            { category: "MOVIE", title: "SW Ep 6: Return of Jedi", me: true, her: false, imdb: 8.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/mDCExtpMdCvH5.jpg", desc: "Final battle.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 11 },
+            { category: "SHOW", title: "The Mandalorian S1-2", me: true, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sWgBv7LV2PRoQgkxwlibd.jpg", desc: "Bounty hunter protects child.", note: "I watched S1-2, GF hasn't watched any.", group: "StarWars", chronology: 12 },
+            { category: "SHOW", title: "The Mandalorian S3", me: false, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sWgBv7LV2PRoQgkxwlibd.jpg", desc: "Bounty hunter protects child.", note: "Neither of us has watched S3.", group: "StarWars", chronology: 12.1 },
+            { category: "SHOW", title: "Book of Boba Fett", me: true, her: false, imdb: 7.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gNbdjDi1HamTCrfvM.jpg", desc: "Boba Fett's territory.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 13 },
             { category: "SHOW", title: "Ahsoka", me: false, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/laCJxobHoPVaLGL0.jpg", desc: "Ahsoka investigates.", note: "", group: "StarWars", chronology: 14 },
             { category: "SHOW", title: "Skeleton Crew", me: false, her: false, imdb: 7.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/d076J.jpg", desc: "Kids lost in galaxy.", note: "Upcoming", group: "StarWars", chronology: 15 },
-            { category: "MOVIE", title: "SW Ep 7: Force Awakens", me: false, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/wqnLdwVXoBjKibfR.jpg", desc: "New threat rises.", note: "", group: "StarWars", chronology: 16 },
+            { category: "MOVIE", title: "SW Ep 7: Force Awakens", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/wqnLdwVXoBjKibfR.jpg", desc: "New threat rises.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 16 },
             { category: "MOVIE", title: "SW Ep 8: Last Jedi", me: false, her: false, imdb: 6.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/kOVEVeg59E0ws.jpg", desc: "Rey seeks Luke.", note: "", group: "StarWars", chronology: 17 },
             { category: "MOVIE", title: "SW Ep 9: Rise of Skywalker", me: false, her: false, imdb: 6.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/db32LaOibwEliAmSL2jjDF6oDre.jpg", desc: "Final chapter.", note: "", group: "StarWars", chronology: 18 },
 
             // --- HARRY POTTER (GROUPED) ---
-            { category: "MOVIE", title: "HP 1: Sorcerer's Stone", me: "50/50", her: true, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", desc: "Harry discovers magic.", note: "I dont remember much", group: "HP", chronology: 1 },
-            { category: "MOVIE", title: "HP 2: Chamber of Secrets", me: "50/50", her: true, imdb: 7.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sdEOH0992YZ0QSxgXNIGLq1ToUi.jpg", desc: "Chamber is opened.", note: "", group: "HP", chronology: 2 },
-            { category: "MOVIE", title: "HP 3: Prisoner of Azkaban", me: "50/50", her: true, imdb: 7.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/aWxwnYoe8p2d2fcxOqtvAtJ72Rw.jpg", desc: "Sirius Black escapes.", note: "", group: "HP", chronology: 3 },
-            { category: "MOVIE", title: "HP 4: Goblet of Fire", me: "50/50", her: true, imdb: 7.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/fECVtH9z7K39Hux779gsX2M.jpg", desc: "Triwizard Tournament.", note: "", group: "HP", chronology: 4 },
-            { category: "MOVIE", title: "HP 5: Order of Phoenix", me: "50/50", her: true, imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/5aGhaIHYuQbqlHWvWYqMCnj40y2.jpg", desc: "Harry forms a secret group.", note: "", group: "HP", chronology: 5 },
-            { category: "MOVIE", title: "HP 6: Half-Blood Prince", me: "50/50", her: true, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/z7uo9zmQdQwU5ZJHFpv296Erul6.jpg", desc: "Dark secrets revealed.", note: "", group: "HP", chronology: 6 },
-            { category: "MOVIE", title: "HP 7: Deathly Hallows 1", me: "50/50", her: true, imdb: 7.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/iGoXIpPf7ENBB7Ajo1LfC6ddW6.jpg", desc: "Hunting Horcruxes.", note: "", group: "HP", chronology: 7 },
-            { category: "MOVIE", title: "HP 8: Deathly Hallows 2", me: "50/50", her: true, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/c54Hb1C6nJLNTgE5ab1Xac0l98F.jpg", desc: "The final battle.", note: "", group: "HP", chronology: 8 },
+            { category: "MOVIE", title: "HP 1: Sorcerer's Stone", me: "50/50", her: true, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", desc: "Harry discovers magic.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 1 },
+            { category: "MOVIE", title: "HP 2: Chamber of Secrets", me: "50/50", her: true, imdb: 7.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sdEOH0992YZ0QSxgXNIGLq1ToUi.jpg", desc: "Chamber is opened.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 2 },
+            { category: "MOVIE", title: "HP 3: Prisoner of Azkaban", me: "50/50", her: true, imdb: 7.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/aWxwnYoe8p2d2fcxOqtvAtJ72Rw.jpg", desc: "Sirius Black escapes.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 3 },
+            { category: "MOVIE", title: "HP 4: Goblet of Fire", me: "50/50", her: true, imdb: 7.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/fECVtH9z7K39Hux779gsX2M.jpg", desc: "Triwizard Tournament.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 4 },
+            { category: "MOVIE", title: "HP 5: Order of Phoenix", me: "50/50", her: true, imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/5aGhaIHYuQbqlHWvWYqMCnj40y2.jpg", desc: "Harry fights back.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 5 },
+            { category: "MOVIE", title: "HP 6: Half-Blood Prince", me: "50/50", her: true, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/z7uo9zmQdQwU5ZJHFpv296Erul6.jpg", desc: "Dark secrets revealed.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 6 },
+            { category: "MOVIE", title: "HP 7: Deathly Hallows 1", me: "50/50", her: true, imdb: 7.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/iGoXIpPf7ENBB7Ajo1LfC6ddW6.jpg", desc: "Hunting Horcruxes.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 7 },
+            { category: "MOVIE", title: "HP 8: Deathly Hallows 2", me: "50/50", her: true, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/c54Hb1C6nJLNTgE5ab1Xac0l98F.jpg", desc: "The final battle.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 8 },
 
             // --- HOBBIT (GROUPED) ---
-            { category: "MOVIE", title: "Hobbit: Journey", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/yHA9Fc37iZ4pQeQfVp16K075LKK.jpg", desc: "Bilbo begins his unexpected journey.", note: "", group: "Hobbit", chronology: 1 },
-            { category: "MOVIE", title: "Hobbit: Smaug", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/xS1x4xS5sLhW5m3g9rF5sC5yM0h.jpg", desc: "The company reaches Smaug.", note: "", group: "Hobbit", chronology: 2 },
-            { category: "MOVIE", title: "Hobbit: Five Armies", me: true, her: false, imdb: 7.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/yv0C3g87x41HwXp33r8XgU9J09A.jpg", desc: "Battle for the mountain.", note: "", group: "Hobbit", chronology: 3 },
+            { category: "MOVIE", title: "Hobbit: Journey", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/yHA9Fc37iZ4pQeQfVp16K075LKK.jpg", desc: "Bilbo begins his unexpected journey.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 1 },
+            { category: "MOVIE", title: "Hobbit: Smaug", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/xS1x4xS5sLhW5m3g9rF5sC5yM0h.jpg", desc: "The company reaches Smaug.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 2 },
+            { category: "MOVIE", title: "Hobbit: Five Armies", me: true, her: false, imdb: 7.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/yv0C3g87x41HwXp33r8XgU9J09A.jpg", desc: "Battle for the mountain.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 3 },
 
             // --- LOTR (GROUPED) ---
             { category: "MOVIE", title: "LOTR: Fellowship", me: true, her: false, imdb: 8.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg", desc: "The journey begins.", note: "", group: "LOTR", chronology: 1 },
@@ -303,20 +317,20 @@
             { category: "MOVIE", title: "LOTR: Return of King", me: true, her: false, imdb: 9.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", desc: "Final battle.", note: "", group: "LOTR", chronology: 3 },
             
             // --- IT (GROUPED) ---
-            { category: "MOVIE", title: "IT: Chapter One", me: false, her: false, imdb: 7.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/9E2y5Q7WlCVNEhP5GiVTJhEhx1o.jpg", desc: "Kids fight Pennywise.", note: "", group: "IT", chronology: 2 },
-            { category: "MOVIE", title: "IT: Chapter Two", me: false, her: false, imdb: 6.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zfE0R94v1E8cuKAerbskfD3VfUt.jpg", desc: "Adults return to fight.", note: "", group: "IT", chronology: 3 },
+            { category: "MOVIE", title: "IT: Chapter One", me: false, her: true, imdb: 7.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/9E2y5Q7WlCVNEhP5GiVTJhEhx1o.jpg", desc: "Kids fight Pennywise.", note: "GF watched this, I didn't.", group: "IT", chronology: 2 },
+            { category: "MOVIE", title: "IT: Chapter Two", me: false, her: true, imdb: 6.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zfE0R94v1E8cuKAerbskfD3VfUt.jpg", desc: "Adults return to fight.", note: "GF watched this, I didn't.", group: "IT", chronology: 3 },
 
             // --- PLANET OF APES (GROUPED) ---
-            { category: "MOVIE", title: "Apes: Rise (2011)", me: false, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rj8l6C3R797x2v1e7j4yC1R8.jpg", desc: "Caesar is born.", note: "", group: "Apes", chronology: 1 },
-            { category: "MOVIE", title: "Apes: Dawn (2014)", me: false, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/kScdQEw79VPIVMcV2vLASRLiGZ8.jpg", desc: "Apes vs Humans.", note: "", group: "Apes", chronology: 2 },
-            { category: "MOVIE", title: "Apes: War (2017)", me: false, her: false, imdb: 7.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7Ze1260Z8QJ98c19a9a3.jpg", desc: "Final conflict.", note: "", group: "Apes", chronology: 3 },
+            { category: "MOVIE", title: "Apes: Rise (2011)", me: true, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rj8l6C3R797x2v1e7j4yC1R8.jpg", desc: "Caesar is born.", note: "I watched all four, GF didn't.", group: "Apes", chronology: 1 },
+            { category: "MOVIE", title: "Apes: Dawn (2014)", me: true, her: false, imdb: 7.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/kScdQEw79VPIVMcV2vLASRLiGZ8.jpg", desc: "Apes vs Humans.", note: "I watched all four, GF didn't.", group: "Apes", chronology: 2 },
+            { category: "MOVIE", title: "Apes: War (2017)", me: true, her: false, imdb: 7.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7Ze1260Z8QJ98c19a9a3.jpg", desc: "Final conflict.", note: "I watched all four, GF didn't.", group: "Apes", chronology: 3 },
             { category: "MOVIE", title: "Apes: Kingdom (2024)", me: false, her: false, imdb: 7.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gKkl37BQuKTanygYQG1pyYgLVgf.jpg", desc: "New generation.", note: "", group: "Apes", chronology: 4 },
 
             // --- INDIANA JONES (GROUPED) ---
-            { category: "MOVIE", title: "Indy: Raiders", me: "50/50", her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ceG9VzoRAVGwivFU403Wc3AHRys.jpg", desc: "Ark of Covenant.", note: "", group: "Indy", chronology: 1 },
-            { category: "MOVIE", title: "Indy: Temple of Doom", me: "50/50", her: false, imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/xxBZGjW71gK1Q25Oa3c0BpBq9y.jpg", desc: "Kali Ma!", note: "", group: "Indy", chronology: 2 },
-            { category: "MOVIE", title: "Indy: Last Crusade", me: "50/50", her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sizg1AU8f8JDZX4QIgE4pcU8X.jpg", desc: "Holy Grail.", note: "", group: "Indy", chronology: 3 },
-            { category: "MOVIE", title: "Indy: Crystal Skull", me: "50/50", her: false, imdb: 6.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gSc90x40J7o399Y3t98hK4z0.jpg", desc: "Aliens.", note: "", group: "Indy", chronology: 4 },
+            { category: "MOVIE", title: "Indy: Raiders", me: true, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ceG9VzoRAVGwivFU403Wc3AHRys.jpg", desc: "Ark of Covenant.", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 1 },
+            { category: "MOVIE", title: "Indy: Temple of Doom", me: true, her: false, imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/xxBZGjW71gK1Q25Oa3c0BpBq9y.jpg", desc: "Kali Ma!", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 2 },
+            { category: "MOVIE", title: "Indy: Last Crusade", me: true, her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sizg1AU8f8JDZX4QIgE4pcU8X.jpg", desc: "Holy Grail.", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 3 },
+            { category: "MOVIE", title: "Indy: Crystal Skull", me: true, her: false, imdb: 6.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gSc90x40J7o399Y3t98hK4z0.jpg", desc: "Aliens.", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 4 },
             { category: "MOVIE", title: "Indy: Dial of Destiny", me: false, her: false, imdb: 6.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/Af4bXE63pVsb2FzxWSi1Yy0Q9zN.jpg", desc: "Time travel.", note: "", group: "Indy", chronology: 5 },
 
             // --- MOVIES (UNGROUPED) ---
@@ -328,21 +342,21 @@
             { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/1SWuoGZuyM7x2d5l1thf5GM15db.jpg", desc: "Zombie pandemic.", note: "" },
             { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7oWY8VDWW7thTzWh3OKYRkWUlD5.jpg", desc: "Bounty hunter western.", note: "" },
             { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/tVxDe01Zy3kZqaZRNiXFGDICdZk.jpg", desc: "Assassins on a train.", note: "" },
-            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/s9j02dJ8v7c10b7o8s1FfP7H7D.jpg", desc: "Cowboy team up.", note: "" },
+            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/s9j02dJ8v7x2d5l1thf5GM15db.jpg", desc: "Cowboy team up.", note: "" },
             { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/jtrhTYB7xSrxFhPBqvXppdmkLh.jpg", desc: "London drug empire.", note: "" },
             { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/56mOJth6DJ6PAxoXFQJ1wBuCNrF.jpg", desc: "London crime caper.", note: "" },
             { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/p6AbOJvMQhBm6cIeHVfP8656nJ0.jpg", desc: "Monday hating cat.", note: "" },
             { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", desc: "Space travel.", note: "" },
 
             // --- SHOWS ---
-            { category: "SHOW", title: "The Boys", me: false, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/vRijM26W2nL5lC46b5P7XlJ8zVb.jpg", desc: "Vigilantes fight corrupt superheroes.", note: "" },
+            { category: "SHOW", title: "The Boys", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/vRijM26W2nL5lC46b5P7XlJ8zVb.jpg", desc: "Vigilantes fight corrupt superheroes.", note: "I have watched up to the second-to-last season." },
             { category: "SHOW", title: "IT: Welcome to Derry", me: false, her: false, imdb: 7.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7Lp6zF76T8r8Sj1c121e7W9n3Q.jpg", desc: "Prequel series to the IT movies.", note: "Upcoming" },
-            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/u3O3dK16r32rF0o31d6T4R6Nfr.jpg", desc: "Trapped in a town.", note: "we both stopped mid season 1" },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/l3gE5083k5y6X5o5.jpg", desc: "Work/Life horror.", note: "i didnt finish" },
-            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rLvs3gX1F25191zWn60o7v4G2jW.jpg", desc: "School drama.", note: "i didnt finish" },
+            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/u3O3dK16r32rF0o31d6T4R6Nfr.jpg", desc: "Trapped in a town.", note: "We watched 4 episodes together." },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/l3gE5083k5y6X5o5.jpg", desc: "Work/Life horror.", note: "I watched half." },
+            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rLvs3gX1F25191zWn60o7v4G2jW.jpg", desc: "School drama.", note: "I watched half." },
             { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/AnsSKR9LuK0W9b8WJCZiyHUf0rV.jpg", desc: "Wasteland survival.", note: "too much gore?" },
             { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/58H6CTxz9RZHnjTVPnomW1CtjI9.jpg", desc: "Serial killer cop.", note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "50/50", her: false, imdb: 9.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/2jd8Y8yflj72J9lcfhL5uQ5kL5E.jpg", desc: "Westeros politics.", note: "I stopped at season 6" },
+            { category: "SHOW", title: "Game Of Thrones", me: "check", her: "check", imdb: 9.2, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/2jd8Y8yflj72J9lcfhL5uQ5kL5E.jpg", desc: "Westeros politics.", note: "I finished S6, we finished S3 together. Needs restarting from S4/where we stopped." },
             { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ekZobS8isE6mA53RAiGDG93hBxL.jpg", desc: "Devil solves crimes.", note: "" },
             { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/02YhB2v2hV74d53m1B5jV1P54v7.jpg", desc: "Digital afterlife.", note: "" },
             { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zF1R4K1jX82Uq0W76B0s05i58D4.jpg", desc: "Ninjas.", note: "" },
@@ -350,13 +364,13 @@
             { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zQhJ81Sg8E2VvF4E1V7U8oBf7cR.jpg", desc: "German time travel.", note: "" },
             { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/s4qPjKz367K8RjE6L38V12K6i3X.jpg", desc: "Vampire outbreak.", note: "" },
             { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/jJ62W0e7R5jT6E4P5S0C5302t9e.jpg", desc: "1900s Gangsters.", note: "" },
-            { category: "SHOW", title: "The Last of Us", me: "50/50", her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg", desc: "Fungal zombies.", note: "" },
+            { category: "SHOW", title: "The Last of Us S1", me: true, her: false, imdb: 8.7, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg", desc: "Fungal zombies.", note: "I finished Season 1." },
             { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/24V5zKx1vj5jUaO90WbO9C47Xp8.jpg", desc: "Train world.", note: "" },
 
             // --- YOUTUBE ---
             { category: "YOUTUBE", title: "Random YouTube Pick", me: false, her: false, imdb: 0, image: "https://upload.wikimedia.org/wikipedia/commons/e/ec/YouTube_logo_2017.svg", desc: "Pick a random video from the YouTube playlist.", note: "Random pick" },
             { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, image: "https://i.ytimg.com/vi/aL3sIk23XqE/hqdefault.jpg", desc: "John Oliver funny moments.", note: "John Oliver?" },
-            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", desc: "Vlogs in Japan.", note: "stopped on like ep3" },
+            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: true, her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/q1R2_K_Xq1U/hqdefault.jpg", desc: "Vlogs in Japan.", note: "I finished, we stopped at episode 3 together." },
             { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, image: "https://i.ytimg.com/vi/c0d7gR_d-iU/hqdefault.jpg", desc: "Crossing US for a penny.", note: "stopped on like ep.16?" }
         ];
 
@@ -365,7 +379,9 @@
         let currentModalIndex = 0;
 
         function getStatusInfo(me, her) {
-            if (me === true && her === true) return { text: "Completed Together", class: "s-done", dot: "d-done", code: "done" };
+            if (me === "together" || her === "together") return { text: "Watching Together 💞", class: "s-together", dot: "d-together", code: "together" };
+            if (me === "check" || her === "check") return { text: "Check Note ⚠️", class: "s-check", dot: "d-check", code: "check" };
+            if (me === true && her === true) return { text: "Completed Together ✅", class: "s-done", dot: "d-done", code: "done" };
             if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
             if (me === true && her === false) return { text: "Only Me", class: "s-me", dot: "d-me", code: "me" };
             if (me === false && her === true) return { text: "Only Her", class: "s-her", dot: "d-her", code: "her" };
@@ -402,8 +418,8 @@
 
             // 3. DECIDE LAYOUT: Rows or Grid?
             if (statusFilter === 'all' && currentCategory === 'all') {
-                // HOME SCREEN VIEW: Stacked Category Rows (No sorting preference here, default by data order)
-                const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
+                // HOME SCREEN VIEW: Stacked Category Rows
+                const categories = ["ANIME", "MOVIE", "SHOW", "ONE_PIECE_MOVIE", "YOUTUBE"];
                 categories.forEach(cat => {
                     let rowItems = mediaList.filter(i => i.category.includes(cat));
                     if (sortFunction) rowItems.sort(sortFunction);
@@ -456,13 +472,11 @@
 
             const header = document.createElement('div');
             header.className = 'section-header';
-            let displayName = isCategory ? (title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title) : title;
-            
-            // Check if title is generic, use original title if not
-            if(isCategory) {
-                 displayName = title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title;
+            let displayName;
+            if (isCategory) {
+                 displayName = title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title === 'ONE_PIECE_MOVIE' ? 'One Piece Movies' : title;
             } else {
-                displayName = title; // Use custom title like 'One-Shot / Standalone'
+                displayName = title;
             }
 
             header.innerHTML = `
@@ -498,7 +512,7 @@
                     <div class="card-title">${item.title}</div>
                     <div class="card-status">
                         <span class="status-dot ${s.dot}"></span>
-                        <span class="${s.class}">${s.text}</span>
+                        <span class="${s.class}">${s.text.replace(' ', ' ')}</span>
                     </div>
                 </div>
             `;
@@ -533,8 +547,8 @@
             document.getElementById('mHero').style.backgroundImage = `url('${item.image}')`;
             document.getElementById('mTitle').innerText = item.title;
             document.getElementById('mTags').innerHTML = `
-                <span class="${s.class}" style="font-weight:bold;">${s.text}</span> • 
-                ${item.category} • 
+                <span class="${s.class}" style="font-weight:bold;">${s.text.replace(' ', ' ')}</span> • 
+                ${item.category === 'ONE_PIECE_MOVIE' ? 'OP MOVIE' : item.category} • 
                 ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}
             `;
             document.getElementById('mDesc').innerText = item.desc;
@@ -572,12 +586,12 @@
             const candidates = mediaList.filter(i => {
                 const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory);
                 const s = getStatusInfo(i.me, i.her).code;
-                const isWatchable = s === 'new' || s === 'paused';
+                const isWatchable = s === 'new' || s === 'paused' || s === 'check' || s === 'together';
                 
                 return isFilteredCat && isWatchable;
             });
             
-            if (candidates.length === 0) { alert("Nothing new/paused to watch in this view!"); return; }
+            if (candidates.length === 0) { alert("Nothing new/paused/uncertain to watch in this view!"); return; }
 
             document.getElementById('rouletteModal').style.display = 'flex';
             document.getElementById('rWinner').style.opacity = '0';
