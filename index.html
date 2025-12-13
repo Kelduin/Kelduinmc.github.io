@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Our Watchlist</title>
+    
+    <link rel="apple-touch-icon" href="https://em-content.zobj.net/source/apple/354/clapper-board_1f3ac.png">
+    <link rel="icon" type="image/png" href="https://em-content.zobj.net/source/apple/354/clapper-board_1f3ac.png">
+
     <style>
         /* --- CSS RESET & VARIABLES --- */
         :root {
@@ -16,7 +22,9 @@
             --gold: #ffd700;
             --card-width: 145px;
             --card-height: 220px;
-            --radius: 16px; /* Bubbly Radius */
+            --radius: 16px;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -27,36 +35,39 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            padding-bottom: 80px;
+            padding-bottom: calc(80px + var(--safe-bottom));
             overflow-x: hidden;
+            user-select: none; /* Prevents text highlighting on phone taps */
         }
 
         /* --- HEADER --- */
         header {
-            padding: 25px 20px 10px 20px;
-            background: linear-gradient(to bottom, #050505 0%, rgba(5,5,5,0.95) 60%, rgba(5,5,5,0) 100%);
+            padding: calc(15px + var(--safe-top)) 20px 10px 20px;
+            background: linear-gradient(to bottom, rgba(5,5,5,0.98) 0%, rgba(5,5,5,0.9) 70%, rgba(5,5,5,0) 100%);
             position: sticky;
             top: 0;
             z-index: 50;
             text-align: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         h1 { 
             margin: 0; 
-            font-size: 1.6rem; 
+            font-size: 1.5rem; 
             font-weight: 800;
             color: var(--accent); 
             text-transform: uppercase; 
             letter-spacing: 2px; 
-            text-shadow: 0 4px 10px rgba(229, 9, 20, 0.4);
+            text-shadow: 0 4px 15px rgba(229, 9, 20, 0.5);
         }
 
         /* --- CONTROLS --- */
         .controls {
-            padding: 10px 20px;
+            padding: 5px 15px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
             margin-bottom: 10px;
         }
@@ -65,41 +76,43 @@
             background: linear-gradient(135deg, #ff4b4b, #e50914);
             border: none;
             color: white;
-            padding: 12px 35px;
+            padding: 12px 40px;
             font-size: 0.95rem;
             font-weight: 700;
             border-radius: 50px;
             box-shadow: 0 8px 20px rgba(229, 9, 20, 0.3);
             cursor: pointer;
             transition: transform 0.2s;
+            width: 100%;
+            max-width: 300px;
         }
-        .btn-roulette:active { transform: scale(0.95); }
+        .btn-roulette:active { transform: scale(0.96); }
 
         /* Filter Chips */
         .filter-scroll {
-            display: flex; gap: 10px; overflow-x: auto; width: 100%; padding: 5px 5px 15px 5px;
+            display: flex; gap: 8px; overflow-x: auto; width: 100%; padding: 5px 5px 15px 5px;
             scrollbar-width: none;
-            justify-content: flex-start; /* Aligns left on scroll */
+            -webkit-overflow-scrolling: touch;
         }
         .filter-scroll::-webkit-scrollbar { display: none; }
 
         .chip {
             background: #222; color: #888; border: 1px solid #333;
-            padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+            padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
             white-space: nowrap; cursor: pointer; transition: all 0.2s ease;
+            flex-shrink: 0;
         }
         .chip.active { background: white; color: black; border-color: white; box-shadow: 0 4px 10px rgba(255,255,255,0.2); }
 
         /* Pretty Dropdowns */
         .dropdown-row { 
-            display: flex; gap: 10px; width: 100%; max-width: 600px; 
+            display: flex; gap: 8px; width: 100%; max-width: 600px; 
             flex-wrap: wrap; justify-content: center; 
         }
         
-        /* The container for custom select styling */
         .select-wrapper {
             position: relative;
-            flex: 1; min-width: 140px;
+            flex: 1 1 100px; /* Allows them to shrink/grow on mobile */
         }
         
         select {
@@ -108,10 +121,10 @@
             background: #222; 
             color: #ddd; 
             border: 1px solid #333;
-            padding: 12px 15px; 
+            padding: 10px 15px; 
             border-radius: 12px; 
-            font-size: 0.85rem; 
-            font-weight: 500;
+            font-size: 0.8rem; 
+            font-weight: 600;
             outline: none;
             cursor: pointer;
             transition: 0.2s;
@@ -121,10 +134,10 @@
         /* Custom Arrow */
         .select-wrapper::after {
             content: '▼';
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             color: #888;
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
@@ -132,11 +145,12 @@
 
         /* --- LAYOUTS --- */
         .section-header {
-            padding: 0 20px; margin-top: 25px; margin-bottom: 12px;
+            padding: 0 20px; margin-top: 20px; margin-bottom: 12px;
             display: flex; align-items: center; justify-content: space-between;
         }
         .section-title { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
         
+        /* Arrows hidden on touch, shown on hover (desktop) */
         .scroll-arrows { display: none; gap: 8px; }
         @media (hover: hover) { .scroll-arrows { display: flex; } }
         
@@ -144,16 +158,16 @@
             background: rgba(255,255,255,0.1); border: none; color: white;
             width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
         }
-        .arrow-btn:hover { background: white; color: black; }
 
         /* Rows */
         .row-wrapper { position: relative; }
         .row-container {
             display: flex; overflow-x: auto; gap: 14px;
             padding: 0 20px 10px 20px;
-            scroll-snap-type: x mandatory; scroll-behavior: smooth;
+            scroll-snap-type: x mandatory; 
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch; /* Smooth iOS scroll */
             scrollbar-width: none;
         }
         .row-container::-webkit-scrollbar { display: none; }
@@ -161,7 +175,7 @@
         /* Grid */
         .grid-container {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px; padding: 20px;
+            gap: 15px; padding: 0 20px;
         }
 
         /* --- CARD --- */
@@ -171,14 +185,14 @@
             border-radius: var(--radius); 
             overflow: hidden;
             position: relative; scroll-snap-align: start; cursor: pointer;
-            transition: transform 0.2s, opacity 0.3s;
+            transition: transform 0.1s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            -webkit-transform: translate3d(0,0,0); /* Hardware accel */
         }
         .card:active { transform: scale(0.96); }
         .card.dimmed { opacity: 0.3; filter: grayscale(90%); }
-        .card.dimmed:hover { opacity: 1; filter: grayscale(0%); }
 
-        .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.3s; }
+        .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; }
         
         .imdb-badge {
             position: absolute; top: 8px; right: 8px;
@@ -211,24 +225,25 @@
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             z-index: 100; display: none; flex-direction: column; 
             align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 101; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: rgba(255,255,255,0.2); cursor: pointer; }
         .nav-left { left: 0; } .nav-right { right: 0; }
         
         .info-card { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #111; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-        .info-hero { flex-shrink: 0; height: 50vh; width: 100%; background-size: cover; background-position: center; position: relative; }
+        .info-hero { flex-shrink: 0; height: 45vh; width: 100%; background-size: cover; background-position: center; position: relative; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #111 5%, transparent); }
-        .info-content { padding: 30px 25px; }
-        .info-title { font-size: 1.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 15px; color: white; }
+        .info-content { padding: 25px 25px 80px 25px; } /* Extra bottom padding for scroll */
+        .info-title { font-size: 1.6rem; font-weight: 800; line-height: 1.1; margin-bottom: 15px; color: white; }
         .info-tags { display: flex; flex-wrap: wrap; gap: 8px; color: #999; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
-        .tag-pill { background: #222; border: 1px solid #333; padding: 4px 10px; border-radius: 20px; color: #ccc; }
+        .tag-pill { background: #222; border: 1px solid #333; padding: 4px 10px; border-radius: 20px; color: #ccc; font-size: 0.75rem; }
         
         .info-desc { color: #ccc; line-height: 1.6; margin-bottom: 25px; font-size: 0.95rem; }
         .info-note { background: #1a1a1a; padding: 20px; border-left: 4px solid var(--accent); color: #ddd; font-style: italic; border-radius: 8px; font-size: 0.9rem; }
         
         .close-btn-float {
-            position: absolute; top: 20px; right: 20px; z-index: 102; 
+            position: absolute; top: calc(20px + var(--safe-top)); right: 20px; z-index: 102; 
             background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.3);
             width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
@@ -237,9 +252,9 @@
 
         /* --- ROULETTE --- */
         #rouletteModal { background: rgba(0,0,0,0.98); }
-        .roulette-wrapper { width: 90%; max-width: 600px; height: 200px; border: 3px solid #333; background: #000; overflow: hidden; position: relative; margin: 0 auto; border-radius: 16px;}
+        .roulette-wrapper { width: 95%; max-width: 500px; height: 180px; border: 3px solid #333; background: #000; overflow: hidden; position: relative; margin: 0 auto; border-radius: 16px;}
         .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
-        .r-card { width: 140px; height: 100%; background-size: cover; border-right: 1px solid #111; flex-shrink: 0; }
+        .r-card { width: 130px; height: 100%; background-size: cover; border-right: 1px solid #111; flex-shrink: 0; }
         .r-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--gold); transform: translateX(-50%); z-index: 10; box-shadow: 0 0 15px var(--gold); }
 
     </style>
@@ -295,8 +310,8 @@
 
     <div class="modal-overlay" id="infoModal">
         <button class="close-btn-float" onclick="closeModal()">✕</button>
-        <div class="nav-zone nav-left" onclick="navigateModal(-1)">&#10094;</div>
-        <div class="nav-zone nav-right" onclick="navigateModal(1)">&#10095;</div>
+        <div class="nav-zone nav-left" onclick="navigateModal(-1)"></div>
+        <div class="nav-zone nav-right" onclick="navigateModal(1)"></div>
         <div class="info-card" id="infoCard">
             <div class="info-hero" id="mHero"></div>
             <div class="info-content">
@@ -322,7 +337,6 @@
 
     <script>
         // --- DATA (V17 - FIXED IMDB GENRES) ---
-        // Genres: Action, Adventure, Animation, Biography, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Mystery, Reality-TV, Romance, Sci-Fi, Sport, Thriller, War, Western
         const mediaList = [
             // --- ANIME ---
             { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, tags: "Animation, Adventure, Drama, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BZTI4ZGMxN2UtODlkYS00MTBjLWE1YzctYzc3NDViMGI0ZmJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The elven mage Frieren, who was part of the hero's party that defeated the Demon King, faces a new journey as she comes to terms with the fleeting lives of her human companions. She embarks on a quest to truly understand human emotion and life's passage, leading to encounters with new friends and old memories.", note: "" },
@@ -436,10 +450,10 @@
             { category: "SHOW", title: "Breaking Bad", me: false, her: false, imdb: 9.5, tags: "Crime, Drama, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_QL75_UX190_CR0,2,190,281_.jpg", desc: "A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student to secure his family's future.", note: "" },
 
             // --- YOUTUBE ---
-            { category: "YOUTUBE", title: "YouTube Random Pick", me: false, her: false, imdb: 0, tags: "Reality-TV, Documentary", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "When you can't decide, let fate choose the next video from your shared playlist.", note: "Random pick" },
-            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, tags: "Comedy, News, Talk-Show", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A compilation of the best segments and funny moments from John Oliver's insightful and humorous weekly program.", note: "John Oliver?" },
-            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: "check", her: "check", imdb: 0, tags: "Documentary, Reality-TV, Adventure", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "Ludwig and his friends travel across Japan, documenting their adventures, challenges, and cultural experiences in a series of vlogs.", note: "I finished, we stopped at episode 3 together." },
-            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, tags: "Documentary, Reality-TV, Adventure", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A travel challenge series involving crossing the United States and visiting 50 states for a humorous or specific goal.", note: "stopped on like ep.16?" }
+             { category: "YOUTUBE", title: "YouTube Random Pick", me: false, her: false, imdb: 0, tags: "Youtube", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "When you can't decide, let fate choose the next video from your shared playlist.", note: "Random pick" },
+            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, tags: "Youtube", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A compilation of the best segments and funny moments from John Oliver's insightful and humorous weekly program.", note: "John Oliver?" },
+            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: "check", her: "check", imdb: 0, tags: "Youtube", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "Ludwig and his friends travel across Japan, documenting their adventures, challenges, and cultural experiences in a series of vlogs.", note: "I finished, we stopped at episode 3 together." },
+            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, tags: "Youtube", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A travel challenge series involving crossing the United States and visiting 50 states for a humorous or specific goal.", note: "stopped on like ep.16?" }
         ];
 
         let currentCategory = 'all';
@@ -447,14 +461,14 @@
         let currentModalIndex = 0;
 
         function getStatusInfo(me, her) {
-            if (me === "together" || her === "together") return { text: "Watching Together", class: "s-together", dot: "d-together", code: "together" };
-            if (me === "check" || her === "check") return { text: "Check Note", class: "s-check", dot: "d-check", code: "check" };
+            if (me === "together" || her === "together") return { text: "Together", class: "s-together", dot: "d-together", code: "together" };
+            if (me === "check" || her === "check") return { text: "Note", class: "s-check", dot: "d-check", code: "check" };
             if (me === "50/50" || her === "50/50") return { text: "Paused", class: "s-paused", dot: "d-paused", code: "paused" };
-            if (me === true && her === true) return { text: "Completed Together", class: "s-done", dot: "d-done", code: "done" };
+            if (me === true && her === true) return { text: "Completed", class: "s-done", dot: "d-done", code: "done" };
             if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
             if (me === true && her === false) return { text: "Only Me", class: "s-me", dot: "d-me", code: "me" };
             if (me === false && her === true) return { text: "Only Her", class: "s-her", dot: "d-her", code: "her" };
-            return { text: "Status Unknown", class: "s-paused", dot: "d-paused", code: "paused" };
+            return { text: "Unknown", class: "s-paused", dot: "d-paused", code: "paused" };
         }
 
         function setFilter(cat, btn) {
@@ -464,7 +478,6 @@
             updateUI();
         }
 
-        // --- POPULATE GENRES DYNAMICALLY ---
         function populateGenres() {
             const allTags = new Set();
             mediaList.forEach(item => {
@@ -472,7 +485,6 @@
                     item.tags.split(',').forEach(tag => allTags.add(tag.trim()));
                 }
             });
-            
             const sortedTags = Array.from(allTags).sort();
             const genreSelect = document.getElementById('genreFilter');
             sortedTags.forEach(tag => {
@@ -483,7 +495,6 @@
             });
         }
 
-        // --- RENDERING ---
         function updateUI() {
             const main = document.getElementById('mainContent');
             const statusFilter = document.getElementById('statusFilter').value;
@@ -492,7 +503,6 @@
 
             main.innerHTML = "";
 
-            // 1. UNIVERSAL FILTER & SORT
             let filtered = mediaList.filter(item => {
                 const s = getStatusInfo(item.me, item.her);
                 if (statusFilter !== 'all' && s.code !== statusFilter) return false;
@@ -509,43 +519,29 @@
                 return 0; 
             });
 
-            // 2. RENDERING LOGIC (The Fix: Always respect category structure!)
             if (currentCategory === 'all') {
-                // HOME SCREEN VIEW: Stacked Category Rows
                 const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
                 categories.forEach(cat => {
                     let rowItems = filtered.filter(i => i.category.includes(cat));
                     if (rowItems.length > 0) renderRow(cat, rowItems, main);
                 });
             } else if (currentCategory === 'MOVIE' || currentCategory === 'SHOW' || currentCategory === 'ANIME') {
-                // CATEGORY VIEW: Grouped Franchises
-                // Even with a filter applied, we want to maintain the "Group" vs "Single" structure
-                
-                let filteredByCategory = filtered; // already filtered by category above
-                
+                let filteredByCategory = filtered;
                 let franchiseItems = filteredByCategory.filter(i => i.group);
                 let singularItems = filteredByCategory.filter(i => !i.group);
 
-                if (singularItems.length > 0) {
-                    renderRow('One-Shot / Standalone', singularItems, main, false);
-                }
+                if (singularItems.length > 0) renderRow('One-Shot / Standalone', singularItems, main, false);
 
                 if (franchiseItems.length > 0) {
-                    // Find which groups still have items left after filtering
                     const visibleGroups = Array.from(new Set(franchiseItems.map(i => i.group)));
-                    
                     visibleGroups.forEach(groupName => {
                         let groupItems = franchiseItems
                             .filter(i => i.group === groupName)
                             .sort((a, b) => sortOrder === 'default' ? (a.chronology || 999) - (b.chronology || 999) : 0); 
-                        
-                        if (groupItems.length > 0) {
-                            renderRow(groupName, groupItems, main);
-                        }
+                        if (groupItems.length > 0) renderRow(groupName, groupItems, main);
                     });
                 }
             } else {
-                // FALLBACK GRID (YouTube, etc)
                 const grid = document.createElement('div');
                 grid.className = 'grid-container';
                 filtered.forEach(item => grid.appendChild(createCard(item, filtered)));
@@ -558,26 +554,13 @@
         function renderRow(title, items, mainElement, isCategory=true) {
             const wrapper = document.createElement('div');
             wrapper.className = 'row-wrapper';
-
             const header = document.createElement('div');
             header.className = 'section-header';
-            let displayName;
-            
-            if (isCategory) {
-                 displayName = title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title;
-            } else {
-                displayName = title;
-            }
+            let displayName = isCategory ? (title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title) : title;
 
-            header.innerHTML = `
-                <div class="section-title">${displayName}</div>
-                <div class="scroll-arrows">
-                    <button class="arrow-btn" onclick="scrollRow(this, -300)">&#10094;</button>
-                    <button class="arrow-btn" onclick="scrollRow(this, 300)">&#10095;</button>
-                </div>
-            `;
-
+            header.innerHTML = `<div class="section-title">${displayName}</div>`;
             const row = document.createElement('div');
+            
             if (title === 'One-Shot / Standalone') {
                 row.className = 'grid-container';
                 items.forEach(item => row.appendChild(createCard(item, items)));
@@ -595,37 +578,24 @@
         function createCard(item, sourceList) {
             const el = document.createElement('div');
             const s = getStatusInfo(item.me, item.her);
-            
             el.className = `card ${s.code === 'done' ? 'dimmed' : ''}`;
             el.onclick = () => openModal(item, sourceList);
             
             const badge = item.imdb > 0 ? `<div class="imdb-badge">⭐ ${item.imdb}</div>` : '';
-            
             const isYouTubeLogo = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick';
-            const imageStyle = isYouTubeLogo
-                ? `background-image: url('${item.image}'); background-size: 80%; background-repeat: no-repeat; background-color: #ff0000;` 
-                : `background-image: url('${item.image}')`;
+            const imageStyle = isYouTubeLogo ? `background-image: url('${item.image}'); background-size: 80%; background-repeat: no-repeat; background-color: #ff0000;` : `background-image: url('${item.image}')`;
 
             el.innerHTML = `
                 <div class="card-image" style="${imageStyle}"></div>
                 ${badge}
                 <div class="card-overlay">
                     <div class="card-title">${item.title}</div>
-                    <div class="card-status">
-                        <span class="status-dot ${s.dot}"></span>
-                        <span class="${s.class}">${s.text}</span>
-                    </div>
+                    <div class="card-status"><span class="status-dot ${s.dot}"></span><span class="${s.class}">${s.text}</span></div>
                 </div>
             `;
             return el;
         }
 
-        function scrollRow(btn, amount) {
-            const row = btn.parentElement.parentElement.nextElementSibling;
-            row.scrollBy({ left: amount, behavior: 'smooth' });
-        }
-
-        // --- MODAL & SWIPE ---
         function openModal(item, list) {
             currentModalList = list;
             currentModalIndex = list.indexOf(item);
@@ -644,27 +614,16 @@
         function renderModalContent() {
             const item = currentModalList[currentModalIndex];
             const s = getStatusInfo(item.me, item.her);
-            
             const isYouTubeLogo = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick';
-            const heroStyle = isYouTubeLogo
-                ? `background-image: url('${item.image}'); background-size: 30%; background-repeat: no-repeat; background-color: #ff0000;`
-                : `background-image: url('${item.image}')`;
+            const heroStyle = isYouTubeLogo ? `background-image: url('${item.image}'); background-size: 30%; background-repeat: no-repeat; background-color: #ff0000;` : `background-image: url('${item.image}')`;
 
             document.getElementById('mHero').style.cssText = heroStyle;
             document.getElementById('mTitle').innerText = item.title;
-            
             let categoryText = item.category;
             if (item.group) categoryText = item.group; 
-            
             const tagsHtml = item.tags ? item.tags.split(', ').map(tag => `<span class="tag-pill">${tag}</span>`).join('') : '';
 
-            document.getElementById('mTags').innerHTML = `
-                <span class="${s.class}" style="font-weight:bold;">${s.text}</span> • 
-                ${categoryText} • 
-                ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}
-                <br><br>
-                ${tagsHtml}
-            `;
+            document.getElementById('mTags').innerHTML = `<span class="${s.class}" style="font-weight:bold;">${s.text}</span> • ${categoryText} • ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}<br><br>${tagsHtml}`;
             document.getElementById('mDesc').innerText = item.desc;
             
             const noteBox = document.getElementById('mNoteBox');
@@ -677,16 +636,12 @@
         }
 
         function closeModal(e) {
-            if (!e || e.target.id === 'infoModal' || e.target.classList.contains('close-btn-float')) {
-                document.getElementById('infoModal').style.display = 'none';
-            }
+            if (!e || e.target.id === 'infoModal' || e.target.classList.contains('close-btn-float')) document.getElementById('infoModal').style.display = 'none';
         }
 
-        // Swipe Logic
         let touchstartX = 0;
         let touchendX = 0;
         const modalEl = document.getElementById('infoModal');
-
         modalEl.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
         modalEl.addEventListener('touchend', e => {
             touchendX = e.changedTouches[0].screenX;
@@ -694,27 +649,16 @@
             if (touchendX > touchstartX + 50) navigateModal(-1);
         });
 
-        // --- ROULETTE ---
         function startRoulette() {
             const genreFilter = document.getElementById('genreFilter').value; 
             const statusFilter = document.getElementById('statusFilter').value;
 
             const candidates = mediaList.filter(i => {
                 const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory);
-                
-                // Status Check for Roulette (Ignore filter if 'all', otherwise respect it, BUT prevent 'done' items)
                 const s = getStatusInfo(i.me, i.her).code;
                 const matchesStatus = statusFilter === 'all' ? s !== 'done' : s === statusFilter;
-                const isWatchable = s !== 'done'; // Hard rule: never roll completed stuff unless specifically filtered?
-                                                  // Actually, if user filters "Completed", maybe they want to rewatch. 
-                                                  // But usually Roulette is for new stuff. Let's keep it simple:
-                                                  // If filter is 'all', exclude 'done'. If filter is 'done', include 'done'.
-                
                 const validStatus = statusFilter === 'done' ? true : s !== 'done';
-
-                // Check Genre
                 const matchesGenre = genreFilter === 'all' || (i.tags && i.tags.includes(genreFilter));
-
                 return isFilteredCat && matchesStatus && matchesGenre && validStatus;
             });
             
@@ -722,7 +666,6 @@
 
             document.getElementById('rouletteModal').style.display = 'flex';
             document.getElementById('rWinner').style.opacity = '0';
-            
             const track = document.getElementById('rTrack');
             track.innerHTML = "";
             track.style.transition = 'none';
@@ -741,26 +684,19 @@
             }
 
             setTimeout(() => {
-                const cardW = 140;
+                const cardW = 130;
                 const offset = -((winIdx * cardW) + (cardW/2) - (track.parentElement.offsetWidth / 2));
                 const jitter = Math.floor(Math.random()*20) - 10;
-                
                 track.style.transition = 'transform 4.5s cubic-bezier(0.1, 0, 0.2, 1)';
                 track.style.transform = `translateX(${offset + jitter}px)`;
-                
                 setTimeout(() => {
                     document.getElementById('rWinner').innerText = winner.title;
                     document.getElementById('rWinner').style.opacity = '1';
-                    
-                    setTimeout(() => {
-                        openModal(winner, candidates); 
-                        document.getElementById('rouletteModal').style.display = 'none';
-                    }, 1500);
+                    setTimeout(() => { openModal(winner, candidates); document.getElementById('rouletteModal').style.display = 'none'; }, 1500);
                 }, 4500);
             }, 50);
         }
 
-        // Initialize!
         populateGenres();
         updateUI();
     </script>
