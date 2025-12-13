@@ -158,7 +158,10 @@
             background: rgba(255,255,255,0.1); border: none; color: white;
             width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+            transition: background 0.2s;
         }
+        .arrow-btn:hover { background: rgba(255,255,255,0.3); }
 
         /* Rows */
         .row-wrapper { position: relative; }
@@ -299,6 +302,7 @@
             <div class="select-wrapper">
                 <select id="sortOrder" onchange="updateUI()">
                     <option value="default">Sort: Default</option>
+                    <option value="year">Date: Newest</option>
                     <option value="imdb">Rating: High</option>
                     <option value="az">A-Z</option>
                 </select>
@@ -379,6 +383,14 @@
             });
         }
 
+        function scrollRow(btn, direction) {
+            // Find the container relative to the button
+            const wrapper = btn.closest('.row-wrapper');
+            const container = wrapper.querySelector('.row-container');
+            const scrollAmount = container.clientWidth * 0.8; // Scroll 80% of width
+            container.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+        }
+
         function updateUI() {
             const main = document.getElementById('mainContent');
             const statusFilter = document.getElementById('statusFilter').value;
@@ -399,6 +411,7 @@
                 return true;
             }).sort((a, b) => {
                 if (sortOrder === 'imdb') return (b.imdb || 0) - (a.imdb || 0);
+                if (sortOrder === 'year') return (b.year || 0) - (a.year || 0); // Newest first
                 if (sortOrder === 'az') return a.title.localeCompare(b.title);
                 return 0; 
             });
@@ -438,11 +451,27 @@
         function renderRow(title, items, mainElement, isCategory=true) {
             const wrapper = document.createElement('div');
             wrapper.className = 'row-wrapper';
+            
             const header = document.createElement('div');
             header.className = 'section-header';
             let displayName = isCategory ? (title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title) : title;
 
-            header.innerHTML = `<div class="section-title">${displayName}</div>`;
+            // Create title
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'section-title';
+            titleDiv.innerText = displayName;
+
+            // Create arrows
+            const arrowsDiv = document.createElement('div');
+            arrowsDiv.className = 'scroll-arrows';
+            arrowsDiv.innerHTML = `
+                <button class="arrow-btn" onclick="scrollRow(this, -1)">‹</button>
+                <button class="arrow-btn" onclick="scrollRow(this, 1)">›</button>
+            `;
+
+            header.appendChild(titleDiv);
+            header.appendChild(arrowsDiv);
+
             const row = document.createElement('div');
             
             if (title === 'One-Shot / Standalone') {
@@ -507,7 +536,8 @@
             if (item.group) categoryText = item.group; 
             const tagsHtml = item.tags ? item.tags.split(', ').map(tag => `<span class="tag-pill">${tag}</span>`).join('') : '';
 
-            document.getElementById('mTags').innerHTML = `<span class="${s.class}" style="font-weight:bold;">${s.text}</span> • ${categoryText} • ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}<br><br>${tagsHtml}`;
+            // Added Year to the modal display here too!
+            document.getElementById('mTags').innerHTML = `<span class="${s.class}" style="font-weight:bold;">${s.text}</span> • ${categoryText} • ${item.year > 0 ? item.year : ''} • ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}<br><br>${tagsHtml}`;
             document.getElementById('mDesc').innerText = item.desc;
             
             const noteBox = document.getElementById('mNoteBox');
