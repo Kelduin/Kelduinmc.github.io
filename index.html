@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Our Watchlist Ultimate</title>
+    <title>Our Watchlist</title>
     <style>
         /* --- CSS RESET & VARIABLES --- */
         :root {
             --bg-color: #050505;
-            --card-bg: #141414;
+            --card-bg: #1a1a1a;
             --text-color: #ffffff;
             --accent: #e50914;
-            --pink: #ff69b4; /* Watching Together */
-            --yellow: #fdd835; /* Check Note */
+            --pink: #ff69b4;
+            --yellow: #fdd835;
             --gold: #ffd700;
-            --card-width: 150px;
-            --card-height: 225px;
+            --card-width: 145px;
+            --card-height: 220px;
+            --radius: 16px; /* Bubbly Radius */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -32,82 +33,126 @@
 
         /* --- HEADER --- */
         header {
-            padding: 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
+            padding: 25px 20px 10px 20px;
+            background: linear-gradient(to bottom, #050505 0%, rgba(5,5,5,0.95) 60%, rgba(5,5,5,0) 100%);
             position: sticky;
             top: 0;
             z-index: 50;
             text-align: center;
         }
 
-        h1 { margin: 0; font-size: 1.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
+        h1 { 
+            margin: 0; 
+            font-size: 1.6rem; 
+            font-weight: 800;
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            text-shadow: 0 4px 10px rgba(229, 9, 20, 0.4);
+        }
 
         /* --- CONTROLS --- */
         .controls {
-            padding: 0 20px;
+            padding: 10px 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .btn-roulette {
-            background: linear-gradient(135deg, #e50914, #b20710);
+            background: linear-gradient(135deg, #ff4b4b, #e50914);
             border: none;
             color: white;
-            padding: 12px 40px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+            padding: 12px 35px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.3);
             cursor: pointer;
+            transition: transform 0.2s;
         }
+        .btn-roulette:active { transform: scale(0.95); }
 
         /* Filter Chips */
         .filter-scroll {
-            display: flex; gap: 10px; overflow-x: auto; width: 100%; padding-bottom: 5px;
+            display: flex; gap: 10px; overflow-x: auto; width: 100%; padding: 5px 5px 15px 5px;
             scrollbar-width: none;
+            justify-content: flex-start; /* Aligns left on scroll */
         }
         .filter-scroll::-webkit-scrollbar { display: none; }
 
         .chip {
-            background: #222; color: #aaa; border: 1px solid #444;
-            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem;
-            white-space: nowrap; cursor: pointer; transition: 0.2s;
+            background: #222; color: #888; border: 1px solid #333;
+            padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+            white-space: nowrap; cursor: pointer; transition: all 0.2s ease;
         }
-        .chip.active { background: white; color: black; font-weight: bold; border-color: white; }
+        .chip.active { background: white; color: black; border-color: white; box-shadow: 0 4px 10px rgba(255,255,255,0.2); }
 
-        /* Dropdowns */
-        .dropdown-row { display: flex; gap: 10px; width: 100%; max-width: 600px; flex-wrap: wrap; justify-content: center; }
+        /* Pretty Dropdowns */
+        .dropdown-row { 
+            display: flex; gap: 10px; width: 100%; max-width: 600px; 
+            flex-wrap: wrap; justify-content: center; 
+        }
+        
+        /* The container for custom select styling */
+        .select-wrapper {
+            position: relative;
+            flex: 1; min-width: 140px;
+        }
+        
         select {
-            flex: 1; min-width: 120px; background: #222; color: white; border: 1px solid #444;
-            padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none;
+            width: 100%;
+            appearance: none; -webkit-appearance: none;
+            background: #222; 
+            color: #ddd; 
+            border: 1px solid #333;
+            padding: 12px 15px; 
+            border-radius: 12px; 
+            font-size: 0.85rem; 
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        select:focus { border-color: #666; background: #2a2a2a; }
+
+        /* Custom Arrow */
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.6rem;
+            color: #888;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
         }
 
         /* --- LAYOUTS --- */
         .section-header {
-            padding: 0 20px; margin-top: 20px; margin-bottom: 10px;
+            padding: 0 20px; margin-top: 25px; margin-bottom: 12px;
             display: flex; align-items: center; justify-content: space-between;
         }
-        .section-title { font-size: 1.2rem; font-weight: 700; color: #e5e5e5; }
+        .section-title { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
         
-        /* PC Arrows */
-        .scroll-arrows { display: none; gap: 5px; }
+        .scroll-arrows { display: none; gap: 8px; }
         @media (hover: hover) { .scroll-arrows { display: flex; } }
         
         .arrow-btn {
             background: rgba(255,255,255,0.1); border: none; color: white;
-            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
         }
         .arrow-btn:hover { background: white; color: black; }
 
         /* Rows */
         .row-wrapper { position: relative; }
         .row-container {
-            display: flex; overflow-x: auto; gap: 12px;
-            padding: 0 20px 20px 20px;
+            display: flex; overflow-x: auto; gap: 14px;
+            padding: 0 20px 10px 20px;
             scroll-snap-type: x mandatory; scroll-behavior: smooth;
             scrollbar-width: none;
         }
@@ -122,40 +167,42 @@
         /* --- CARD --- */
         .card {
             flex: 0 0 var(--card-width); height: var(--card-height);
-            background-color: #222; border-radius: 6px; overflow: hidden;
+            background-color: var(--card-bg); 
+            border-radius: var(--radius); 
+            overflow: hidden;
             position: relative; scroll-snap-align: start; cursor: pointer;
             transition: transform 0.2s, opacity 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .card:active { transform: scale(0.97); }
-        .card.dimmed { opacity: 0.3; filter: grayscale(80%); }
+        .card:active { transform: scale(0.96); }
+        .card.dimmed { opacity: 0.3; filter: grayscale(90%); }
         .card.dimmed:hover { opacity: 1; filter: grayscale(0%); }
 
-        .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; }
+        .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.3s; }
         
-        /* IMDB BADGE */
         .imdb-badge {
-            position: absolute; top: 6px; right: 6px;
-            background: var(--gold); color: black; font-weight: 800;
-            padding: 2px 5px; border-radius: 3px; font-size: 0.65rem; z-index: 5;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: absolute; top: 8px; right: 8px;
+            background: rgba(0,0,0,0.8); color: var(--gold); border: 1px solid var(--gold);
+            font-weight: 700; padding: 2px 6px; border-radius: 6px; 
+            font-size: 0.6rem; z-index: 5;
+            backdrop-filter: blur(4px);
         }
 
         .card-overlay {
             position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%);
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 10px;
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0) 60%);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 12px;
         }
-        .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; text-shadow: 0 2px 4px black; }
-        .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .card-title { font-size: 0.8rem; font-weight: 700; line-height: 1.3; margin-bottom: 6px; text-shadow: 0 2px 4px black; }
+        .card-status { font-size: 0.65rem; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 5px currentColor; }
 
         /* --- STATUS COLORS --- */
         .s-new { color: #46d369; } .d-new { background: #46d369; }
         .s-paused { color: #ffa00a; } .d-paused { background: #ffa00a; }
         .s-me { color: #a55eea; } .d-me { background: #a55eea; }
         .s-her { color: #fd79a8; } .d-her { background: #fd79a8; }
-        .s-done { color: #888; } .d-done { background: #888; }
-        
+        .s-done { color: #666; } .d-done { background: #666; }
         .s-together { color: var(--pink); } .d-together { background: var(--pink); }
         .s-check { color: var(--yellow); } .d-check { background: var(--yellow); }
 
@@ -164,28 +211,35 @@
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             z-index: 100; display: none; flex-direction: column; 
             align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
         }
-        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 101; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: rgba(255,255,255,0.3); cursor: pointer; }
+        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 101; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: rgba(255,255,255,0.2); cursor: pointer; }
         .nav-left { left: 0; } .nav-right { right: 0; }
         
         .info-card { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #111; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
         .info-hero { flex-shrink: 0; height: 50vh; width: 100%; background-size: cover; background-position: center; position: relative; }
-        .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #111, transparent); }
-        .info-content { padding: 25px; }
-        .info-title { font-size: 1.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px; }
-        .info-tags { display: flex; flex-wrap: wrap; gap: 10px; color: #aaa; font-size: 0.9rem; margin-bottom: 15px; }
-        .info-desc { color: #ccc; line-height: 1.6; margin-bottom: 20px; }
-        .info-note { background: #222; padding: 15px; border-left: 3px solid var(--accent); color: #ddd; font-style: italic; border-radius: 4px; }
+        .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #111 5%, transparent); }
+        .info-content { padding: 30px 25px; }
+        .info-title { font-size: 1.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 15px; color: white; }
+        .info-tags { display: flex; flex-wrap: wrap; gap: 8px; color: #999; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
+        .tag-pill { background: #222; border: 1px solid #333; padding: 4px 10px; border-radius: 20px; color: #ccc; }
+        
+        .info-desc { color: #ccc; line-height: 1.6; margin-bottom: 25px; font-size: 0.95rem; }
+        .info-note { background: #1a1a1a; padding: 20px; border-left: 4px solid var(--accent); color: #ddd; font-style: italic; border-radius: 8px; font-size: 0.9rem; }
+        
         .close-btn-float {
-            position: absolute; top: 20px; right: 20px; z-index: 102; background: rgba(0,0,0,0.6); color: white; border: 1px solid white;
-            width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold;
+            position: absolute; top: 20px; right: 20px; z-index: 102; 
+            background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.3);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
         }
 
         /* --- ROULETTE --- */
-        #rouletteModal { background: rgba(0,0,0,0.95); }
-        .roulette-wrapper { width: 90%; max-width: 600px; height: 200px; border: 2px solid #333; background: #000; overflow: hidden; position: relative; margin: 0 auto; border-radius: 10px;}
+        #rouletteModal { background: rgba(0,0,0,0.98); }
+        .roulette-wrapper { width: 90%; max-width: 600px; height: 200px; border: 3px solid #333; background: #000; overflow: hidden; position: relative; margin: 0 auto; border-radius: 16px;}
         .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
-        .r-card { width: 140px; height: 100%; background-size: cover; border-right: 1px solid #222; flex-shrink: 0; }
+        .r-card { width: 140px; height: 100%; background-size: cover; border-right: 1px solid #111; flex-shrink: 0; }
         .r-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--gold); transform: translateX(-50%); z-index: 10; box-shadow: 0 0 15px var(--gold); }
 
     </style>
@@ -208,33 +262,39 @@
         </div>
 
         <div class="dropdown-row">
-            <select id="statusFilter" onchange="updateUI()">
-                <option value="all">Status: Everything</option>
-                <option value="new">✨ New</option>
-                <option value="together">💞 Watching Together</option>
-                <option value="paused">⏸️ Paused / In Progress</option>
-                <option value="me">👤 Only Me</option>
-                <option value="her">💕 Only Her</option>
-                <option value="done">✅ Completed</option>
-                <option value="check">⚠️ Check Note</option>
-            </select>
-            
-            <select id="genreFilter" onchange="updateUI()">
-                <option value="all">Genre: All</option>
+            <div class="select-wrapper">
+                <select id="statusFilter" onchange="updateUI()">
+                    <option value="all">Status: All</option>
+                    <option value="new">✨ New</option>
+                    <option value="together">💞 Together</option>
+                    <option value="paused">⏸️ Paused</option>
+                    <option value="me">👤 Me</option>
+                    <option value="her">💕 Her</option>
+                    <option value="done">✅ Done</option>
+                    <option value="check">⚠️ Note</option>
                 </select>
+            </div>
+            
+            <div class="select-wrapper">
+                <select id="genreFilter" onchange="updateUI()">
+                    <option value="all">Genre: All</option>
+                    </select>
+            </div>
 
-            <select id="sortOrder" onchange="updateUI()">
-                <option value="default">Sort: Default</option>
-                <option value="imdb">Rating: High to Low</option>
-                <option value="az">A-Z</option>
-            </select>
+            <div class="select-wrapper">
+                <select id="sortOrder" onchange="updateUI()">
+                    <option value="default">Sort: Default</option>
+                    <option value="imdb">Rating: High</option>
+                    <option value="az">A-Z</option>
+                </select>
+            </div>
         </div>
     </div>
 
     <div id="mainContent"></div>
 
     <div class="modal-overlay" id="infoModal">
-        <button class="close-btn-float" onclick="closeModal()">X</button>
+        <button class="close-btn-float" onclick="closeModal()">✕</button>
         <div class="nav-zone nav-left" onclick="navigateModal(-1)">&#10094;</div>
         <div class="nav-zone nav-right" onclick="navigateModal(1)">&#10095;</div>
         <div class="info-card" id="infoCard">
@@ -250,135 +310,136 @@
 
     <div class="modal-overlay" id="rouletteModal">
         <div style="text-align:center; width: 100%;">
-            <h2 style="color:var(--gold); text-transform:uppercase; margin-bottom:20px;">Rolling...</h2>
+            <h2 style="color:var(--gold); text-transform:uppercase; margin-bottom:20px; font-weight:800; letter-spacing:2px;">Rolling...</h2>
             <div class="roulette-wrapper">
                 <div class="r-line"></div>
                 <div class="roulette-track" id="rTrack"></div>
             </div>
-            <h1 id="rWinner" style="color:white; margin-top:20px; opacity:0; transition:0.5s;">???</h1>
-            <button class="chip" style="margin-top:20px; padding: 10px 30px;" onclick="document.getElementById('rouletteModal').style.display='none'">Close</button>
+            <h1 id="rWinner" style="color:white; margin-top:25px; opacity:0; transition:0.5s; font-size: 1.5rem;">???</h1>
+            <button class="chip" style="margin-top:25px; padding: 12px 40px; background: #333; color: white; border:none;" onclick="document.getElementById('rouletteModal').style.display='none'">Close</button>
         </div>
     </div>
 
     <script>
-        // --- DATA (V16) ---
+        // --- DATA (V17 - FIXED IMDB GENRES) ---
+        // Genres: Action, Adventure, Animation, Biography, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Mystery, Reality-TV, Romance, Sci-Fi, Sport, Thriller, War, Western
         const mediaList = [
             // --- ANIME ---
-            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, tags: "Adventure, Fantasy, Slice of Life", image: "https://m.media-amazon.com/images/M/MV5BZTI4ZGMxN2UtODlkYS00MTBjLWE1YzctYzc3NDViMGI0ZmJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The elven mage Frieren, who was part of the hero's party that defeated the Demon King, faces a new journey as she comes to terms with the fleeting lives of her human companions. She embarks on a quest to truly understand human emotion and life's passage, leading to encounters with new friends and old memories.", note: "" },
-            { category: "ANIME", title: "Attack on Titan", me: true, her: false, imdb: 9.1, tags: "Action, Dark Fantasy, Military", image: "https://m.media-amazon.com/images/M/MV5BZjliODY5MzQtMmViZC00MTZmLWFhMWMtMjMwM2I3OGY1MTRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Mankind is driven to the brink of extinction by giant humanoid creatures called Titans, forcing the remaining population to live within massive walls. When a breach occurs, the desperate fight for survival begins, revealing deep political and historical conspiracies.", note: "I have finished, GF has not watched." },
-            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, tags: "Comedy, Fantasy, Cooking", image: "https://m.media-amazon.com/images/M/MV5BNjRiNzI1MTYtZDg0Mi00NWFiLTg1MWItNjNkMmM5NjU3MWEyXkEyXkFqcGc@._V1_.jpg", desc: "A dungeon explorer party finds themselves broke and deep within a dangerous labyrinth after their leader's sister is eaten by a dragon. To save her before she is fully digested, they must embrace a radical new approach: eating the monsters they kill to save on food expenses.", note: "" },
-            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, tags: "Action, Sci-Fi, Shonen", image: "https://m.media-amazon.com/images/M/MV5BYTViZGZiODktZmQwMC00ZTBhLWE4MTAtMTJmZjdkNTJkYzE0XkEyXkFqcGc@._V1_.jpg", desc: "In a world plagued by giant monsters (Kaiju), Kafka Hibino dreams of joining the elite Defense Force. After an unexpected event turns him into a humanoid Kaiju, he must hide his new identity while fighting the creatures he has become.", note: "we both saw s1" },
-            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, tags: "Adventure, Post-Apocalyptic, Science", image: "https://m.media-amazon.com/images/M/MV5BYzZkYjM1MWMtNTY3Mi00MTMzLTlhNmQtN2ExZjFkYzdjZmFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "3,700 years after a mysterious flash turns every human into stone, genius boy Senku Ishigami awakens. Facing a world reverted to the Stone Age, he sets out to rebuild civilization from scratch using the power of science.", note: "" },
-            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, tags: "Fantasy, Isekai, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMDFkMGU0OWItMGRlYi00NzcxLWE0M2ItZDBkMjQ1ZmY5ZWI2XkEyXkFqcGc@._V1_.jpg", desc: "Suddenlt transported to a fantasy world, Subaru Natsuki gains an ability called 'Return by Death'—he resets time when he dies. However, he alone remembers the previous loops, forcing him to endure grueling psychological torment to save his new friends.", note: "Finished season 1. Need to continue to S2/S3." },
+            { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, tags: "Animation, Adventure, Drama, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BZTI4ZGMxN2UtODlkYS00MTBjLWE1YzctYzc3NDViMGI0ZmJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The elven mage Frieren, who was part of the hero's party that defeated the Demon King, faces a new journey as she comes to terms with the fleeting lives of her human companions. She embarks on a quest to truly understand human emotion and life's passage, leading to encounters with new friends and old memories.", note: "" },
+            { category: "ANIME", title: "Attack on Titan", me: true, her: false, imdb: 9.1, tags: "Animation, Action, Adventure, Drama, Fantasy, Horror", image: "https://m.media-amazon.com/images/M/MV5BZjliODY5MzQtMmViZC00MTZmLWFhMWMtMjMwM2I3OGY1MTRiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Mankind is driven to the brink of extinction by giant humanoid creatures called Titans, forcing the remaining population to live within massive walls. When a breach occurs, the desperate fight for survival begins, revealing deep political and historical conspiracies.", note: "I have finished, GF has not watched." },
+            { category: "ANIME", title: "Delicious in Dungeon", me: false, her: false, imdb: 8.4, tags: "Animation, Adventure, Comedy, Drama, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BNjRiNzI1MTYtZDg0Mi00NWFiLTg1MWItNjNkMmM5NjU3MWEyXkEyXkFqcGc@._V1_.jpg", desc: "A dungeon explorer party finds themselves broke and deep within a dangerous labyrinth after their leader's sister is eaten by a dragon. To save her before she is fully digested, they must embrace a radical new approach: eating the monsters they kill to save on food expenses.", note: "" },
+            { category: "ANIME", title: "Kaiju no 8 s2", me: false, her: false, imdb: 8.4, tags: "Animation, Action, Adventure, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYTViZGZiODktZmQwMC00ZTBhLWE4MTAtMTJmZjdkNTJkYzE0XkEyXkFqcGc@._V1_.jpg", desc: "In a world plagued by giant monsters (Kaiju), Kafka Hibino dreams of joining the elite Defense Force. After an unexpected event turns him into a humanoid Kaiju, he must hide his new identity while fighting the creatures he has become.", note: "we both saw s1" },
+            { category: "ANIME", title: "Dr. Stone", me: false, her: false, imdb: 8.1, tags: "Animation, Action, Adventure, Comedy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYzZkYjM1MWMtNTY3Mi00MTMzLTlhNmQtN2ExZjFkYzdjZmFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "3,700 years after a mysterious flash turns every human into stone, genius boy Senku Ishigami awakens. Facing a world reverted to the Stone Age, he sets out to rebuild civilization from scratch using the power of science.", note: "" },
+            { category: "ANIME", title: "Re:Zero", me: "50/50", her: "50/50", imdb: 8.0, tags: "Animation, Adventure, Drama, Fantasy, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMDFkMGU0OWItMGRlYi00NzcxLWE0M2ItZDBkMjQ1ZmY5ZWI2XkEyXkFqcGc@._V1_.jpg", desc: "Suddenlt transported to a fantasy world, Subaru Natsuki gains an ability called 'Return by Death'—he resets time when he dies. However, he alone remembers the previous loops, forcing him to endure grueling psychological torment to save his new friends.", note: "Finished season 1. Need to continue to S2/S3." },
 
             // --- ONE PIECE MOVIES (GROUPED WITHIN MOVIE) ---
-            { category: "MOVIE", title: "OP Movie: Strong World", me: true, her: true, imdb: 7.9, tags: "Anime, Action, Adventure", image: "https://m.media-amazon.com/images/M/MV5BMTA5MTM5YWQtNzE1Yi00OWUyLTk1MWItMWVkODM4ZGM5OWUzXkEyXkFqcGc@._V1_.jpg", desc: "The Straw Hat Pirates face Shiki the Golden Lion, a legendary pirate who escaped Impel Down 20 years ago and threatens to unleash his powers on the East Blue.", note: "Completed Together.", group: "OP_Movies", chronology: 0 },
-            { category: "MOVIE", title: "OP Movie: Film Z", me: false, her: false, imdb: 8.0, tags: "Anime, Action, Shonen", image: "https://m.media-amazon.com/images/M/MV5BNjY3ODNiZjgtY2RmNS00MjAyLWIwMzUtNTE0ZWIxNDU3YThhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The crew encounters 'Black Arm' Zephyr, a former Navy Admiral turned militant anti-pirate fanatic who possesses a devastating weapon and seeks to end the Great Pirate Era.", note: "New to us.", group: "OP_Movies", chronology: 1 },
-            { category: "MOVIE", title: "OP Movie: Gold", me: false, her: false, imdb: 7.7, tags: "Anime, Casino, Heist", image: "https://m.media-amazon.com/images/M/MV5BYjRlNmY2ZmUtNTZjMS00Y2ZlLThkN2ItMmY5MTBiZDJhZTE5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Luffy and his crew travel to Gran Tesoro, a massive ship and entertainment city governed by Gild Tesoro, the man who controls 20% of the world's currency and has the power of the Gold-Gold Fruit.", note: "New to us.", group: "OP_Movies", chronology: 2 },
-            { category: "MOVIE", title: "OP Movie: Stampede", me: false, her: false, imdb: 8.2, tags: "Anime, Massive Crossover, Festival", image: "https://m.media-amazon.com/images/M/MV5BY2FlYzRmZGMtM2Y5OC00NzFhLTgyNDAtZDk1YjdkZTlmMjE3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Pirates from all over the world gather for the Pirate World Fair, where they search for a treasure linked to the King of Pirates, Gold Roger. But the event turns into a battle royal against a powerful enemy.", note: "New to us.", group: "OP_Movies", chronology: 3 },
-            { category: "MOVIE", title: "OP Movie: Red", me: false, her: false, imdb: 7.6, tags: "Anime, Musical, Shonen", image: "https://m.media-amazon.com/images/M/MV5BNTdjY2YxYTQtNjIzYy00ZDczLThhNTUtNmY2ZWNkZjZiMTYzXkEyXkFqcGc@._V1_.jpg", desc: "The Straw Hats attend a music festival hosted by Uta, the world's most popular singer and the estranged daughter of Red-Haired Shanks. Uta's dream of creating a new era of happiness clashes dangerously with the reality of the world.", note: "New to us.", group: "OP_Movies", chronology: 4 },
+            { category: "MOVIE", title: "OP Movie: Strong World", me: true, her: true, imdb: 7.9, tags: "Animation, Action, Adventure, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BMTA5MTM5YWQtNzE1Yi00OWUyLTk1MWItMWVkODM4ZGM5OWUzXkEyXkFqcGc@._V1_.jpg", desc: "The Straw Hat Pirates face Shiki the Golden Lion, a legendary pirate who escaped Impel Down 20 years ago and threatens to unleash his powers on the East Blue.", note: "Completed Together.", group: "One Piece Movies", chronology: 0 },
+            { category: "MOVIE", title: "OP Movie: Film Z", me: false, her: false, imdb: 8.0, tags: "Animation, Action, Adventure, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BNjY3ODNiZjgtY2RmNS00MjAyLWIwMzUtNTE0ZWIxNDU3YThhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The crew encounters 'Black Arm' Zephyr, a former Navy Admiral turned militant anti-pirate fanatic who possesses a devastating weapon and seeks to end the Great Pirate Era.", note: "New to us.", group: "One Piece Movies", chronology: 1 },
+            { category: "MOVIE", title: "OP Movie: Gold", me: false, her: false, imdb: 7.7, tags: "Animation, Action, Adventure, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BYjRlNmY2ZmUtNTZjMS00Y2ZlLThkN2ItMmY5MTBiZDJhZTE5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Luffy and his crew travel to Gran Tesoro, a massive ship and entertainment city governed by Gild Tesoro, the man who controls 20% of the world's currency and has the power of the Gold-Gold Fruit.", note: "New to us.", group: "One Piece Movies", chronology: 2 },
+            { category: "MOVIE", title: "OP Movie: Stampede", me: false, her: false, imdb: 8.2, tags: "Animation, Action, Adventure, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BY2FlYzRmZGMtM2Y5OC00NzFhLTgyNDAtZDk1YjdkZTlmMjE3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Pirates from all over the world gather for the Pirate World Fair, where they search for a treasure linked to the King of Pirates, Gold Roger. But the event turns into a battle royal against a powerful enemy.", note: "New to us.", group: "One Piece Movies", chronology: 3 },
+            { category: "MOVIE", title: "OP Movie: Red", me: false, her: false, imdb: 7.6, tags: "Animation, Action, Adventure, Fantasy, Music", image: "https://m.media-amazon.com/images/M/MV5BNTdjY2YxYTQtNjIzYy00ZDczLThhNTUtNmY2ZWNkZjZiMTYzXkEyXkFqcGc@._V1_.jpg", desc: "The Straw Hats attend a music festival hosted by Uta, the world's most popular singer and the estranged daughter of Red-Haired Shanks. Uta's dream of creating a new era of happiness clashes dangerously with the reality of the world.", note: "New to us.", group: "One Piece Movies", chronology: 4 },
 
             // --- STAR WARS (GROUPED) ---
-            { category: "SHOW", title: "The Acolyte", me: false, her: false, imdb: 6.0, tags: "Sci-Fi, Mystery, High Republic", image: "https://m.media-amazon.com/images/M/MV5BYzkxYjcxOWUtNWM5Zi00MzY3LTliYjAtNGYyNjE5OWY2MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Set during the High Republic era, a former Padawan reunites with her Jedi Master to investigate a series of crimes that lead them to a trail of dark secrets and the rising forces of the Sith.", note: "", group: "StarWars", chronology: 100 },
-            { category: "MOVIE", title: "SW Ep 1: Phantom Menace", me: true, her: true, imdb: 6.5, tags: "Sci-Fi, Adventure, Prequel", image: "https://m.media-amazon.com/images/M/MV5BODVhNGIxOGItYWNlMi00YTA0LWI3NTctZmQxZGUwZDEyZWI4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Two Jedi escape a hostile blockade to find a young boy, Anakin Skywalker, who may bring balance to the Force, but the dark side is already stirring.", note: "Completed Together", group: "StarWars", chronology: 1 },
-            { category: "MOVIE", title: "SW Ep 2: Attack of Clones", me: true, her: true, imdb: 6.6, tags: "Sci-Fi, Romance, Action", image: "https://m.media-amazon.com/images/M/MV5BNTgxMjY2YzUtZmVmNC00YjAwLWJlODMtNDBhNzllNzIzMjgxXkEyXkFqcGc@._V1_.jpg", desc: "As the Republic threatens to fall into civil war, Obi-Wan investigates an assassination attempt on Padmé Amidala, leading to the discovery of a massive clone army and the start of the Clone Wars.", note: "Completed Together", group: "StarWars", chronology: 2 },
-            { category: "MOVIE", title: "SW Ep 3: Revenge of Sith", me: true, her: true, imdb: 7.6, tags: "Sci-Fi, Tragedy, Drama", image: "https://m.media-amazon.com/images/M/MV5BNTc4MTc3NTQ5OF5BMl5BanBnXkFtZTcwOTg0NjI4NA@@._V1_.jpg", desc: "The Clone Wars rage on. Anakin Skywalker is seduced by the Dark Side of the Force and becomes Darth Vader, leading to the destruction of the Jedi Order and the rise of the Galactic Empire.", note: "Completed Together", group: "StarWars", chronology: 3 },
-            { category: "SHOW", title: "Obi-Wan Kenobi", me: true, her: true, imdb: 7.1, tags: "Sci-Fi, Miniseries, Action", image: "https://m.media-amazon.com/images/M/MV5BOGU4ODlmNmMtMDM0OS00NTMxLWFlODUtZGFkMjU5NDdhMjgyXkEyXkFqcGc@._V1_.jpg", desc: "Ten years after the events of *Revenge of the Sith*, Obi-Wan Kenobi lives in exile on Tatooine, watching over young Luke Skywalker, until he is drawn into a desperate mission to save Leia.", note: "Completed Together", group: "StarWars", chronology: 4 },
-            { category: "MOVIE", title: "Solo: Star Wars Story", me: true, her: true, imdb: 6.9, tags: "Sci-Fi, Heist, Western", image: "https://m.media-amazon.com/images/M/MV5BOTM2NTI3NTc3Nl5BMl5BanBnXkFtZTgwNzM1OTQyNTM@._V1_.jpg", desc: "Han Solo meets Chewbacca and Lando Calrissian and attempts a daring heist on the spice mines of Kessel, establishing his reputation as a smuggler.", note: "Completed Together", group: "StarWars", chronology: 5 },
-            { category: "SHOW", title: "Andor S1", me: true, her: true, imdb: 8.4, tags: "Spy Thriller, Sci-Fi, Rebellion", image: "https://m.media-amazon.com/images/M/MV5BY2FhY2E2ZTMtN2E5Ny00Mzk1LWE0MmYtMDljZDBiN2JlMjAxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The series follows the journey of Cassian Andor, a reluctant hero who transforms from a cynical thief into a dedicated rebel leader during the oppressive early years of the Galactic Empire.", note: "Completed Together", group: "StarWars", chronology: 6 },
-            { category: "SHOW", title: "Andor S2", me: false, her: false, imdb: 8.4, tags: "Spy Thriller, Sci-Fi, Upcoming", image: "https://m.media-amazon.com/images/M/MV5BNGI2MTJjMjUtMTJhOC00YTY2LTg1NjUtMTdmMjg4YTk2YjM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The final season, leading directly into the events of *Rogue One*, will detail the full formation and growth of the organized Rebel Alliance.", note: "Needs to start when out", group: "StarWars", chronology: 7 },
-            { category: "MOVIE", title: "Rogue One", me: true, her: false, imdb: 7.8, tags: "Military, Action, Pre-Sequel", image: "https://m.media-amazon.com/images/M/MV5BMjEwMzMxODIzOV5BMl5BanBnXkFtZTgwNzg3OTAzMDI@._V1_.jpg", desc: "In a time of conflict, a group of unlikely heroes bands together on a mission to steal the plans for the Death Star, the Empire's ultimate weapon of destruction.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 8 },
-            { category: "MOVIE", title: "SW Ep 4: A New Hope", me: true, her: false, imdb: 8.6, tags: "Classic Sci-Fi, Space Opera", image: "https://m.media-amazon.com/images/M/MV5BOGUwMDk0Y2MtNjBlNi00NmRiLTk2MWYtMGMyMDlhYmI4ZDBjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee, and two droids to save the galaxy from the Empire's world-destroying battle station, the Death Star.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 9 },
-            { category: "MOVIE", title: "SW Ep 5: Empire Strikes Back", me: true, her: false, imdb: 8.7, tags: "Sci-Fi, Darker Tone, Twist", image: "https://m.media-amazon.com/images/M/MV5BMTkxNGFlNDktZmJkNC00MDdhLTg0MTEtZjZiYWI3MGE5NWIwXkEyXkFqcGc@._V1_.jpg", desc: "After the rebels are scattered by the Empire, Luke Skywalker begins Jedi training with Yoda while his friends are pursued by Darth Vader and the Imperial fleet.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 10 },
-            { category: "MOVIE", title: "SW Ep 6: Return of Jedi", me: true, her: false, imdb: 8.3, tags: "Sci-Fi, Finale, Redemption", image: "https://m.media-amazon.com/images/M/MV5BNWEwOTI0MmUtMGNmNy00ODViLTlkZDQtZTg1YmQ3MDgyNTUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The Empire prepares to crush the Rebellion with a new, more powerful Death Star, while the Rebel fleet mounts a massive attack and Luke struggles to redeem Darth Vader.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 11 },
-            { category: "SHOW", title: "The Mandalorian S1-2", me: true, her: false, imdb: 8.7, tags: "Space Western, Action, Bounty Hunter", image: "https://m.media-amazon.com/images/M/MV5BMjZlOGUwN2UtYjRkZC00OGJkLWEwY2YtZjk3NThiMWFkZDAxXkEyXkFqcGc@._V1_.jpg", desc: "A lone Mandalorian bounty hunter traverses the outer reaches of the galaxy, five years after the fall of the Empire, tasked with retrieving a mysterious child who possesses great power.", note: "I watched S1-2, GF hasn't watched any.", group: "StarWars", chronology: 12 },
-            { category: "SHOW", title: "The Mandalorian S3", me: false, her: false, imdb: 8.7, tags: "Space Western, Action, Clan Politics", image: "https://m.media-amazon.com/images/M/MV5BMjZlOGUwN2UtYjRkZC00OGJkLWEwY2YtZjk3NThiMWFkZDAxXkEyXkFqcGc@._V1_.jpg", desc: "The Mandalorian and Grogu travel to Mandalore where the Mandalore people face a threat to their culture and future.", note: "Neither of us has watched S3.", group: "StarWars", chronology: 12.1 },
-            { category: "SHOW", title: "Book of Boba Fett", me: true, her: false, imdb: 7.2, tags: "Space Western, Crime Drama", image: "https://m.media-amazon.com/images/M/MV5BY2JlY2NkOWItYjAyZS00Yzc5LWE4ZWEtMGY2NzBlZDkzNjYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The legendary bounty hunter Boba Fett and mercenary Fennec Shand navigate the Galaxy's underworld and stake their claim on the territory once controlled by Jabba the Hutt.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 13 },
-            { category: "SHOW", title: "Ahsoka", me: false, her: false, imdb: 7.6, tags: "Sci-Fi, Fantasy, Jedi", image: "https://m.media-amazon.com/images/M/MV5BYWQ3NmQxZTEtNDc2MS00ODExLWE3ZDEtZTU2N2Y2NjAyNmY5XkEyXkFqcGc@._V1_.jpg", desc: "Former Jedi Knight Ahsoka Tano investigates an emerging threat to the galaxy following the fall of the Empire, searching for the missing Grand Admiral Thrawn.", note: "", group: "StarWars", chronology: 14 },
-            { category: "SHOW", title: "Skeleton Crew", me: false, her: false, imdb: 7.0, tags: "Sci-Fi, Coming-of-Age, Adventure", image: "https://m.media-amazon.com/images/M/MV5BN2VlZjA3ZTktODEzNC00ZDhlLWExMTQtZmZkNjRhNWJhMWNkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Set in the New Republic era, the series follows four children who get lost in the galaxy and must try to find their way home, encountering new adventures along the way.", note: "Upcoming", group: "StarWars", chronology: 15 },
-            { category: "MOVIE", title: "SW Ep 7: Force Awakens", me: true, her: false, imdb: 7.8, tags: "Sci-Fi, Action, Sequel", image: "https://m.media-amazon.com/images/M/MV5BOTAzODEzNDAzMl5BMl5BanBnXkFtZTgwMDU1MTgzNzE@._V1_FMjpg_UX1000_.jpg", desc: "Thirty years after the defeat of the Empire, a new threat, the First Order, arises. Rey, a scavenger, and Finn, a former stormtrooper, join Han Solo and Chewbacca to find the missing Luke Skywalker.", note: "I watched this, GF didn't.", group: "StarWars", chronology: 16 },
-            { category: "MOVIE", title: "SW Ep 8: Last Jedi", me: false, her: false, imdb: 6.9, tags: "Sci-Fi, Action, Rebellion", image: "https://m.media-amazon.com/images/M/MV5BMjQ1MzcxNjg4N15BMl5BanBnXkFtZTgwNzgwMjY4MzI@._V1_.jpg", desc: "Rey develops her newly discovered abilities with the guidance of Luke Skywalker, who is unsettled by the strength of her powers, while the Resistance fights the First Order.", note: "", group: "StarWars", chronology: 17 },
-            { category: "MOVIE", title: "SW Ep 9: Rise of Skywalker", me: false, her: false, imdb: 6.5, tags: "Sci-Fi, Finale, Space Opera", image: "https://m.media-amazon.com/images/M/MV5BODg5ZTNmMTUtYThlNy00NjljLWE0MGUtYmQ1NDg4NWU5MjQ1XkEyXkFqcGc@._V1_.jpg", desc: "The surviving Resistance faces the First Order once more as Rey and Kylo Ren grapple with their complicated relationship and the return of a long-dead evil.", note: "", group: "StarWars", chronology: 18 },
+            { category: "SHOW", title: "The Acolyte", me: false, her: false, imdb: 6.0, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYzkxYjcxOWUtNWM5Zi00MzY3LTliYjAtNGYyNjE5OWY2MmU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Set during the High Republic era, a former Padawan reunites with her Jedi Master to investigate a series of crimes that lead them to a trail of dark secrets and the rising forces of the Sith.", note: "", group: "Star Wars", chronology: 100 },
+            { category: "MOVIE", title: "SW Ep 1: Phantom Menace", me: true, her: true, imdb: 6.5, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BODVhNGIxOGItYWNlMi00YTA0LWI3NTctZmQxZGUwZDEyZWI4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Two Jedi escape a hostile blockade to find a young boy, Anakin Skywalker, who may bring balance to the Force, but the dark side is already stirring.", note: "Completed Together", group: "Star Wars", chronology: 1 },
+            { category: "MOVIE", title: "SW Ep 2: Attack of Clones", me: true, her: true, imdb: 6.6, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BNTgxMjY2YzUtZmVmNC00YjAwLWJlODMtNDBhNzllNzIzMjgxXkEyXkFqcGc@._V1_.jpg", desc: "As the Republic threatens to fall into civil war, Obi-Wan investigates an assassination attempt on Padmé Amidala, leading to the discovery of a massive clone army and the start of the Clone Wars.", note: "Completed Together", group: "Star Wars", chronology: 2 },
+            { category: "MOVIE", title: "SW Ep 3: Revenge of Sith", me: true, her: true, imdb: 7.6, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BNTc4MTc3NTQ5OF5BMl5BanBnXkFtZTcwOTg0NjI4NA@@._V1_.jpg", desc: "The Clone Wars rage on. Anakin Skywalker is seduced by the Dark Side of the Force and becomes Darth Vader, leading to the destruction of the Jedi Order and the rise of the Galactic Empire.", note: "Completed Together", group: "Star Wars", chronology: 3 },
+            { category: "SHOW", title: "Obi-Wan Kenobi", me: true, her: true, imdb: 7.1, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BOGU4ODlmNmMtMDM0OS00NTMxLWFlODUtZGFkMjU5NDdhMjgyXkEyXkFqcGc@._V1_.jpg", desc: "Ten years after the events of *Revenge of the Sith*, Obi-Wan Kenobi lives in exile on Tatooine, watching over young Luke Skywalker, until he is drawn into a desperate mission to save Leia.", note: "Completed Together", group: "Star Wars", chronology: 4 },
+            { category: "MOVIE", title: "Solo: Star Wars Story", me: true, her: true, imdb: 6.9, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BOTM2NTI3NTc3Nl5BMl5BanBnXkFtZTgwNzM1OTQyNTM@._V1_.jpg", desc: "Han Solo meets Chewbacca and Lando Calrissian and attempts a daring heist on the spice mines of Kessel, establishing his reputation as a smuggler.", note: "Completed Together", group: "Star Wars", chronology: 5 },
+            { category: "SHOW", title: "Andor S1", me: true, her: true, imdb: 8.4, tags: "Action, Adventure, Drama, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BY2FhY2E2ZTMtN2E5Ny00Mzk1LWE0MmYtMDljZDBiN2JlMjAxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The series follows the journey of Cassian Andor, a reluctant hero who transforms from a cynical thief into a dedicated rebel leader during the oppressive early years of the Galactic Empire.", note: "Completed Together", group: "Star Wars", chronology: 6 },
+            { category: "SHOW", title: "Andor S2", me: false, her: false, imdb: 8.4, tags: "Action, Adventure, Drama, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BNGI2MTJjMjUtMTJhOC00YTY2LTg1NjUtMTdmMjg4YTk2YjM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The final season, leading directly into the events of *Rogue One*, will detail the full formation and growth of the organized Rebel Alliance.", note: "Needs to start when out", group: "Star Wars", chronology: 7 },
+            { category: "MOVIE", title: "Rogue One", me: true, her: false, imdb: 7.8, tags: "Action, Adventure, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BMjEwMzMxODIzOV5BMl5BanBnXkFtZTgwNzg3OTAzMDI@._V1_.jpg", desc: "In a time of conflict, a group of unlikely heroes bands together on a mission to steal the plans for the Death Star, the Empire's ultimate weapon of destruction.", note: "I watched this, GF didn't.", group: "Star Wars", chronology: 8 },
+            { category: "MOVIE", title: "SW Ep 4: A New Hope", me: true, her: false, imdb: 8.6, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BOGUwMDk0Y2MtNjBlNi00NmRiLTk2MWYtMGMyMDlhYmI4ZDBjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee, and two droids to save the galaxy from the Empire's world-destroying battle station, the Death Star.", note: "I watched this, GF didn't.", group: "Star Wars", chronology: 9 },
+            { category: "MOVIE", title: "SW Ep 5: Empire Strikes Back", me: true, her: false, imdb: 8.7, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BMTkxNGFlNDktZmJkNC00MDdhLTg0MTEtZjZiYWI3MGE5NWIwXkEyXkFqcGc@._V1_.jpg", desc: "After the rebels are scattered by the Empire, Luke Skywalker begins Jedi training with Yoda while his friends are pursued by Darth Vader and the Imperial fleet.", note: "I watched this, GF didn't.", group: "Star Wars", chronology: 10 },
+            { category: "MOVIE", title: "SW Ep 6: Return of Jedi", me: true, her: false, imdb: 8.3, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BNWEwOTI0MmUtMGNmNy00ODViLTlkZDQtZTg1YmQ3MDgyNTUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The Empire prepares to crush the Rebellion with a new, more powerful Death Star, while the Rebel fleet mounts a massive attack and Luke struggles to redeem Darth Vader.", note: "I watched this, GF didn't.", group: "Star Wars", chronology: 11 },
+            { category: "SHOW", title: "The Mandalorian S1-2", me: true, her: false, imdb: 8.7, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BMjZlOGUwN2UtYjRkZC00OGJkLWEwY2YtZjk3NThiMWFkZDAxXkEyXkFqcGc@._V1_.jpg", desc: "A lone Mandalorian bounty hunter traverses the outer reaches of the galaxy, five years after the fall of the Empire, tasked with retrieving a mysterious child who possesses great power.", note: "I watched S1-2, GF hasn't watched any.", group: "Star Wars", chronology: 12 },
+            { category: "SHOW", title: "The Mandalorian S3", me: false, her: false, imdb: 8.7, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BMjZlOGUwN2UtYjRkZC00OGJkLWEwY2YtZjk3NThiMWFkZDAxXkEyXkFqcGc@._V1_.jpg", desc: "The Mandalorian and Grogu travel to Mandalore where the Mandalore people face a threat to their culture and future.", note: "Neither of us has watched S3.", group: "Star Wars", chronology: 12.1 },
+            { category: "SHOW", title: "Book of Boba Fett", me: true, her: false, imdb: 7.2, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BY2JlY2NkOWItYjAyZS00Yzc5LWE4ZWEtMGY2NzBlZDkzNjYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The legendary bounty hunter Boba Fett and mercenary Fennec Shand navigate the Galaxy's underworld and stake their claim on the territory once controlled by Jabba the Hutt.", note: "I watched this, GF didn't.", group: "Star Wars", chronology: 13 },
+            { category: "SHOW", title: "Ahsoka", me: false, her: false, imdb: 7.6, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYWQ3NmQxZTEtNDc2MS00ODExLWE3ZDEtZTU2N2Y2NjAyNmY5XkEyXkFqcGc@._V1_.jpg", desc: "Former Jedi Knight Ahsoka Tano investigates an emerging threat to the galaxy following the fall of the Empire, searching for the missing Grand Admiral Thrawn.", note: "", group: "Star Wars", chronology: 14 },
+            { category: "SHOW", title: "Skeleton Crew", me: false, her: false, imdb: 7.0, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BN2VlZjA3ZTktODEzNC00ZDhlLWExMTQtZmZkNjRhNWJhMWNkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Set in the New Republic era, the series follows four children who get lost in the galaxy and must try to find their way home, encountering new adventures along the way.", note: "Upcoming", group: "Star Wars", chronology: 15 },
+            { category: "MOVIE", title: "SW Ep 7: Force Awakens", me: true, her: false, imdb: 7.8, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BOTAzODEzNDAzMl5BMl5BanBnXkFtZTgwMDU1MTgzNzE@._V1_FMjpg_UX1000_.jpg", desc: "Thirty years after the defeat of the Empire, a new threat, the First Order, arises. Rey, a scavenger, and Finn, a former stormtrooper, join Han Solo and Chewbacca to find the missing Luke Skywalker.", note: "I watched this, GF didn't.", group: "Star Wars", chronology: 16 },
+            { category: "MOVIE", title: "SW Ep 8: Last Jedi", me: false, her: false, imdb: 6.9, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BMjQ1MzcxNjg4N15BMl5BanBnXkFtZTgwNzgwMjY4MzI@._V1_.jpg", desc: "Rey develops her newly discovered abilities with the guidance of Luke Skywalker, who is unsettled by the strength of her powers, while the Resistance fights the First Order.", note: "", group: "Star Wars", chronology: 17 },
+            { category: "MOVIE", title: "SW Ep 9: Rise of Skywalker", me: false, her: false, imdb: 6.5, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BODg5ZTNmMTUtYThlNy00NjljLWE0MGUtYmQ1NDg4NWU5MjQ1XkEyXkFqcGc@._V1_.jpg", desc: "The surviving Resistance faces the First Order once more as Rey and Kylo Ren grapple with their complicated relationship and the return of a long-dead evil.", note: "", group: "Star Wars", chronology: 18 },
 
             // --- HARRY POTTER (GROUPED) ---
-            { category: "MOVIE", title: "HP 1: Sorcerer's Stone", me: "50/50", her: true, imdb: 7.6, tags: "Family, Fantasy, Magic", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", desc: "An orphaned boy enrolls in a school of wizardry, where he learns the truth about himself, his family and the terrible evil that haunts the magical world.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 1 },
-            { category: "MOVIE", title: "HP 2: Chamber of Secrets", me: "50/50", her: true, imdb: 7.4, tags: "Family, Fantasy, Mystery", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sdEOH0992YZ0QSxgXNIGLq1ToUi.jpg", desc: "An ancient prophecy foretells that a secret chamber at Hogwarts will be opened, unleashing a monster that will terrorize the students.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 2 },
-            { category: "MOVIE", title: "HP 3: Prisoner of Azkaban", me: "50/50", her: true, imdb: 7.9, tags: "Fantasy, Mystery, Darker Tone", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/aWxwnYoe8p2d2fcxOqtvAtJ72Rw.jpg", desc: "Sirius Black, an escaped convict, threatens Harry, leading to the introduction of soul-sucking Dementors and revelations about Harry's past.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 3 },
-            { category: "MOVIE", title: "HP 4: Goblet of Fire", me: "50/50", her: true, imdb: 7.7, tags: "Fantasy, Adventure, Tournament", image: "https://m.media-amazon.com/images/M/MV5BMTIzNzUzOTk2NV5BMl5BanBnXkFtZTYwNTI4MDg2._V1_.jpg", desc: "Harry is unexpectedly chosen as a champion in the Triwizard Tournament, a dangerous competition between rival magical schools, marking the return of Lord Voldemort.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 4 },
-            { category: "MOVIE", title: "HP 5: Order of Phoenix", me: "50/50", her: true, imdb: 7.5, tags: "Fantasy, Action, Rebellion", image: "https://m.media-amazon.com/images/M/MV5BYWJmM2M1YzItMjY1Ni00ODExLWE3ZDEtZTU2N2Y2NjAyNmY1XkEyXkFqcGc@._V1_.jpg", desc: "Harry tries to convince the magical community that Voldemort has returned, forming a secret defense group called 'Dumbledore's Army' to prepare for the inevitable war.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 5 },
-            { category: "MOVIE", title: "HP 6: Half-Blood Prince", me: "50/50", her: true, imdb: 7.6, tags: "Fantasy, Romance, Mystery", image: "https://m.media-amazon.com/images/M/MV5BNzU3NDg4NTAyNV5BMl5BanBnXkFtZTcwOTg2ODg1Mg@@._V1_FMjpg_UX1000_.jpg", desc: "As Voldemort tightens his grip on the Muggle and wizarding worlds, Harry discovers a mysterious old textbook belonging to the 'Half-Blood Prince' and explores key memories of Voldemort's past.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 6 },
-            { category: "MOVIE", title: "HP 7: Deathly Hallows 1", me: "50/50", her: true, imdb: 7.7, tags: "Fantasy, War, Hunt", image: "https://m.media-amazon.com/images/M/MV5BMTQ2OTE1Mjk0N15BMl5BanBnXkFtZTcwODE3MDAwNA@@._V1_.jpg", desc: "Harry, Ron, and Hermione leave Hogwarts to hunt down the Horcruxes—the secrets to Voldemort's immortality—without the protection of Dumbledore or the Order.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 7 },
-            { category: "MOVIE", title: "HP 8: Deathly Hallows 2", me: "50/50", her: true, imdb: 8.1, tags: "Fantasy, Epic Battle, Finale", image: "https://m.media-amazon.com/images/M/MV5BOTA1Mzc2N2ItZWRiNS00MjQzLTlmZDQtMjU0NmY1YWRkMGQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The battle between the good and evil forces of the wizarding world escalates into an all-out war. Harry races against time to destroy the remaining Horcruxes and confront Voldemort for the final time.", note: "GF watched all, I've seen but don't remember.", group: "HP", chronology: 8 },
+            { category: "MOVIE", title: "HP 1: Sorcerer's Stone", me: "50/50", her: true, imdb: 7.6, tags: "Adventure, Family, Fantasy", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg", desc: "An orphaned boy enrolls in a school of wizardry, where he learns the truth about himself, his family and the terrible evil that haunts the magical world.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 1 },
+            { category: "MOVIE", title: "HP 2: Chamber of Secrets", me: "50/50", her: true, imdb: 7.4, tags: "Adventure, Family, Fantasy", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/sdEOH0992YZ0QSxgXNIGLq1ToUi.jpg", desc: "An ancient prophecy foretells that a secret chamber at Hogwarts will be opened, unleashing a monster that will terrorize the students.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 2 },
+            { category: "MOVIE", title: "HP 3: Prisoner of Azkaban", me: "50/50", her: true, imdb: 7.9, tags: "Adventure, Family, Fantasy", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/aWxwnYoe8p2d2fcxOqtvAtJ72Rw.jpg", desc: "Sirius Black, an escaped convict, threatens Harry, leading to the introduction of soul-sucking Dementors and revelations about Harry's past.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 3 },
+            { category: "MOVIE", title: "HP 4: Goblet of Fire", me: "50/50", her: true, imdb: 7.7, tags: "Adventure, Family, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BMTIzNzUzOTk2NV5BMl5BanBnXkFtZTYwNTI4MDg2._V1_.jpg", desc: "Harry is unexpectedly chosen as a champion in the Triwizard Tournament, a dangerous competition between rival magical schools, marking the return of Lord Voldemort.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 4 },
+            { category: "MOVIE", title: "HP 5: Order of Phoenix", me: "50/50", her: true, imdb: 7.5, tags: "Adventure, Family, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BYWJmM2M1YzItMjY1Ni00ODExLWE3ZDEtZTU2N2Y2NjAyNmY1XkEyXkFqcGc@._V1_.jpg", desc: "Harry tries to convince the magical community that Voldemort has returned, forming a secret defense group called 'Dumbledore's Army' to prepare for the inevitable war.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 5 },
+            { category: "MOVIE", title: "HP 6: Half-Blood Prince", me: "50/50", her: true, imdb: 7.6, tags: "Adventure, Family, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BNzU3NDg4NTAyNV5BMl5BanBnXkFtZTcwOTg2ODg1Mg@@._V1_FMjpg_UX1000_.jpg", desc: "As Voldemort tightens his grip on the Muggle and wizarding worlds, Harry discovers a mysterious old textbook belonging to the 'Half-Blood Prince' and explores key memories of Voldemort's past.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 6 },
+            { category: "MOVIE", title: "HP 7: Deathly Hallows 1", me: "50/50", her: true, imdb: 7.7, tags: "Adventure, Family, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BMTQ2OTE1Mjk0N15BMl5BanBnXkFtZTcwODE3MDAwNA@@._V1_.jpg", desc: "Harry, Ron, and Hermione leave Hogwarts to hunt down the Horcruxes—the secrets to Voldemort's immortality—without the protection of Dumbledore or the Order.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 7 },
+            { category: "MOVIE", title: "HP 8: Deathly Hallows 2", me: "50/50", her: true, imdb: 8.1, tags: "Adventure, Family, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BOTA1Mzc2N2ItZWRiNS00MjQzLTlmZDQtMjU0NmY1YWRkMGQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The battle between the good and evil forces of the wizarding world escalates into an all-out war. Harry races against time to destroy the remaining Horcruxes and confront Voldemort for the final time.", note: "GF watched all, I've seen but don't remember.", group: "Harry Potter", chronology: 8 },
 
             // --- HOBBIT (GROUPED) ---
-            { category: "MOVIE", title: "Hobbit 1: Journey", me: true, her: false, imdb: 7.8, tags: "Fantasy, Adventure, Prequel", image: "https://m.media-amazon.com/images/M/MV5BMTcwNTE4MTUxMl5BMl5BanBnXkFtZTcwMDIyODM4OA@@._V1_FMjpg_UX1000_.jpg", desc: "A reluctant hobbit, Bilbo Baggins, sets out to the Lonely Mountain with a spirited group of dwarves to reclaim their home and treasure from the dragon Smaug.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 1 },
-            { category: "MOVIE", title: "Hobbit 2: Smaug", me: true, her: false, imdb: 7.8, tags: "Fantasy, Adventure, Dragon", image: "https://m.media-amazon.com/images/M/MV5BMzU0NDY0NDEzNV5BMl5BanBnXkFtZTgwOTIxNDU1MDE@._V1_.jpg", desc: "The Company of Dwarves continues its journey, encountering skin-changers, giant spiders, and wood-elves before Bilbo faces the terrifying dragon Smaug.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 2 },
-            { category: "MOVIE", title: "Hobbit 3: Five Armies", me: true, her: false, imdb: 7.4, tags: "Fantasy, War, Epic", image: "https://m.media-amazon.com/images/M/MV5BMTYzNDE3OTQ3MF5BMl5BanBnXkFtZTgwODczMTg4MjE@._V1_.jpg", desc: "The dwarves, men, and elves must decide whether to unite or be destroyed as a dark power and an army of Orcs descend upon the Lonely Mountain.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 3 },
+            { category: "MOVIE", title: "Hobbit 1: Journey", me: true, her: false, imdb: 7.8, tags: "Adventure, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BMTcwNTE4MTUxMl5BMl5BanBnXkFtZTcwMDIyODM4OA@@._V1_FMjpg_UX1000_.jpg", desc: "A reluctant hobbit, Bilbo Baggins, sets out to the Lonely Mountain with a spirited group of dwarves to reclaim their home and treasure from the dragon Smaug.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 1 },
+            { category: "MOVIE", title: "Hobbit 2: Smaug", me: true, her: false, imdb: 7.8, tags: "Adventure, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BMzU0NDY0NDEzNV5BMl5BanBnXkFtZTgwOTIxNDU1MDE@._V1_.jpg", desc: "The Company of Dwarves continues its journey, encountering skin-changers, giant spiders, and wood-elves before Bilbo faces the terrifying dragon Smaug.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 2 },
+            { category: "MOVIE", title: "Hobbit 3: Five Armies", me: true, her: false, imdb: 7.4, tags: "Adventure, Fantasy, War", image: "https://m.media-amazon.com/images/M/MV5BMTYzNDE3OTQ3MF5BMl5BanBnXkFtZTgwODczMTg4MjE@._V1_.jpg", desc: "The dwarves, men, and elves must decide whether to unite or be destroyed as a dark power and an army of Orcs descend upon the Lonely Mountain.", note: "I watched all three, GF hasn't.", group: "Hobbit", chronology: 3 },
 
             // --- LOTR (GROUPED) ---
-            { category: "MOVIE", title: "LOTR: Fellowship", me: true, her: false, imdb: 8.9, tags: "Epic Fantasy, Adventure", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg", desc: "A young hobbit, Frodo Baggins, inherits a mystical ring and embarks on an epic quest with eight companions to destroy it in the fires of Mount Doom before the Dark Lord Sauron can use it to conquer Middle-earth.", note: "", group: "LOTR", chronology: 1 },
-            { category: "MOVIE", title: "LOTR: Two Towers", me: true, her: false, imdb: 8.8, tags: "Epic Fantasy, War, Action", image: "https://m.media-amazon.com/images/M/MV5BMGQxMDdiOWUtYjc1Ni00YzM1LWE2NjMtZTg3Y2JkMjEzMTJjXkEyXkFqcGc@._V1_.jpg", desc: "While Frodo and Sam continue their journey to Mordor with the help of the manipulative Gollum, the scattered fellowship battles Sauron's forces at the great Battle of Helm's Deep.", note: "", group: "LOTR", chronology: 2 },
-            { category: "MOVIE", title: "LOTR: Return of King", me: true, her: false, imdb: 9.0, tags: "Epic Fantasy, Finale, Classic", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", desc: "The final battle for Middle-earth begins. Aragorn must lead the world of Men against Sauron's army, while Frodo and Sam continue their treacherous journey to Mount Doom.", note: "", group: "LOTR", chronology: 3 },
+            { category: "MOVIE", title: "LOTR: Fellowship", me: true, her: false, imdb: 8.9, tags: "Action, Adventure, Drama, Fantasy", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg", desc: "A young hobbit, Frodo Baggins, inherits a mystical ring and embarks on an epic quest with eight companions to destroy it in the fires of Mount Doom before the Dark Lord Sauron can use it to conquer Middle-earth.", note: "", group: "LOTR", chronology: 1 },
+            { category: "MOVIE", title: "LOTR: Two Towers", me: true, her: false, imdb: 8.8, tags: "Action, Adventure, Drama, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BMGQxMDdiOWUtYjc1Ni00YzM1LWE2NjMtZTg3Y2JkMjEzMTJjXkEyXkFqcGc@._V1_.jpg", desc: "While Frodo and Sam continue their journey to Mordor with the help of the manipulative Gollum, the scattered fellowship battles Sauron's forces at the great Battle of Helm's Deep.", note: "", group: "LOTR", chronology: 2 },
+            { category: "MOVIE", title: "LOTR: Return of King", me: true, her: false, imdb: 9.0, tags: "Action, Adventure, Drama, Fantasy", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", desc: "The final battle for Middle-earth begins. Aragorn must lead the world of Men against Sauron's army, while Frodo and Sam continue their treacherous journey to Mount Doom.", note: "", group: "LOTR", chronology: 3 },
             
             // --- IT (GROUPED) ---
-            { category: "MOVIE", title: "IT: Chapter One", me: false, her: true, imdb: 7.3, tags: "Horror, Mystery, Coming-of-Age", image: "https://m.media-amazon.com/images/M/MV5BZGZmOTZjNzUtOTE4OS00OGM3LWJiNGEtZjk4Yzg2M2Q1YzYxXkEyXkFqcGc@._V1_.jpg", desc: "Seven young outcasts in Derry, Maine, are forced to confront an ancient, shape-shifting evil that emerges from the sewers every 27 years to prey on children, often taking the form of Pennywise the Dancing Clown.", note: "GF watched this, I didn't. She also thinks she saw the movies, but not the show (upcoming).", group: "IT", chronology: 2 },
-            { category: "MOVIE", title: "IT: Chapter Two", me: false, her: true, imdb: 6.5, tags: "Horror, Supernatural, Finale", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zfE0R94v1E8cuKAerbskfD3VfUt.jpg", desc: "Twenty-seven years after the Losers Club defeated Pennywise, they are called back to Derry as children begin to disappear again, forcing the now-adult friends to confront their past and their deepest fears.", note: "GF watched this, I didn't. She also thinks she saw the movies, but not the show (upcoming).", group: "IT", chronology: 3 },
+            { category: "MOVIE", title: "IT: Chapter One", me: false, her: true, imdb: 7.3, tags: "Horror", image: "https://m.media-amazon.com/images/M/MV5BZGZmOTZjNzUtOTE4OS00OGM3LWJiNGEtZjk4Yzg2M2Q1YzYxXkEyXkFqcGc@._V1_.jpg", desc: "Seven young outcasts in Derry, Maine, are forced to confront an ancient, shape-shifting evil that emerges from the sewers every 27 years to prey on children, often taking the form of Pennywise the Dancing Clown.", note: "GF watched this, I didn't. She also thinks she saw the movies, but not the show (upcoming).", group: "It", chronology: 2 },
+            { category: "MOVIE", title: "IT: Chapter Two", me: false, her: true, imdb: 6.5, tags: "Drama, Fantasy, Horror", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/zfE0R94v1E8cuKAerbskfD3VfUt.jpg", desc: "Twenty-seven years after the Losers Club defeated Pennywise, they are called back to Derry as children begin to disappear again, forcing the now-adult friends to confront their past and their deepest fears.", note: "GF watched this, I didn't. She also thinks she saw the movies, but not the show (upcoming).", group: "It", chronology: 3 },
 
             // --- PLANET OF APES (GROUPED) ---
-            { category: "MOVIE", title: "Apes 1: Rise (2011)", me: true, her: false, imdb: 7.6, tags: "Sci-Fi, Action, Origin", image: "https://m.media-amazon.com/images/M/MV5BMjAyNDY2NzQ2MF5BMl5BanBnXkFtZTcwNjE3Njk5NQ@@._V1_.jpg", desc: "A scientist genetically engineers a powerful serum intended to cure Alzheimer's, but the drug inadvertently gives rise to a hyper-intelligent chimpanzee named Caesar, leading to the beginning of a global uprising.", note: "I watched all four, GF didn't.", group: "Apes", chronology: 1 },
-            { category: "MOVIE", title: "Apes 2: Dawn (2014)", me: true, her: false, imdb: 7.6, tags: "Sci-Fi, Post-Apocalyptic, Drama", image: "https://m.media-amazon.com/images/M/MV5BNWNjYzQ4ZGItZTg1My00NTM2LTg1NDUtYThjOTQwMTYyNjU1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Ten years after the simian flu wiped out most of humanity, Caesar leads a growing nation of genetically evolved apes, who are threatened by a group of human survivors.", note: "I watched all four, GF didn't.", group: "Apes", chronology: 2 },
-            { category: "MOVIE", title: "Apes 3: War (2017)", me: true, her: false, imdb: 7.4, tags: "Sci-Fi, War, Epic", image: "https://m.media-amazon.com/images/M/MV5BMzNhMzNiZDYtMzYxYy00YTYwLTkxNmYtNTJhOGU1Yjg5ODI5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Caesar and his apes are forced into a deadly conflict with a ruthless human army. Caesar must grapple with his darker instincts as he seeks revenge for the apes' losses.", note: "I watched all four, GF didn't.", group: "Apes", chronology: 3 },
-            { category: "MOVIE", title: "Apes 4: Kingdom (2024)", me: false, her: false, imdb: 7.0, tags: "Sci-Fi, Future, Adventure", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gKkl37BQuKTanygYQG1pyYgLVgf.jpg", desc: "Many generations after Caesar's reign, apes are the dominant species living harmoniously, but a new tyrannical ape leader builds an empire, forcing a young ape to question all he knows.", note: "", group: "Apes", chronology: 4 },
+            { category: "MOVIE", title: "Apes 1: Rise (2011)", me: true, her: false, imdb: 7.6, tags: "Action, Drama, Sci-Fi, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMjAyNDY2NzQ2MF5BMl5BanBnXkFtZTcwNjE3Njk5NQ@@._V1_.jpg", desc: "A scientist genetically engineers a powerful serum intended to cure Alzheimer's, but the drug inadvertently gives rise to a hyper-intelligent chimpanzee named Caesar, leading to the beginning of a global uprising.", note: "I watched all four, GF didn't.", group: "Planet of the Apes", chronology: 1 },
+            { category: "MOVIE", title: "Apes 2: Dawn (2014)", me: true, her: false, imdb: 7.6, tags: "Action, Adventure, Drama, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BNWNjYzQ4ZGItZTg1My00NTM2LTg1NDUtYThjOTQwMTYyNjU1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Ten years after the simian flu wiped out most of humanity, Caesar leads a growing nation of genetically evolved apes, who are threatened by a group of human survivors.", note: "I watched all four, GF didn't.", group: "Planet of the Apes", chronology: 2 },
+            { category: "MOVIE", title: "Apes 3: War (2017)", me: true, her: false, imdb: 7.4, tags: "Action, Adventure, Drama, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BMzNhMzNiZDYtMzYxYy00YTYwLTkxNmYtNTJhOGU1Yjg5ODI5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Caesar and his apes are forced into a deadly conflict with a ruthless human army. Caesar must grapple with his darker instincts as he seeks revenge for the apes' losses.", note: "I watched all four, GF didn't.", group: "Planet of the Apes", chronology: 3 },
+            { category: "MOVIE", title: "Apes 4: Kingdom (2024)", me: false, her: false, imdb: 7.0, tags: "Action, Adventure, Drama, Sci-Fi", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/gKkl37BQuKTanygYQG1pyYgLVgf.jpg", desc: "Many generations after Caesar's reign, apes are the dominant species living harmoniously, but a new tyrannical ape leader builds an empire, forcing a young ape to question all he knows.", note: "", group: "Planet of the Apes", chronology: 4 },
 
             // --- INDIANA JONES (GROUPED) ---
-            { category: "MOVIE", title: "Indy 1: Raiders", me: true, her: false, imdb: 8.4, tags: "Action, Adventure, Classic", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ceG9VzoRAVGwivFU403Wc3AHRys.jpg", desc: "Archaeologist and adventurer Indiana Jones races against the Nazis in 1936 to find the Ark of the Covenant before they can use its awesome power.", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 1 },
-            { category: "MOVIE", title: "Indy 2: Temple of Doom", me: true, her: false, imdb: 7.5, tags: "Action, Adventure, Dark", image: "https://m.media-amazon.com/images/M/MV5BOGUwZjZiNWQtYzAzZi00NGI5LWE4YmUtN2Y4YWMwY2RlZDkyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Indy, accompanied by a nightclub singer and a young sidekick, finds himself in a remote village in India where he must recover a sacred stone and free children enslaved in a dangerous mine.", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 2 },
-            { category: "MOVIE", title: "Indy 3: Last Crusade", me: true, her: false, imdb: 8.2, tags: "Action, Adventure, Father/Son", image: "https://m.media-amazon.com/images/M/MV5BNGIxNzQ0YzYtMjNmYi00YjBlLWFjNzEtNGE3ZGFmYTczM2MwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Indy teams up with his estranged father, Professor Henry Jones Sr., to find the Holy Grail before the Nazis can seize its immortal power.", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 3 },
-            { category: "MOVIE", title: "Indy 4: Crystal Skull", me: true, her: false, imdb: 6.2, tags: "Action, Sci-Fi, Revival", image: "https://m.media-amazon.com/images/M/MV5BYTFiMDk2NzItZDU5Ni00ZjBjLTkzYWQtYzcwZDIwMWZjMmZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "In 1957, Indy is pitted against Soviet agents while searching for a powerful, telepathic crystal skull in the jungles of Peru.", note: "I watched all, GF didn't watch any.", group: "Indy", chronology: 4 },
-            { category: "MOVIE", title: "Indy 5: Dial of Destiny", me: false, her: false, imdb: 6.6, tags: "Action, Time Travel, Finale", image: "https://m.media-amazon.com/images/M/MV5BYWJlOWE2ZjEtZGRhOC00M2YzLWFkZGEtYzIzZWI2Zjg3NWYxXkEyXkFqcGc@._V1_.jpg", desc: "Indy attempts to retrieve a legendary artifact known as the Antikythera, or 'Dial of Destiny,' before it falls into the hands of an ex-Nazi who is now working for NASA.", note: "", group: "Indy", chronology: 5 },
+            { category: "MOVIE", title: "Indy 1: Raiders", me: true, her: false, imdb: 8.4, tags: "Action, Adventure", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ceG9VzoRAVGwivFU403Wc3AHRys.jpg", desc: "Archaeologist and adventurer Indiana Jones races against the Nazis in 1936 to find the Ark of the Covenant before they can use its awesome power.", note: "I watched all, GF didn't watch any.", group: "Indiana Jones", chronology: 1 },
+            { category: "MOVIE", title: "Indy 2: Temple of Doom", me: true, her: false, imdb: 7.5, tags: "Action, Adventure", image: "https://m.media-amazon.com/images/M/MV5BOGUwZjZiNWQtYzAzZi00NGI5LWE4YmUtN2Y4YWMwY2RlZDkyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Indy, accompanied by a nightclub singer and a young sidekick, finds himself in a remote village in India where he must recover a sacred stone and free children enslaved in a dangerous mine.", note: "I watched all, GF didn't watch any.", group: "Indiana Jones", chronology: 2 },
+            { category: "MOVIE", title: "Indy 3: Last Crusade", me: true, her: false, imdb: 8.2, tags: "Action, Adventure", image: "https://m.media-amazon.com/images/M/MV5BNGIxNzQ0YzYtMjNmYi00YjBlLWFjNzEtNGE3ZGFmYTczM2MwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Indy teams up with his estranged father, Professor Henry Jones Sr., to find the Holy Grail before the Nazis can seize its immortal power.", note: "I watched all, GF didn't watch any.", group: "Indiana Jones", chronology: 3 },
+            { category: "MOVIE", title: "Indy 4: Crystal Skull", me: true, her: false, imdb: 6.2, tags: "Action, Adventure, Sci-Fi, Thriller", image: "https://m.media-amazon.com/images/M/MV5BYTFiMDk2NzItZDU5Ni00ZjBjLTkzYWQtYzcwZDIwMWZjMmZiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "In 1957, Indy is pitted against Soviet agents while searching for a powerful, telepathic crystal skull in the jungles of Peru.", note: "I watched all, GF didn't watch any.", group: "Indiana Jones", chronology: 4 },
+            { category: "MOVIE", title: "Indy 5: Dial of Destiny", me: false, her: false, imdb: 6.6, tags: "Action, Adventure, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYWJlOWE2ZjEtZGRhOC00M2YzLWFkZGEtYzIzZWI2Zjg3NWYxXkEyXkFqcGc@._V1_.jpg", desc: "Indy attempts to retrieve a legendary artifact known as the Antikythera, or 'Dial of Destiny,' before it falls into the hands of an ex-Nazi who is now working for NASA.", note: "", group: "Indiana Jones", chronology: 5 },
 
             // --- MOVIES (UNGROUPED) ---
-            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 6.0, tags: "Horror, Mystery, Upcoming", image: "https://m.media-amazon.com/images/M/MV5BNjIwZWY4ZDEtMmIxZS00NDA4LTg4ZGMtMzUwZTYyNzgxMzk5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An upcoming mysterious horror film directed by Ryan Coogler and starring Michael B. Jordan. Plot details are kept secret, promising a unique and genre-bending cinematic experience.", note: "Upcoming" },
-            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, tags: "Action, Time Loop, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BNThlODU1ZjAtMWZkOS00NDc4LWE5ZjYtZTk1NzYwZTdjMmJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A retired special forces agent finds himself trapped in a never-ending time loop on the day of his death, where he must repeatedly fight his way through elite assassins to reach the 'boss' and break the cycle.", note: "" },
-            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, tags: "Historical, Drama, War", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/8u0QBGUbZcBW59VEAdmeFl9g98N.jpg", desc: "Hal, wayward prince and reluctant heir to the English throne, turns his back on royal life and lives among the people. But when his tyrannical father dies, Hal must embrace the life he previously avoided and become King Henry V.", note: "" },
-            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, tags: "Horror, Psychological, Occult", image: "https://m.media-amazon.com/images/M/MV5BNTEyZGQwODctYWJjZi00NjFmLTg3YmEtMzlhNjljOGZhMWMyXkEyXkFqcGc@._V1_.jpg", desc: "After the death of their secretive grandmother, a family begins to unravel chilling secrets about their ancestry, leading them to encounter a terrifying fate they inherited.", note: "" },
-            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, tags: "Action, Adventure, Treasure Hunt", image: "https://m.media-amazon.com/images/M/MV5BYjQxYWNiNzgtOTc2Yi00OGEwLTk5MjAtODdiZTk0ZDJlZGY4XkEyXkFqcGc@._V1_.jpg", desc: "Street-smart Nathan Drake is recruited by seasoned treasure hunter Victor 'Sully' Sullivan to recover a fortune amassed by Ferdinand Magellan, lost 500 years ago by the House of Moncada.", note: "" },
-            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, tags: "Action, Zombie, Pandemic", image: "https://m.media-amazon.com/images/M/MV5BODg3ZTM2YWQtZDE5Ny00NGNiLTkzYjgtYWVlYjNkOTg5NDI1XkEyXkFqcGc@._V1_.jpg", desc: "Former United Nations investigator Gerry Lane traverses the world in a race against time to stop a fast-moving zombie pandemic that is collapsing armies and governments.", note: "" },
-            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, tags: "Western, Action, Revisionist", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7oWY8VDWW7thTzWh3OKYRkWUlD5.jpg", desc: "A freed slave, Django, teams up with a German bounty hunter to rescue his wife from a brutal Mississippi plantation owner.", note: "" },
-            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, tags: "Action, Comedy, Ensemble Cast", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/tVxDe01Zy3kZqaZRNiXFGDICdZk.jpg", desc: "Five assassins aboard a fast-moving bullet train discover their missions are interconnected as they race through modern-day Japan.", note: "" },
-            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, tags: "Western, Action, Remake", image: "https://m.media-amazon.com/images/M/MV5BMTUzNTc0NTAyM15BMl5BanBnXkFtZTgwMTk1ODA5OTE@._V1_.jpg", desc: "Seven gunfighters are hired to protect a small town from a ruthless industrialist and his crew of bandits in the American West.", note: "" },
-            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, tags: "Crime, Comedy, British", image: "https://m.media-amazon.com/images/M/MV5BMWZkZGIyMTQtNTI3Mi00ODhkLTk3OTctNWI4MTU1NTcyNGUxXkEyXkFqcGc@._V1_.jpg", desc: "An American expatriate tries to sell off his highly profitable marijuana empire in London, triggering a chain of plots, schemes, bribes, and blackmail from various lowlifes.", note: "" },
-            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, tags: "Crime, Heist, Black Comedy", image: "https://m.media-amazon.com/images/M/MV5BYzk5NjJkMTQtN2IyNC00YWM5LTlhZmMtNGI3MWNhMTU1YTc4XkEyXkFqcGc@._V1_.jpg", desc: "Unscrupulous boxing promoters, high-stakes gamblers, a Russian gangster, and a dog all figure into a complex web of interwoven plots involving a stolen diamond.", note: "" },
-            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, tags: "Family, Animation, Comedy", image: "https://m.media-amazon.com/images/M/MV5BMTQ0OGMzZWEtNzM2NC00MDkwLWIwMDQtMTM0MmJhNTc1YmY3XkEyXkFqcGc@._V1_.jpg", desc: "The world-famous, Monday-hating, lasagna-loving indoor cat Garfield gets an unexpected reunion with his long-lost father and is forced to join him on a high-stakes adventure.", note: "" },
-            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, tags: "Sci-Fi, Space, Drama", image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A team of explorers travel through a newly discovered wormhole in space, trying to ensure humanity's survival by finding a new habitable planet.", note: "" },
-            { category: "MOVIE", title: "Constantine", me: true, her: false, imdb: 7.0, tags: "Action, Fantasy, Horror", image: "https://m.media-amazon.com/images/M/MV5BM2Q0YTNmOTItZWY2ZC00M2M0LTgxNzgtNWM0OGZiMGM3ODdjXkEyXkFqcGc@._V1_.jpg", desc: "Detective Angela approaches Constantine, a demon hunter, to help her investigate her twin sister's mysterious death. As he digs deeper, he realizes that demons are trying to enter the human world.", note: "" },
+            { category: "MOVIE", title: "Sinners", me: false, her: false, imdb: 6.0, tags: "Drama, Horror, Mystery, Thriller", image: "https://m.media-amazon.com/images/M/MV5BNjIwZWY4ZDEtMmIxZS00NDA4LTg4ZGMtMzUwZTYyNzgxMzk5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "An upcoming mysterious horror film directed by Ryan Coogler and starring Michael B. Jordan. Plot details are kept secret, promising a unique and genre-bending cinematic experience.", note: "Upcoming" },
+            { category: "MOVIE", title: "Boss Level", me: true, her: false, imdb: 6.8, tags: "Action, Mystery, Sci-Fi, Thriller", image: "https://m.media-amazon.com/images/M/MV5BNThlODU1ZjAtMWZkOS00NDc4LWE5ZjYtZTk1NzYwZTdjMmJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A retired special forces agent finds himself trapped in a never-ending time loop on the day of his death, where he must repeatedly fight his way through elite assassins to reach the 'boss' and break the cycle.", note: "" },
+            { category: "MOVIE", title: "The King", me: false, her: false, imdb: 7.3, tags: "Biography, Drama, History, War", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/8u0QBGUbZcBW59VEAdmeFl9g98N.jpg", desc: "Hal, wayward prince and reluctant heir to the English throne, turns his back on royal life and lives among the people. But when his tyrannical father dies, Hal must embrace the life he previously avoided and become King Henry V.", note: "" },
+            { category: "MOVIE", title: "Hereditary", me: false, her: false, imdb: 7.3, tags: "Drama, Horror, Mystery", image: "https://m.media-amazon.com/images/M/MV5BNTEyZGQwODctYWJjZi00NjFmLTg3YmEtMzlhNjljOGZhMWMyXkEyXkFqcGc@._V1_.jpg", desc: "After the death of their secretive grandmother, a family begins to unravel chilling secrets about their ancestry, leading them to encounter a terrifying fate they inherited.", note: "" },
+            { category: "MOVIE", title: "Uncharted", me: true, her: false, imdb: 6.3, tags: "Action, Adventure", image: "https://m.media-amazon.com/images/M/MV5BYjQxYWNiNzgtOTc2Yi00OGEwLTk5MjAtODdiZTk0ZDJlZGY4XkEyXkFqcGc@._V1_.jpg", desc: "Street-smart Nathan Drake is recruited by seasoned treasure hunter Victor 'Sully' Sullivan to recover a fortune amassed by Ferdinand Magellan, lost 500 years ago by the House of Moncada.", note: "" },
+            { category: "MOVIE", title: "World War Z", me: true, her: false, imdb: 7.0, tags: "Action, Adventure, Horror, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BODg3ZTM2YWQtZDE5Ny00NGNiLTkzYjgtYWVlYjNkOTg5NDI1XkEyXkFqcGc@._V1_.jpg", desc: "Former United Nations investigator Gerry Lane traverses the world in a race against time to stop a fast-moving zombie pandemic that is collapsing armies and governments.", note: "" },
+            { category: "MOVIE", title: "Django Unchained", me: true, her: false, imdb: 8.5, tags: "Drama, Western", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/7oWY8VDWW7thTzWh3OKYRkWUlD5.jpg", desc: "A freed slave, Django, teams up with a German bounty hunter to rescue his wife from a brutal Mississippi plantation owner.", note: "" },
+            { category: "MOVIE", title: "Bullet Train", me: false, her: false, imdb: 7.3, tags: "Action, Comedy, Thriller", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/tVxDe01Zy3kZqaZRNiXFGDICdZk.jpg", desc: "Five assassins aboard a fast-moving bullet train discover their missions are interconnected as they race through modern-day Japan.", note: "" },
+            { category: "MOVIE", title: "Magnificent Seven", me: true, her: false, imdb: 6.9, tags: "Action, Adventure, Western", image: "https://m.media-amazon.com/images/M/MV5BMTUzNTc0NTAyM15BMl5BanBnXkFtZTgwMTk1ODA5OTE@._V1_.jpg", desc: "Seven gunfighters are hired to protect a small town from a ruthless industrialist and his crew of bandits in the American West.", note: "" },
+            { category: "MOVIE", title: "The Gentlemen", me: true, her: false, imdb: 7.8, tags: "Action, Comedy, Crime", image: "https://m.media-amazon.com/images/M/MV5BMWZkZGIyMTQtNTI3Mi00ODhkLTk3OTctNWI4MTU1NTcyNGUxXkEyXkFqcGc@._V1_.jpg", desc: "An American expatriate tries to sell off his highly profitable marijuana empire in London, triggering a chain of plots, schemes, bribes, and blackmail from various lowlifes.", note: "" },
+            { category: "MOVIE", title: "Snatch", me: true, her: false, imdb: 8.2, tags: "Comedy, Crime", image: "https://m.media-amazon.com/images/M/MV5BYzk5NjJkMTQtN2IyNC00YWM5LTlhZmMtNGI3MWNhMTU1YTc4XkEyXkFqcGc@._V1_.jpg", desc: "Unscrupulous boxing promoters, high-stakes gamblers, a Russian gangster, and a dog all figure into a complex web of interwoven plots involving a stolen diamond.", note: "" },
+            { category: "MOVIE", title: "Garfield", me: false, her: false, imdb: 5.7, tags: "Animation, Adventure, Comedy, Family", image: "https://m.media-amazon.com/images/M/MV5BMTQ0OGMzZWEtNzM2NC00MDkwLWIwMDQtMTM0MmJhNTc1YmY3XkEyXkFqcGc@._V1_.jpg", desc: "The world-famous, Monday-hating, lasagna-loving indoor cat Garfield gets an unexpected reunion with his long-lost father and is forced to join him on a high-stakes adventure.", note: "" },
+            { category: "MOVIE", title: "Interstellar", me: true, her: false, imdb: 8.7, tags: "Adventure, Drama, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A team of explorers travel through a newly discovered wormhole in space, trying to ensure humanity's survival by finding a new habitable planet.", note: "" },
+            { category: "MOVIE", title: "Constantine", me: true, her: false, imdb: 7.0, tags: "Action, Fantasy, Horror, Mystery", image: "https://m.media-amazon.com/images/M/MV5BM2Q0YTNmOTItZWY2ZC00M2M0LTgxNzgtNWM0OGZiMGM3ODdjXkEyXkFqcGc@._V1_.jpg", desc: "Detective Angela approaches Constantine, a demon hunter, to help her investigate her twin sister's mysterious death. As he digs deeper, he realizes that demons are trying to enter the human world.", note: "" },
             
             // --- SHOWS ---
-            { category: "SHOW", title: "The Boys", me: "50/50", her: false, imdb: 8.7, tags: "Action, Dark Comedy, Superhero", image: "https://m.media-amazon.com/images/M/MV5BMWJlN2U5MzItNjU4My00NTM2LWFjOWUtOWFiNjg3ZTMxZDY1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A group of vigilantes known informally as 'The Boys' sets out to take down the corrupt, celebrity superheroes who abuse their powers rather than use them for good.", note: "I have watched up to the second-to-last season." },
-            { category: "SHOW", title: "IT: Welcome to Derry", me: false, her: false, imdb: 7.5, tags: "Horror, Prequel, Supernatural", image: "https://m.media-amazon.com/images/M/MV5BODg3ZTFkN2MtNTA1ZS00NmJiLWEwNDItZWY1NmMyNWEzYWYxXkEyXkFqcGc@._V1_.jpg", desc: "A prequel series to the *IT* movies, set in the 1960s, detailing the origins of Pennywise the Clown and the town of Derry before the events of the films.", note: "Upcoming" },
-            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, tags: "Mystery, Horror, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYzM5ZWMxOGEtZjEyMC00YjQ0LThiYjEtZjVkZGEzN2NlOGEwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A terrifying town in middle America traps everyone who enters. Residents must find a way to stay alive against the nightly threats of the forest and search for a way out.", note: "We watched 4 episodes together." },
-            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, tags: "Sci-Fi, Psychological Thriller, Workplace", image: "https://m.media-amazon.com/images/M/MV5BZDI5YzJhODQtMzQyNy00YWNmLWIxMjUtNDBjNjA5YWRjMzExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Mark leads a team of employees whose memories have been surgically divided between their work and personal lives. When a mysterious colleague appears, he begins a journey to discover the truth about his job.", note: "I watched half of it." },
-            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, tags: "Action, School, Crime", image: "https://m.media-amazon.com/images/M/MV5BYjJmZjU5MDYtMTljMy00YmRkLWJlMWMtZDQ2NjYxNzIyYzYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Yeon Shi-eun, physically weak but extremely smart, uses his brain and psychology to fight against the school bullies who constantly torment him and his friends.", note: "I watched half of it." },
-            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, tags: "Post-Apocalyptic, Sci-Fi, Dark Comedy", image: "https://m.media-amazon.com/images/M/MV5BOWRjYTU4MjQtOWI0ZC00MmY1LWJiMmMtOGRkZTAwNzhmMjcyXkEyXkFqcGc@._V1_.jpg", desc: "Based on the video game series, the story follows Lucy, a vault dweller, who must leave the safety of her underground home to venture into the brutal, radiation-filled wasteland of a post-nuclear Los Angeles.", note: "too much gore?" },
-            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, tags: "Crime, Thriller, Serial Killer", image: "https://m.media-amazon.com/images/M/MV5BMTQ3YmQ4YzMtOTkyZC00YmM5LThhZjEtM2E0MjFkNTc0OGJhXkEyXkFqcGc@._V1_QL75_UY281_CR14,0,190,281_.jpg", desc: "By day, Dexter Morgan is a blood spatter analyst for the Miami Metro Police. By night, he is a serial killer who hunts other murderers, guided by a strict ethical code established by his adoptive father.", note: "" },
-            { category: "SHOW", title: "Game Of Thrones", me: "check", her: "check", imdb: 9.2, tags: "Epic Fantasy, Drama, Political", image: "https://m.media-amazon.com/images/M/MV5BMTNhMDJmNmYtNDQ5OS00ODdlLWE0ZDAtZTgyYTIwNDY3OTU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Nine noble families fight for control over the mythical lands of Westeros, while an ancient enemy returns after being dormant for thousands of years.", note: "I finished S6, we finished on Episode 3 of an early season. Needs restarting from S4/where we stopped." },
-            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, tags: "Urban Fantasy, Crime, Comedy", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ekZobS8isE6mA53RAiGDG93hBxL.jpg", desc: "Bored and unhappy as the Lord of Hell, Lucifer Morningstar resigns his throne and retires to Los Angeles, where he owns a nightclub and becomes a consultant to the LAPD.", note: "" },
-            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, tags: "Sci-Fi, Comedy, Romance", image: "https://m.media-amazon.com/images/M/MV5BYzYzOTY3MzctOTQ1ZC00NjRlLTljMzMtNDI0OWE1N2I4YTdhXkEyXkFqcGc@._V1_.jpg", desc: "A man who dies early is uploaded to a luxury digital afterlife resort. He must navigate this new existence with the help of his customer service 'Angel,' who is still very much alive.", note: "" },
-            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, tags: "Animation, Action, Kids", image: "https://m.media-amazon.com/images/M/MV5BNGFlYzQ3OWYtMjk1Ni00MmVhLThkOTMtMDM0NGI4YWYyYjc4XkEyXkFqcGc@._V1_.jpg", desc: "A team of young ninja heroes, trained by the wise Master Wu, protect the land of Ninjago from various villains using elemental powers and large mechs.", note: "" },
-            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, tags: "Horror, Thriller, Korean", image: "https://m.media-amazon.com/images/M/MV5BMzY4NDZmOGUtZTlmYy00N2I0LTg3YWYtNTk1M2ZkMDk1Mjg1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A high-rise apartment building is sealed off when a new infectious disease breaks out, turning the residents into zombie-like creatures. The series follows the desperate quarantine and the struggle for survival.", note: "" },
-            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, tags: "Sci-Fi, Time Travel, German", image: "https://m.media-amazon.com/images/M/MV5BOWJjMGViY2UtNTAzNS00ZGFjLWFkNTMtMDBiMDMyZTM1NTY3XkEyXkFqcGc@._V1_.jpg", desc: "When two children go missing in a small German town, its sinful past is exposed along with the double lives and fractured relationships that exist among four families, all linked by a mysterious time travel wormhole.", note: "" },
-            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, tags: "Horror, Vampire, Thriller", image: "https://m.media-amazon.com/images/M/MV5BYzlmNWU4OTMtMDY0My00MTI0LWFhNWItNzU0OGJhNWI0MDI3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A plane lands at JFK International Airport with everyone on board dead. Dr. Ephraim Goodweather investigates the incident, quickly realizing that an ancient, powerful strain of vampirism has arrived in New York City.", note: "" },
-            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, tags: "Crime, Historical, Drama", image: "https://m.media-amazon.com/images/M/MV5BOGM0NGY3ZmItOGE2ZC00OWIxLTk0N2EtZWY4Yzg3ZDlhNGI3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A notorious gang from Birmingham, England, led by the charismatic and ambitious Tommy Shelby, rises to power in the aftermath of World War I.", note: "" },
-            { category: "SHOW", title: "The Last of Us S1", me: true, her: false, imdb: 8.7, tags: "Post-Apocalyptic, Drama, Zombie", image: "https://m.media-amazon.com/images/M/MV5BYWI3ODJlMzktY2U5NC00ZjdlLWE1MGItNWQxZDk3NWNjN2RhXkEyXkFqcGc@._V1_.jpg", desc: "Twenty years after modern civilization has been destroyed by a fungal pandemic, a hardened survivor is hired to smuggle a 14-year-old girl, who may hold the key to the cure, out of an oppressive quarantine zone.", note: "I finished Season 1." },
-            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, tags: "Sci-Fi, Dystopian, Action", image: "https://m.media-amazon.com/images/M/MV5BMTQ3NzA1MTY3MV5BMl5BanBnXkFtZTgwNzE2Mzg5MTE@._V1_.jpg", desc: "Set seven years after the world has become a frozen wasteland, the remnants of humanity inhabit a continually moving train, Snowpiercer, where class warfare, social injustice, and political survival are constants.", note: "" },
-            { category: "SHOW", title: "Moon Knight", me: false, her: false, imdb: 7.3, tags: "Action, Adventure, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BNDAzNmYwZjgtNDc3YS00ZDMyLTk0MjktMTg4MGNmNGU3MjlhXkEyXkFqcGc@._V1_.jpg", desc: "Steven Grant discovers he's been granted the powers of an Egyptian moon god. But he soon finds out that these newfound powers can be both a blessing and a curse to his troubled life.", note: "" },
+            { category: "SHOW", title: "The Boys", me: "50/50", her: false, imdb: 8.7, tags: "Action, Comedy, Crime, Drama, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BMWJlN2U5MzItNjU4My00NTM2LWFjOWUtOWFiNjg3ZTMxZDY1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A group of vigilantes known informally as 'The Boys' sets out to take down the corrupt, celebrity superheroes who abuse their powers rather than use them for good.", note: "I have watched up to the second-to-last season." },
+            { category: "SHOW", title: "IT: Welcome to Derry", me: false, her: false, imdb: 7.5, tags: "Drama, Horror, Mystery", image: "https://m.media-amazon.com/images/M/MV5BODg3ZTFkN2MtNTA1ZS00NmJiLWEwNDItZWY1NmMyNWEzYWYxXkEyXkFqcGc@._V1_.jpg", desc: "A prequel series to the *IT* movies, set in the 1960s, detailing the origins of Pennywise the Clown and the town of Derry before the events of the films.", note: "Upcoming" },
+            { category: "SHOW", title: "From", me: "50/50", her: "50/50", imdb: 7.8, tags: "Drama, Horror, Mystery, Sci-Fi, Thriller", image: "https://m.media-amazon.com/images/M/MV5BYzM5ZWMxOGEtZjEyMC00YjQ0LThiYjEtZjVkZGEzN2NlOGEwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A terrifying town in middle America traps everyone who enters. Residents must find a way to stay alive against the nightly threats of the forest and search for a way out.", note: "We watched 4 episodes together." },
+            { category: "SHOW", title: "Severance", me: "50/50", her: false, imdb: 8.7, tags: "Drama, Mystery, Sci-Fi, Thriller", image: "https://m.media-amazon.com/images/M/MV5BZDI5YzJhODQtMzQyNy00YWNmLWIxMjUtNDBjNjA5YWRjMzExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Mark leads a team of employees whose memories have been surgically divided between their work and personal lives. When a mysterious colleague appears, he begins a journey to discover the truth about his job.", note: "I watched half of it." },
+            { category: "SHOW", title: "Weak Hero", me: "50/50", her: false, imdb: 8.5, tags: "Action, Crime, Drama", image: "https://m.media-amazon.com/images/M/MV5BYjJmZjU5MDYtMTljMy00YmRkLWJlMWMtZDQ2NjYxNzIyYzYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Yeon Shi-eun, physically weak but extremely smart, uses his brain and psychology to fight against the school bullies who constantly torment him and his friends.", note: "I watched half of it." },
+            { category: "SHOW", title: "Fallout", me: false, her: false, imdb: 8.4, tags: "Action, Adventure, Drama, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BOWRjYTU4MjQtOWI0ZC00MmY1LWJiMmMtOGRkZTAwNzhmMjcyXkEyXkFqcGc@._V1_.jpg", desc: "Based on the video game series, the story follows Lucy, a vault dweller, who must leave the safety of her underground home to venture into the brutal, radiation-filled wasteland of a post-nuclear Los Angeles.", note: "too much gore?" },
+            { category: "SHOW", title: "Dexter", me: false, her: false, imdb: 8.6, tags: "Crime, Drama, Mystery, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMTQ3YmQ4YzMtOTkyZC00YmM5LThhZjEtM2E0MjFkNTc0OGJhXkEyXkFqcGc@._V1_QL75_UY281_CR14,0,190,281_.jpg", desc: "By day, Dexter Morgan is a blood spatter analyst for the Miami Metro Police. By night, he is a serial killer who hunts other murderers, guided by a strict ethical code established by his adoptive father.", note: "" },
+            { category: "SHOW", title: "Game Of Thrones", me: "check", her: "check", imdb: 9.2, tags: "Action, Adventure, Drama, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BMTNhMDJmNmYtNDQ5OS00ODdlLWE0ZDAtZTgyYTIwNDY3OTU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "Nine noble families fight for control over the mythical lands of Westeros, while an ancient enemy returns after being dormant for thousands of years.", note: "I finished S6, we finished on Episode 3 of an early season. Needs restarting from S4/where we stopped." },
+            { category: "SHOW", title: "Lucifer", me: true, her: false, imdb: 8.1, tags: "Crime, Drama, Fantasy", image: "https://image.tmdb.org/t/p/w300_and_h450_bestv2/ekZobS8isE6mA53RAiGDG93hBxL.jpg", desc: "Bored and unhappy as the Lord of Hell, Lucifer Morningstar resigns his throne and retires to Los Angeles, where he owns a nightclub and becomes a consultant to the LAPD.", note: "" },
+            { category: "SHOW", title: "Upload", me: false, her: false, imdb: 7.9, tags: "Comedy, Mystery, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYzYzOTY3MzctOTQ1ZC00NjRlLTljMzMtNDI0OWE1N2I4YTdhXkEyXkFqcGc@._V1_.jpg", desc: "A man who dies early is uploaded to a luxury digital afterlife resort. He must navigate this new existence with the help of his customer service 'Angel,' who is still very much alive.", note: "" },
+            { category: "SHOW", title: "Lego Ninjago", me: true, her: false, imdb: 7.0, tags: "Animation, Action, Adventure, Comedy, Family, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BNGFlYzQ3OWYtMjk1Ni00MmVhLThkOTMtMDM0NGI4YWYyYjc4XkEyXkFqcGc@._V1_.jpg", desc: "A team of young ninja heroes, trained by the wise Master Wu, protect the land of Ninjago from various villains using elemental powers and large mechs.", note: "" },
+            { category: "SHOW", title: "Happiness", me: false, her: false, imdb: 8.2, tags: "Action, Fantasy, Horror, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMzY4NDZmOGUtZTlmYy00N2I0LTg3YWYtNTk1M2ZkMDk1Mjg1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A high-rise apartment building is sealed off when a new infectious disease breaks out, turning the residents into zombie-like creatures. The series follows the desperate quarantine and the struggle for survival.", note: "" },
+            { category: "SHOW", title: "Dark", me: false, her: false, imdb: 8.7, tags: "Crime, Drama, Mystery, Sci-Fi, Thriller", image: "https://m.media-amazon.com/images/M/MV5BOWJjMGViY2UtNTAzNS00ZGFjLWFkNTMtMDBiMDMyZTM1NTY3XkEyXkFqcGc@._V1_.jpg", desc: "When two children go missing in a small German town, its sinful past is exposed along with the double lives and fractured relationships that exist among four families, all linked by a mysterious time travel wormhole.", note: "" },
+            { category: "SHOW", title: "The Strain", me: false, her: false, imdb: 7.3, tags: "Drama, Horror, Thriller", image: "https://m.media-amazon.com/images/M/MV5BYzlmNWU4OTMtMDY0My00MTI0LWFhNWItNzU0OGJhNWI0MDI3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A plane lands at JFK International Airport with everyone on board dead. Dr. Ephraim Goodweather investigates the incident, quickly realizing that an ancient, powerful strain of vampirism has arrived in New York City.", note: "" },
+            { category: "SHOW", title: "Peaky Blinders", me: false, her: false, imdb: 8.8, tags: "Crime, Drama", image: "https://m.media-amazon.com/images/M/MV5BOGM0NGY3ZmItOGE2ZC00OWIxLTk0N2EtZWY4Yzg3ZDlhNGI3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "A notorious gang from Birmingham, England, led by the charismatic and ambitious Tommy Shelby, rises to power in the aftermath of World War I.", note: "" },
+            { category: "SHOW", title: "The Last of Us S1", me: true, her: false, imdb: 8.7, tags: "Action, Adventure, Drama, Horror, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BYWI3ODJlMzktY2U5NC00ZjdlLWE1MGItNWQxZDk3NWNjN2RhXkEyXkFqcGc@._V1_.jpg", desc: "Twenty years after modern civilization has been destroyed by a fungal pandemic, a hardened survivor is hired to smuggle a 14-year-old girl, who may hold the key to the cure, out of an oppressive quarantine zone.", note: "I finished Season 1." },
+            { category: "SHOW", title: "Snowpiercer", me: false, her: false, imdb: 6.9, tags: "Action, Drama, Sci-Fi, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMTQ3NzA1MTY3MV5BMl5BanBnXkFtZTgwNzE2Mzg5MTE@._V1_.jpg", desc: "Set seven years after the world has become a frozen wasteland, the remnants of humanity inhabit a continually moving train, Snowpiercer, where class warfare, social injustice, and political survival are constants.", note: "" },
+            { category: "SHOW", title: "Moon Knight", me: false, her: false, imdb: 7.3, tags: "Action, Adventure, Fantasy, Sci-Fi", image: "https://m.media-amazon.com/images/M/MV5BNDAzNmYwZjgtNDc3YS00ZDMyLTk0MjktMTg4MGNmNGU3MjlhXkEyXkFqcGc@._V1_.jpg", desc: "Steven Grant discovers he's been granted the powers of an Egyptian moon god. But he soon finds out that these newfound powers can be both a blessing and a curse to his troubled life.", note: "" },
             { category: "SHOW", title: "Breaking Bad", me: false, her: false, imdb: 9.5, tags: "Crime, Drama, Thriller", image: "https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_QL75_UX190_CR0,2,190,281_.jpg", desc: "A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student to secure his family's future.", note: "" },
 
             // --- YOUTUBE ---
-            { category: "YOUTUBE", title: "YouTube Random Pick", me: false, her: false, imdb: 0, tags: "Vlog, Documentary, Random", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "When you can't decide, let fate choose the next video from your shared playlist.", note: "Random pick" },
-            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, tags: "Comedy, News, Satire", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A compilation of the best segments and funny moments from John Oliver's insightful and humorous weekly program.", note: "John Oliver?" },
-            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: "check", her: "check", imdb: 0, tags: "Vlog, Travel, Adventure", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "Ludwig and his friends travel across Japan, documenting their adventures, challenges, and cultural experiences in a series of vlogs.", note: "I finished, we stopped at episode 3 together." },
-            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, tags: "Vlog, Travel, Challenge", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A travel challenge series involving crossing the United States and visiting 50 states for a humorous or specific goal.", note: "stopped on like ep.16?" }
+            { category: "YOUTUBE", title: "YouTube Random Pick", me: false, her: false, imdb: 0, tags: "Reality-TV, Documentary", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "When you can't decide, let fate choose the next video from your shared playlist.", note: "Random pick" },
+            { category: "YOUTUBE", title: "Oliver Supercut", me: true, her: false, imdb: 0, tags: "Comedy, News, Talk-Show", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A compilation of the best segments and funny moments from John Oliver's insightful and humorous weekly program.", note: "John Oliver?" },
+            { category: "YOUTUBE", title: "Ludwig Japan Trip", me: "check", her: "check", imdb: 0, tags: "Documentary, Reality-TV, Adventure", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "Ludwig and his friends travel across Japan, documenting their adventures, challenges, and cultural experiences in a series of vlogs.", note: "I finished, we stopped at episode 3 together." },
+            { category: "YOUTUBE", title: "Ryan 50 State Trip", me: "50/50", her: "50/50", imdb: 0, tags: "Documentary, Reality-TV, Adventure", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png", desc: "A travel challenge series involving crossing the United States and visiting 50 states for a humorous or specific goal.", note: "stopped on like ep.16?" }
         ];
 
         let currentCategory = 'all';
@@ -386,13 +447,13 @@
         let currentModalIndex = 0;
 
         function getStatusInfo(me, her) {
-            if (me === "together" || her === "together") return { text: "Watching Together 💞", class: "s-together", dot: "d-together", code: "together" };
-            if (me === "check" || her === "check") return { text: "Check Note ⚠️", class: "s-check", dot: "d-check", code: "check" };
-            if (me === "50/50" || her === "50/50") return { text: "Paused / In Progress ⏸️", class: "s-paused", dot: "d-paused", code: "paused" };
-            if (me === true && her === true) return { text: "Completed Together ✅", class: "s-done", dot: "d-done", code: "done" };
-            if (me === false && her === false) return { text: "New ✨", class: "s-new", dot: "d-new", code: "new" };
-            if (me === true && her === false) return { text: "Only Me 👤", class: "s-me", dot: "d-me", code: "me" };
-            if (me === false && her === true) return { text: "Only Her 💕", class: "s-her", dot: "d-her", code: "her" };
+            if (me === "together" || her === "together") return { text: "Watching Together", class: "s-together", dot: "d-together", code: "together" };
+            if (me === "check" || her === "check") return { text: "Check Note", class: "s-check", dot: "d-check", code: "check" };
+            if (me === "50/50" || her === "50/50") return { text: "Paused", class: "s-paused", dot: "d-paused", code: "paused" };
+            if (me === true && her === true) return { text: "Completed Together", class: "s-done", dot: "d-done", code: "done" };
+            if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
+            if (me === true && her === false) return { text: "Only Me", class: "s-me", dot: "d-me", code: "me" };
+            if (me === false && her === true) return { text: "Only Her", class: "s-her", dot: "d-her", code: "her" };
             return { text: "Status Unknown", class: "s-paused", dot: "d-paused", code: "paused" };
         }
 
@@ -408,14 +469,11 @@
             const allTags = new Set();
             mediaList.forEach(item => {
                 if (item.tags) {
-                    // Split tags by comma, trim whitespace, and add to set
                     item.tags.split(',').forEach(tag => allTags.add(tag.trim()));
                 }
             });
             
-            // Convert to array, sort alphabetically
             const sortedTags = Array.from(allTags).sort();
-            
             const genreSelect = document.getElementById('genreFilter');
             sortedTags.forEach(tag => {
                 const option = document.createElement('option');
@@ -430,46 +488,40 @@
             const main = document.getElementById('mainContent');
             const statusFilter = document.getElementById('statusFilter').value;
             const sortOrder = document.getElementById('sortOrder').value;
-            const genreFilter = document.getElementById('genreFilter').value; // Get the genre
+            const genreFilter = document.getElementById('genreFilter').value; 
 
             main.innerHTML = "";
 
             // 1. UNIVERSAL FILTER & SORT
             let filtered = mediaList.filter(item => {
-                // Status Filter
                 const s = getStatusInfo(item.me, item.her);
                 if (statusFilter !== 'all' && s.code !== statusFilter) return false;
                 
-                // Category Filter (Anime, Movie, Show, etc)
                 if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
                 
-                // Genre Filter (NEW!)
                 if (genreFilter !== 'all') {
                     if (!item.tags || !item.tags.includes(genreFilter)) return false;
                 }
-                
                 return true;
             }).sort((a, b) => {
                 if (sortOrder === 'imdb') return (b.imdb || 0) - (a.imdb || 0);
                 if (sortOrder === 'az') return a.title.localeCompare(b.title);
-                return 0; // Maintain original list order
+                return 0; 
             });
 
-            // 2. RENDERING LOGIC
-            // If a GENRE is selected, we switch to Grid View automatically because grouping by franchise might feel weird if only one movie from the franchise fits the genre
-            const forceGrid = genreFilter !== 'all';
-
-            if (!forceGrid && statusFilter === 'all' && currentCategory === 'all') {
+            // 2. RENDERING LOGIC (The Fix: Always respect category structure!)
+            if (currentCategory === 'all') {
                 // HOME SCREEN VIEW: Stacked Category Rows
                 const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
                 categories.forEach(cat => {
                     let rowItems = filtered.filter(i => i.category.includes(cat));
                     if (rowItems.length > 0) renderRow(cat, rowItems, main);
                 });
-            } else if (!forceGrid && (currentCategory === 'MOVIE' || currentCategory === 'SHOW' || currentCategory === 'ANIME')) {
+            } else if (currentCategory === 'MOVIE' || currentCategory === 'SHOW' || currentCategory === 'ANIME') {
                 // CATEGORY VIEW: Grouped Franchises
+                // Even with a filter applied, we want to maintain the "Group" vs "Single" structure
                 
-                let filteredByCategory = currentCategory === 'all' ? filtered : filtered.filter(item => item.category === currentCategory);
+                let filteredByCategory = filtered; // already filtered by category above
                 
                 let franchiseItems = filteredByCategory.filter(i => i.group);
                 let singularItems = filteredByCategory.filter(i => !i.group);
@@ -479,9 +531,10 @@
                 }
 
                 if (franchiseItems.length > 0) {
-                    const franchises = Array.from(new Set(franchiseItems.map(i => i.group))).filter(g => g !== undefined);
+                    // Find which groups still have items left after filtering
+                    const visibleGroups = Array.from(new Set(franchiseItems.map(i => i.group)));
                     
-                    franchises.forEach(groupName => {
+                    visibleGroups.forEach(groupName => {
                         let groupItems = franchiseItems
                             .filter(i => i.group === groupName)
                             .sort((a, b) => sortOrder === 'default' ? (a.chronology || 999) - (b.chronology || 999) : 0); 
@@ -492,14 +545,14 @@
                     });
                 }
             } else {
-                // GRID VIEW (Used for YouTube, specific Genre filters, or combined views)
+                // FALLBACK GRID (YouTube, etc)
                 const grid = document.createElement('div');
                 grid.className = 'grid-container';
                 filtered.forEach(item => grid.appendChild(createCard(item, filtered)));
                 main.appendChild(grid);
             }
             
-            if (filtered.length === 0) main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found for these filters 😔</div>";
+            if (filtered.length === 0) main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found 😔</div>";
         }
 
         function renderRow(title, items, mainElement, isCategory=true) {
@@ -560,7 +613,7 @@
                     <div class="card-title">${item.title}</div>
                     <div class="card-status">
                         <span class="status-dot ${s.dot}"></span>
-                        <span class="${s.class}">${s.text.replace(' ', ' ')}</span>
+                        <span class="${s.class}">${s.text}</span>
                     </div>
                 </div>
             `;
@@ -601,15 +654,15 @@
             document.getElementById('mTitle').innerText = item.title;
             
             let categoryText = item.category;
-            if (item.group === 'OP_Movies') categoryText = 'One Piece Movie';
+            if (item.group) categoryText = item.group; 
             
-            const tagsHtml = item.tags ? item.tags.split(', ').map(tag => `<span>${tag}</span>`).join(' • ') : '';
+            const tagsHtml = item.tags ? item.tags.split(', ').map(tag => `<span class="tag-pill">${tag}</span>`).join('') : '';
 
             document.getElementById('mTags').innerHTML = `
-                <span class="${s.class}" style="font-weight:bold;">${s.text.replace(' ', ' ')}</span> • 
+                <span class="${s.class}" style="font-weight:bold;">${s.text}</span> • 
                 ${categoryText} • 
                 ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}
-                <br>
+                <br><br>
                 ${tagsHtml}
             `;
             document.getElementById('mDesc').innerText = item.desc;
@@ -643,20 +696,29 @@
 
         // --- ROULETTE ---
         function startRoulette() {
-            const genreFilter = document.getElementById('genreFilter').value; // Roulette respects Genre filter too!
+            const genreFilter = document.getElementById('genreFilter').value; 
+            const statusFilter = document.getElementById('statusFilter').value;
 
             const candidates = mediaList.filter(i => {
                 const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory);
-                const s = getStatusInfo(i.me, i.her).code;
-                const isWatchable = s !== 'done';
                 
+                // Status Check for Roulette (Ignore filter if 'all', otherwise respect it, BUT prevent 'done' items)
+                const s = getStatusInfo(i.me, i.her).code;
+                const matchesStatus = statusFilter === 'all' ? s !== 'done' : s === statusFilter;
+                const isWatchable = s !== 'done'; // Hard rule: never roll completed stuff unless specifically filtered?
+                                                  // Actually, if user filters "Completed", maybe they want to rewatch. 
+                                                  // But usually Roulette is for new stuff. Let's keep it simple:
+                                                  // If filter is 'all', exclude 'done'. If filter is 'done', include 'done'.
+                
+                const validStatus = statusFilter === 'done' ? true : s !== 'done';
+
                 // Check Genre
                 const matchesGenre = genreFilter === 'all' || (i.tags && i.tags.includes(genreFilter));
 
-                return isFilteredCat && isWatchable && matchesGenre;
+                return isFilteredCat && matchesStatus && matchesGenre && validStatus;
             });
             
-            if (candidates.length === 0) { alert("Nothing left to roll in this view! Time to watch something new! (✧ω✧)"); return; }
+            if (candidates.length === 0) { alert("Nothing found to roll! Change your filters! (✧ω✧)"); return; }
 
             document.getElementById('rouletteModal').style.display = 'flex';
             document.getElementById('rWinner').style.opacity = '0';
@@ -690,8 +752,10 @@
                     document.getElementById('rWinner').innerText = winner.title;
                     document.getElementById('rWinner').style.opacity = '1';
                     
-                    openModal(winner, candidates); 
-                    document.getElementById('rouletteModal').style.display = 'none';
+                    setTimeout(() => {
+                        openModal(winner, candidates); 
+                        document.getElementById('rouletteModal').style.display = 'none';
+                    }, 1500);
                 }, 4500);
             }, 50);
         }
