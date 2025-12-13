@@ -79,9 +79,9 @@
         .chip.active { background: white; color: black; font-weight: bold; border-color: white; }
 
         /* Dropdowns */
-        .dropdown-row { display: flex; gap: 10px; width: 100%; max-width: 600px; }
+        .dropdown-row { display: flex; gap: 10px; width: 100%; max-width: 600px; flex-wrap: wrap; justify-content: center; }
         select {
-            flex: 1; background: #222; color: white; border: 1px solid #444;
+            flex: 1; min-width: 120px; background: #222; color: white; border: 1px solid #444;
             padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none;
         }
 
@@ -218,6 +218,11 @@
                 <option value="done">✅ Completed</option>
                 <option value="check">⚠️ Check Note</option>
             </select>
+            
+            <select id="genreFilter" onchange="updateUI()">
+                <option value="all">Genre: All</option>
+                </select>
+
             <select id="sortOrder" onchange="updateUI()">
                 <option value="default">Sort: Default</option>
                 <option value="imdb">Rating: High to Low</option>
@@ -256,7 +261,7 @@
     </div>
 
     <script>
-        // --- DATA (V16 - Detailed Descriptions, Genres, and Fixed Sorting) ---
+        // --- DATA (V16) ---
         const mediaList = [
             // --- ANIME ---
             { category: "ANIME", title: "Frieren", me: false, her: false, imdb: 8.9, tags: "Adventure, Fantasy, Slice of Life", image: "https://m.media-amazon.com/images/M/MV5BZTI4ZGMxN2UtODlkYS00MTBjLWE1YzctYzc3NDViMGI0ZmJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The elven mage Frieren, who was part of the hero's party that defeated the Demon King, faces a new journey as she comes to terms with the fleeting lives of her human companions. She embarks on a quest to truly understand human emotion and life's passage, leading to encounters with new friends and old memories.", note: "" },
@@ -398,20 +403,50 @@
             updateUI();
         }
 
+        // --- POPULATE GENRES DYNAMICALLY ---
+        function populateGenres() {
+            const allTags = new Set();
+            mediaList.forEach(item => {
+                if (item.tags) {
+                    // Split tags by comma, trim whitespace, and add to set
+                    item.tags.split(',').forEach(tag => allTags.add(tag.trim()));
+                }
+            });
+            
+            // Convert to array, sort alphabetically
+            const sortedTags = Array.from(allTags).sort();
+            
+            const genreSelect = document.getElementById('genreFilter');
+            sortedTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                option.innerText = tag;
+                genreSelect.appendChild(option);
+            });
+        }
+
         // --- RENDERING ---
         function updateUI() {
             const main = document.getElementById('mainContent');
             const statusFilter = document.getElementById('statusFilter').value;
             const sortOrder = document.getElementById('sortOrder').value;
+            const genreFilter = document.getElementById('genreFilter').value; // Get the genre
 
             main.innerHTML = "";
 
             // 1. UNIVERSAL FILTER & SORT
             let filtered = mediaList.filter(item => {
+                // Status Filter
                 const s = getStatusInfo(item.me, item.her);
                 if (statusFilter !== 'all' && s.code !== statusFilter) return false;
                 
+                // Category Filter (Anime, Movie, Show, etc)
                 if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
+                
+                // Genre Filter (NEW!)
+                if (genreFilter !== 'all') {
+                    if (!item.tags || !item.tags.includes(genreFilter)) return false;
+                }
                 
                 return true;
             }).sort((a, b) => {
@@ -421,35 +456,34 @@
             });
 
             // 2. RENDERING LOGIC
-            if (statusFilter === 'all' && currentCategory === 'all') {
-                // HOME SCREEN VIEW: Stacked Category Rows (Default sort only)
+            // If a GENRE is selected, we switch to Grid View automatically because grouping by franchise might feel weird if only one movie from the franchise fits the genre
+            const forceGrid = genreFilter !== 'all';
+
+            if (!forceGrid && statusFilter === 'all' && currentCategory === 'all') {
+                // HOME SCREEN VIEW: Stacked Category Rows
                 const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
                 categories.forEach(cat => {
                     let rowItems = filtered.filter(i => i.category.includes(cat));
                     if (rowItems.length > 0) renderRow(cat, rowItems, main);
                 });
-            } else if (currentCategory === 'MOVIE' || currentCategory === 'SHOW' || currentCategory === 'ANIME') {
-                // CATEGORY VIEW (Movies/Shows/Anime): Grouped Franchises first, then singles
+            } else if (!forceGrid && (currentCategory === 'MOVIE' || currentCategory === 'SHOW' || currentCategory === 'ANIME')) {
+                // CATEGORY VIEW: Grouped Franchises
                 
-                // --- Group Splitting based on applied filter ---
                 let filteredByCategory = currentCategory === 'all' ? filtered : filtered.filter(item => item.category === currentCategory);
                 
                 let franchiseItems = filteredByCategory.filter(i => i.group);
                 let singularItems = filteredByCategory.filter(i => !i.group);
 
-                // --- Render Singular/One-Shot Items (in grid mode) ---
                 if (singularItems.length > 0) {
                     renderRow('One-Shot / Standalone', singularItems, main, false);
                 }
 
-                // --- Render Franchises (Grouped) ---
                 if (franchiseItems.length > 0) {
                     const franchises = Array.from(new Set(franchiseItems.map(i => i.group))).filter(g => g !== undefined);
                     
                     franchises.forEach(groupName => {
                         let groupItems = franchiseItems
                             .filter(i => i.group === groupName)
-                            // Secondary chronological sort ONLY if primary sort is 'default'
                             .sort((a, b) => sortOrder === 'default' ? (a.chronology || 999) - (b.chronology || 999) : 0); 
                         
                         if (groupItems.length > 0) {
@@ -458,14 +492,14 @@
                     });
                 }
             } else {
-                // YOUTUBE or any other filtered view: Single Grid
+                // GRID VIEW (Used for YouTube, specific Genre filters, or combined views)
                 const grid = document.createElement('div');
                 grid.className = 'grid-container';
                 filtered.forEach(item => grid.appendChild(createCard(item, filtered)));
                 main.appendChild(grid);
             }
             
-            if (filtered.length === 0) main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found 😔</div>";
+            if (filtered.length === 0) main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found for these filters 😔</div>";
         }
 
         function renderRow(title, items, mainElement, isCategory=true) {
@@ -476,7 +510,6 @@
             header.className = 'section-header';
             let displayName;
             
-            // Custom display names for categories and groups
             if (isCategory) {
                  displayName = title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title;
             } else {
@@ -570,7 +603,6 @@
             let categoryText = item.category;
             if (item.group === 'OP_Movies') categoryText = 'One Piece Movie';
             
-            // Genres/Tags
             const tagsHtml = item.tags ? item.tags.split(', ').map(tag => `<span>${tag}</span>`).join(' • ') : '';
 
             document.getElementById('mTags').innerHTML = `
@@ -611,14 +643,17 @@
 
         // --- ROULETTE ---
         function startRoulette() {
+            const genreFilter = document.getElementById('genreFilter').value; // Roulette respects Genre filter too!
+
             const candidates = mediaList.filter(i => {
                 const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory);
                 const s = getStatusInfo(i.me, i.her).code;
-                
-                // Exclude items that are already done/completed
                 const isWatchable = s !== 'done';
                 
-                return isFilteredCat && isWatchable;
+                // Check Genre
+                const matchesGenre = genreFilter === 'all' || (i.tags && i.tags.includes(genreFilter));
+
+                return isFilteredCat && isWatchable && matchesGenre;
             });
             
             if (candidates.length === 0) { alert("Nothing left to roll in this view! Time to watch something new! (✧ω✧)"); return; }
@@ -655,13 +690,14 @@
                     document.getElementById('rWinner').innerText = winner.title;
                     document.getElementById('rWinner').style.opacity = '1';
                     
-                    // NEW: Open the detailed modal for the winner
                     openModal(winner, candidates); 
                     document.getElementById('rouletteModal').style.display = 'none';
                 }, 4500);
             }, 50);
         }
 
+        // Initialize!
+        populateGenres();
         updateUI();
     </script>
 </body>
