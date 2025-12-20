@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Our Watchlist</title>
+    <title>Our Hub</title>
     
     <link rel="apple-touch-icon" href="https://em-content.zobj.net/source/apple/354/clapper-board_1f3ac.png">
     <link rel="icon" type="image/png" href="https://em-content.zobj.net/source/apple/354/clapper-board_1f3ac.png">
@@ -17,6 +17,7 @@
             --card-bg: #1a1a1a;
             --text-color: #ffffff;
             --accent: #e50914;
+            --green: #46d369;
             --pink: #ff69b4;
             --yellow: #fdd835;
             --gold: #ffd700;
@@ -37,172 +38,194 @@
             padding: 0;
             padding-bottom: calc(80px + var(--safe-bottom));
             overflow-x: hidden;
-            user-select: none; /* Prevents text highlighting on phone taps */
+            user-select: none;
         }
+
+        /* --- HUB SCREEN --- */
+        #hubScreen {
+            position: fixed; inset: 0; 
+            background: linear-gradient(135deg, #050505 0%, #1a1a1a 100%);
+            z-index: 2000; 
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            gap: 25px; 
+        }
+
+        .hub-title {
+            font-size: 2.2rem; margin-bottom: 10px; 
+            text-transform: uppercase; letter-spacing: 2px;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .hub-btn {
+            background: rgba(20,20,20,0.6);
+            border: 2px solid;
+            padding: 25px 30px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-radius: 24px;
+            cursor: pointer;
+            width: 85%; max-width: 350px;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .hub-btn:active { transform: scale(0.96); }
+        .btn-watch { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px rgba(229,9,20,0.15); }
+        .btn-play { border-color: var(--green); color: var(--green); box-shadow: 0 0 20px rgba(70,211,105,0.15); }
+
+        .hub-sub-menu {
+            display: none; flex-direction: column; gap: 15px; 
+            width: 85%; max-width: 320px; 
+            animation: fadeIn 0.3s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+        }
+
+        .hub-sub-btn {
+            background: #222;
+            color: white;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: background 0.2s;
+        }
+        .hub-sub-btn:active { background: #333; transform: scale(0.98); }
+
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
         /* --- HEADER --- */
         header {
             padding: calc(15px + var(--safe-top)) 20px 10px 20px;
             background: linear-gradient(to bottom, rgba(5,5,5,0.98) 0%, rgba(5,5,5,0.9) 70%, rgba(5,5,5,0) 100%);
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            position: sticky; top: 0; z-index: 50;
             text-align: center;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
         }
 
+        .home-btn {
+            position: absolute; left: 20px; 
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .home-btn:active { background: rgba(255,255,255,0.3); }
+
         h1 { 
-            margin: 0; 
-            font-size: 1.5rem; 
-            font-weight: 800;
-            color: var(--accent); 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            text-shadow: 0 4px 15px rgba(229, 9, 20, 0.5);
+            margin: 0; font-size: 1.3rem; font-weight: 800;
+            color: white; text-transform: uppercase; letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         /* --- CONTROLS --- */
         .controls {
-            padding: 5px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 10px;
+            padding: 5px 15px; display: flex; flex-direction: column; 
+            gap: 12px; align-items: center; margin-bottom: 10px;
         }
 
         .btn-roulette {
-            background: linear-gradient(135deg, #ff4b4b, #e50914);
-            border: none;
-            color: white;
-            padding: 12px 40px;
-            font-size: 0.95rem;
-            font-weight: 700;
+            background: linear-gradient(135deg, #444, #222);
+            border: 1px solid #555;
+            color: white; padding: 12px 40px;
+            font-size: 0.95rem; font-weight: 700;
             border-radius: 50px;
-            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.3);
-            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            cursor: pointer; width: 100%; max-width: 300px;
             transition: transform 0.2s;
-            width: 100%;
-            max-width: 300px;
         }
         .btn-roulette:active { transform: scale(0.96); }
 
-        /* Filter Chips */
+        /* Chips */
         .filter-scroll {
-            display: flex; gap: 8px; overflow-x: auto; width: 100%; padding: 5px 5px 15px 5px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
+            display: flex; gap: 8px; overflow-x: auto; width: 100%; 
+            padding: 5px 5px 15px 5px; scrollbar-width: none;
         }
         .filter-scroll::-webkit-scrollbar { display: none; }
 
         .chip {
             background: #222; color: #888; border: 1px solid #333;
-            padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
-            white-space: nowrap; cursor: pointer; transition: all 0.2s ease;
+            padding: 8px 18px; border-radius: 50px; 
+            font-size: 0.85rem; font-weight: 600;
+            white-space: nowrap; cursor: pointer; transition: all 0.2s;
             flex-shrink: 0;
         }
         .chip.active { background: white; color: black; border-color: white; box-shadow: 0 4px 10px rgba(255,255,255,0.2); }
 
-        /* Pretty Dropdowns */
+        /* Dropdowns */
         .dropdown-row { 
             display: flex; gap: 8px; width: 100%; max-width: 600px; 
             flex-wrap: wrap; justify-content: center; 
         }
         
-        .select-wrapper {
-            position: relative;
-            flex: 1 1 100px; /* Allows them to shrink/grow on mobile */
-        }
+        .select-wrapper { position: relative; flex: 1 1 100px; }
         
         select {
-            width: 100%;
-            appearance: none; -webkit-appearance: none;
-            background: #222; 
-            color: #ddd; 
-            border: 1px solid #333;
-            padding: 10px 15px; 
-            border-radius: 12px; 
-            font-size: 0.8rem; 
-            font-weight: 600;
-            outline: none;
-            cursor: pointer;
-            transition: 0.2s;
+            width: 100%; appearance: none; -webkit-appearance: none;
+            background: #222; color: #ddd; border: 1px solid #333;
+            padding: 10px 15px; border-radius: 12px; 
+            font-size: 0.8rem; font-weight: 600; outline: none;
         }
-        select:focus { border-color: #666; background: #2a2a2a; }
-
-        /* Custom Arrow */
         .select-wrapper::after {
-            content: '▼';
-            font-size: 0.5rem;
-            color: #888;
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+            content: '▼'; font-size: 0.5rem; color: #888;
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
             pointer-events: none;
         }
 
         /* --- LAYOUTS --- */
         .section-header {
-            padding: 0 20px; margin-top: 20px; margin-bottom: 12px;
+            padding: 0 20px; margin-top: 25px; margin-bottom: 12px;
             display: flex; align-items: center; justify-content: space-between;
         }
         .section-title { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
         
-        /* Arrows hidden on touch, shown on hover (desktop) */
         .scroll-arrows { display: none; gap: 8px; }
         @media (hover: hover) { .scroll-arrows { display: flex; } }
         
         .arrow-btn {
             background: rgba(255,255,255,0.1); border: none; color: white;
             width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
             font-weight: bold;
-            transition: background 0.2s;
         }
-        .arrow-btn:hover { background: rgba(255,255,255,0.3); }
 
-        /* Rows */
-        .row-wrapper { position: relative; }
         .row-container {
             display: flex; overflow-x: auto; gap: 14px;
             padding: 0 20px 10px 20px;
-            scroll-snap-type: x mandatory; 
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch; /* Smooth iOS scroll */
-            scrollbar-width: none;
+            scroll-snap-type: x mandatory; scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
         }
         .row-container::-webkit-scrollbar { display: none; }
 
-        /* Grid */
         .grid-container {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px; padding: 0 20px;
+            gap: 15px; padding: 0 20px; margin-top: 20px;
         }
 
         /* --- CARD --- */
         .card {
             flex: 0 0 var(--card-width); height: var(--card-height);
-            background-color: var(--card-bg); 
-            border-radius: var(--radius); 
-            overflow: hidden;
-            position: relative; scroll-snap-align: start; cursor: pointer;
-            transition: transform 0.1s;
+            background-color: var(--card-bg); border-radius: var(--radius); 
+            overflow: hidden; position: relative; scroll-snap-align: start; 
+            cursor: pointer; transition: transform 0.1s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            -webkit-transform: translate3d(0,0,0); /* Hardware accel */
         }
         .card:active { transform: scale(0.96); }
-        .card.dimmed { opacity: 0.3; filter: grayscale(90%); }
+        .card.dimmed { opacity: 0.4; filter: grayscale(80%); }
 
-        .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; }
+        .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; transition: opacity 0.3s; }
         
         .imdb-badge {
             position: absolute; top: 8px; right: 8px;
             background: rgba(0,0,0,0.8); color: var(--gold); border: 1px solid var(--gold);
             font-weight: 700; padding: 2px 6px; border-radius: 6px; 
-            font-size: 0.6rem; z-index: 5;
-            backdrop-filter: blur(4px);
+            font-size: 0.6rem; z-index: 5; backdrop-filter: blur(4px);
         }
 
         .card-overlay {
@@ -214,8 +237,8 @@
         .card-status { font-size: 0.65rem; display: flex; align-items: center; gap: 6px; font-weight: 600; }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 5px currentColor; }
 
-        /* --- STATUS COLORS --- */
-        .s-new { color: #46d369; } .d-new { background: #46d369; }
+        /* COLORS */
+        .s-new { color: var(--green); } .d-new { background: var(--green); }
         .s-paused { color: #ffa00a; } .d-paused { background: #ffa00a; }
         .s-me { color: #a55eea; } .d-me { background: #a55eea; }
         .s-her { color: #fd79a8; } .d-her { background: #fd79a8; }
@@ -223,25 +246,23 @@
         .s-together { color: var(--pink); } .d-together { background: var(--pink); }
         .s-check { color: var(--yellow); } .d-check { background: var(--yellow); }
 
-        /* --- MODAL (Lightbox) --- */
+        /* --- MODAL --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             z-index: 100; display: none; flex-direction: column; 
             align-items: center; justify-content: center;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
-        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 101; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: rgba(255,255,255,0.2); cursor: pointer; }
+        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 101; }
         .nav-left { left: 0; } .nav-right { right: 0; }
         
         .info-card { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #111; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
         .info-hero { flex-shrink: 0; height: 45vh; width: 100%; background-size: cover; background-position: center; position: relative; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #111 5%, transparent); }
-        .info-content { padding: 25px 25px 80px 25px; } /* Extra bottom padding for scroll */
+        .info-content { padding: 25px 25px 80px 25px; }
         .info-title { font-size: 1.6rem; font-weight: 800; line-height: 1.1; margin-bottom: 15px; color: white; }
         .info-tags { display: flex; flex-wrap: wrap; gap: 8px; color: #999; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
         .tag-pill { background: #222; border: 1px solid #333; padding: 4px 10px; border-radius: 20px; color: #ccc; font-size: 0.75rem; }
-        
         .info-desc { color: #ccc; line-height: 1.6; margin-bottom: 25px; font-size: 0.95rem; }
         .info-note { background: #1a1a1a; padding: 20px; border-left: 4px solid var(--accent); color: #ddd; font-style: italic; border-radius: 8px; font-size: 0.9rem; }
         
@@ -249,8 +270,7 @@
             position: absolute; top: calc(20px + var(--safe-top)); right: 20px; z-index: 102; 
             background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.3);
             width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);
         }
 
         /* --- ROULETTE --- */
@@ -264,20 +284,46 @@
 </head>
 <body>
 
+    <div id="hubScreen">
+        <h1 class="hub-title">What's the plan?</h1>
+        
+        <button onclick="enterSection('watch')" class="hub-btn btn-watch">
+            🍿 Watch Stuff
+        </button>
+        
+        <button onclick="showGameOptions()" class="hub-btn btn-play">
+            🎮 Play Games
+        </button>
+
+        <div id="gameSubMenu" class="hub-sub-menu">
+            <button onclick="enterSection('play-together')" class="hub-sub-btn" style="border-left: 4px solid var(--pink);">
+                <span style="font-size:1.5rem;">💞</span> 
+                <div style="text-align:left;">
+                    <div style="font-size:0.8rem; color:#888;">CO-OP MODE</div>
+                    <div>Play Together</div>
+                </div>
+            </button>
+            <button onclick="enterSection('play-alone')" class="hub-sub-btn" style="border-left: 4px solid var(--yellow);">
+                <span style="font-size:1.5rem;">👤</span>
+                <div style="text-align:left;">
+                    <div style="font-size:0.8rem; color:#888;">SOLO MODE</div>
+                    <div>My Backlog</div>
+                </div>
+            </button>
+            <button onclick="resetHub()" style="background:transparent; border:none; color:#666; padding:10px; cursor:pointer;">« Back</button>
+        </div>
+    </div>
+
     <header>
-        <h1>Our Watchlist</h1>
+        <button class="home-btn" onclick="goHome()">🏠</button>
+        <h1 id="appTitle">Our Watchlist</h1>
     </header>
 
     <div class="controls">
         <button class="btn-roulette" onclick="startRoulette()">🎲 Spin the Wheel</button>
         
-        <div class="filter-scroll">
-            <div class="chip active" onclick="setFilter('all', this)">All</div>
-            <div class="chip" onclick="setFilter('ANIME', this)">Anime</div>
-            <div class="chip" onclick="setFilter('MOVIE', this)">Movies</div>
-            <div class="chip" onclick="setFilter('SHOW', this)">Shows</div>
-            <div class="chip" onclick="setFilter('YOUTUBE', this)">YouTube</div>
-        </div>
+        <div class="filter-scroll" id="categoryChips">
+            </div>
 
         <div class="dropdown-row">
             <div class="select-wrapper">
@@ -342,12 +388,59 @@
     <script src="data.js"></script>
 
     <script>
-        // --- LOGIC (Data is now loaded from data.js!) ---
-
+        // --- STATE ---
+        let currentList = [];
         let currentCategory = 'all';
         let currentModalList = [];
         let currentModalIndex = 0;
+        let currentMode = 'watch'; // 'watch' | 'play-together' | 'play-alone'
 
+        // --- HUB FUNCTIONS ---
+        function showGameOptions() {
+            document.querySelectorAll('.hub-btn').forEach(b => b.style.display = 'none');
+            document.getElementById('gameSubMenu').style.display = 'flex';
+        }
+
+        function resetHub() {
+            document.querySelectorAll('.hub-btn').forEach(b => b.style.display = 'block');
+            document.getElementById('gameSubMenu').style.display = 'none';
+        }
+
+        function goHome() {
+            document.getElementById('hubScreen').style.display = 'flex';
+            resetHub();
+        }
+
+        function enterSection(mode) {
+            currentMode = mode;
+            document.getElementById('hubScreen').style.display = 'none';
+
+            // Load correct data
+            if (mode === 'watch') {
+                currentList = typeof watchList !== 'undefined' ? watchList : [];
+                document.getElementById('appTitle').innerText = "Our Watchlist";
+                document.querySelector('.btn-roulette').style.background = "linear-gradient(135deg, #ff4b4b, #e50914)";
+            } else if (mode === 'play-together') {
+                currentList = typeof gamesTogether !== 'undefined' ? gamesTogether : [];
+                document.getElementById('appTitle').innerText = "Games: Together";
+                document.querySelector('.btn-roulette').style.background = "linear-gradient(135deg, #ff69b4, #e056fd)";
+            } else {
+                currentList = typeof gamesAlone !== 'undefined' ? gamesAlone : [];
+                document.getElementById('appTitle').innerText = "My Backlog";
+                document.querySelector('.btn-roulette').style.background = "linear-gradient(135deg, #fdd835, #f0932b)";
+            }
+
+            // Reset filters
+            currentCategory = 'all';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('sortOrder').value = 'default';
+            
+            updateCategoryChips();
+            populateGenres();
+            updateUI();
+        }
+
+        // --- CORE LOGIC ---
         function getStatusInfo(me, her) {
             if (me === "together" || her === "together") return { text: "Together", class: "s-together", dot: "d-together", code: "together" };
             if (me === "check" || her === "check") return { text: "Note", class: "s-check", dot: "d-check", code: "check" };
@@ -359,6 +452,37 @@
             return { text: "Unknown", class: "s-paused", dot: "d-paused", code: "paused" };
         }
 
+        function updateCategoryChips() {
+            const container = document.getElementById('categoryChips');
+            container.innerHTML = `<div class="chip active" onclick="setFilter('all', this)">All</div>`;
+            
+            // Get unique categories from current list
+            const uniqueCats = [...new Set(currentList.map(i => i.category))].sort();
+            
+            // Custom order for Watchlist
+            if (currentMode === 'watch') {
+                const priority = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
+                priority.forEach(cat => {
+                    if (uniqueCats.includes(cat)) {
+                        container.innerHTML += `<div class="chip" onclick="setFilter('${cat}', this)">${prettyCat(cat)}</div>`;
+                    }
+                });
+            } else {
+                // For games, just list them all
+                uniqueCats.forEach(cat => {
+                    container.innerHTML += `<div class="chip" onclick="setFilter('${cat}', this)">${prettyCat(cat)}</div>`;
+                });
+            }
+        }
+
+        function prettyCat(cat) {
+            if (cat === 'ANIME') return 'Anime';
+            if (cat === 'MOVIE') return 'Movies';
+            if (cat === 'SHOW') return 'Shows';
+            if (cat === 'YOUTUBE') return 'YouTube';
+            return cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(); // Capitalize first letter
+        }
+
         function setFilter(cat, btn) {
             currentCategory = cat;
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -368,27 +492,18 @@
 
         function populateGenres() {
             const allTags = new Set();
-            mediaList.forEach(item => {
-                if (item.tags) {
-                    item.tags.split(',').forEach(tag => allTags.add(tag.trim()));
-                }
+            currentList.forEach(item => {
+                if (item.tags) item.tags.split(',').forEach(tag => allTags.add(tag.trim()));
             });
             const sortedTags = Array.from(allTags).sort();
             const genreSelect = document.getElementById('genreFilter');
+            genreSelect.innerHTML = '<option value="all">Genre: All</option>';
             sortedTags.forEach(tag => {
                 const option = document.createElement('option');
                 option.value = tag;
                 option.innerText = tag;
                 genreSelect.appendChild(option);
             });
-        }
-
-        function scrollRow(btn, direction) {
-            // Find the container relative to the button
-            const wrapper = btn.closest('.row-wrapper');
-            const container = wrapper.querySelector('.row-container');
-            const scrollAmount = container.clientWidth * 0.8; // Scroll 80% of width
-            container.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
         }
 
         function updateUI() {
@@ -399,35 +514,53 @@
 
             main.innerHTML = "";
 
-            let filtered = mediaList.filter(item => {
+            let filtered = currentList.filter(item => {
                 const s = getStatusInfo(item.me, item.her);
                 if (statusFilter !== 'all' && s.code !== statusFilter) return false;
-                
                 if (currentCategory !== 'all' && !item.category.includes(currentCategory)) return false;
-                
                 if (genreFilter !== 'all') {
                     if (!item.tags || !item.tags.includes(genreFilter)) return false;
                 }
                 return true;
             }).sort((a, b) => {
                 if (sortOrder === 'imdb') return (b.imdb || 0) - (a.imdb || 0);
-                if (sortOrder === 'year') return (b.year || 0) - (a.year || 0); // Newest first
+                if (sortOrder === 'year') return (b.year || 0) - (a.year || 0);
                 if (sortOrder === 'az') return a.title.localeCompare(b.title);
                 return 0; 
             });
 
-            if (currentCategory === 'all') {
-                const categories = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
-                categories.forEach(cat => {
-                    let rowItems = filtered.filter(i => i.category.includes(cat));
-                    if (rowItems.length > 0) renderRow(cat, rowItems, main);
-                });
-            } else if (currentCategory === 'MOVIE' || currentCategory === 'SHOW' || currentCategory === 'ANIME') {
-                let filteredByCategory = filtered;
-                let franchiseItems = filteredByCategory.filter(i => i.group);
-                let singularItems = filteredByCategory.filter(i => !i.group);
+            if (filtered.length === 0) {
+                main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found 😔</div>";
+                return;
+            }
 
-                if (singularItems.length > 0) renderRow('One-Shot / Standalone', singularItems, main, false);
+            // --- DISPLAY LOGIC ---
+            if (currentCategory === 'all') {
+                // Dynamic Grouping
+                // 1. Get all unique categories present in filtered list
+                const categoriesInView = [...new Set(filtered.map(i => i.category))];
+                
+                // If it's Watch mode, enforce specific order
+                if (currentMode === 'watch') {
+                    const order = ["ANIME", "MOVIE", "SHOW", "YOUTUBE"];
+                    order.forEach(cat => {
+                        let rowItems = filtered.filter(i => i.category === cat);
+                        if (rowItems.length > 0) renderRow(prettyCat(cat), rowItems, main);
+                    });
+                } else {
+                    // Game Mode: Just show categories as they appear
+                    categoriesInView.sort().forEach(cat => {
+                        let rowItems = filtered.filter(i => i.category === cat);
+                        renderRow(prettyCat(cat), rowItems, main);
+                    });
+                }
+            } 
+            else {
+                // Specific Category Selected -> Check for Groups (Franchises) vs Standalone
+                let franchiseItems = filtered.filter(i => i.group);
+                let singularItems = filtered.filter(i => !i.group);
+
+                if (singularItems.length > 0) renderRow('Library', singularItems, main, false); // False = Grid view
 
                 if (franchiseItems.length > 0) {
                     const visibleGroups = Array.from(new Set(franchiseItems.map(i => i.group)));
@@ -438,53 +571,48 @@
                         if (groupItems.length > 0) renderRow(groupName, groupItems, main);
                     });
                 }
-            } else {
-                const grid = document.createElement('div');
-                grid.className = 'grid-container';
-                filtered.forEach(item => grid.appendChild(createCard(item, filtered)));
-                main.appendChild(grid);
             }
-            
-            if (filtered.length === 0) main.innerHTML = "<div style='text-align:center; padding:50px; color:#555;'>Nothing found 😔</div>";
         }
 
-        function renderRow(title, items, mainElement, isCategory=true) {
+        function renderRow(title, items, mainElement, useRow = true) {
             const wrapper = document.createElement('div');
-            wrapper.className = 'row-wrapper';
             
             const header = document.createElement('div');
             header.className = 'section-header';
-            let displayName = isCategory ? (title === 'ANIME' ? 'Anime' : title === 'MOVIE' ? 'Movies' : title === 'SHOW' ? 'Shows' : title === 'YOUTUBE' ? 'YouTube' : title) : title;
-
-            // Create title
+            
             const titleDiv = document.createElement('div');
             titleDiv.className = 'section-title';
-            titleDiv.innerText = displayName;
-
-            // Create arrows
-            const arrowsDiv = document.createElement('div');
-            arrowsDiv.className = 'scroll-arrows';
-            arrowsDiv.innerHTML = `
-                <button class="arrow-btn" onclick="scrollRow(this, -1)">‹</button>
-                <button class="arrow-btn" onclick="scrollRow(this, 1)">›</button>
-            `;
-
+            titleDiv.innerText = title;
             header.appendChild(titleDiv);
-            header.appendChild(arrowsDiv);
 
-            const row = document.createElement('div');
+            if (useRow) {
+                const arrowsDiv = document.createElement('div');
+                arrowsDiv.className = 'scroll-arrows';
+                arrowsDiv.innerHTML = `<button class="arrow-btn" onclick="scrollRow(this, -1)">‹</button><button class="arrow-btn" onclick="scrollRow(this, 1)">›</button>`;
+                header.appendChild(arrowsDiv);
+            }
+
+            const content = document.createElement('div');
+            content.className = useRow ? 'row-container' : 'grid-container';
             
-            if (title === 'One-Shot / Standalone') {
-                row.className = 'grid-container';
-                items.forEach(item => row.appendChild(createCard(item, items)));
-                mainElement.appendChild(header);
-                mainElement.appendChild(row);
-            } else {
-                row.className = 'row-container';
-                items.forEach(item => row.appendChild(createCard(item, items)));
+            items.forEach(item => content.appendChild(createCard(item, items)));
+
+            if (useRow) {
                 wrapper.appendChild(header);
-                wrapper.appendChild(row);
+                wrapper.appendChild(content);
                 mainElement.appendChild(wrapper);
+            } else {
+                mainElement.appendChild(header);
+                mainElement.appendChild(content);
+            }
+        }
+
+        function scrollRow(btn, direction) {
+            const wrapper = btn.closest('div').parentElement.parentElement; // Header -> Wrapper
+            const container = wrapper.querySelector('.row-container');
+            if (container) {
+                const scrollAmount = container.clientWidth * 0.8;
+                container.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
             }
         }
 
@@ -495,11 +623,15 @@
             el.onclick = () => openModal(item, sourceList);
             
             const badge = item.imdb > 0 ? `<div class="imdb-badge">⭐ ${item.imdb}</div>` : '';
-            const isYouTubeLogo = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick';
-            const imageStyle = isYouTubeLogo ? `background-image: url('${item.image}'); background-size: 80%; background-repeat: no-repeat; background-color: #ff0000;` : `background-image: url('${item.image}')`;
+            // Handle placeholders or broken images gracefully
+            const bgImage = item.image.includes('http') ? item.image : 'https://placehold.co/300x450?text=No+Image';
+            
+            // Special YouTube Styling
+            const isYT = item.category === 'YOUTUBE' && item.title.includes('Random');
+            const style = isYT ? `background-image: url('${bgImage}'); background-size: 80%; background-repeat: no-repeat; background-color: #ff0000;` : `background-image: url('${bgImage}')`;
 
             el.innerHTML = `
-                <div class="card-image" style="${imageStyle}"></div>
+                <div class="card-image" style="${style}"></div>
                 ${badge}
                 <div class="card-overlay">
                     <div class="card-title">${item.title}</div>
@@ -509,6 +641,7 @@
             return el;
         }
 
+        // --- MODAL LOGIC ---
         function openModal(item, list) {
             currentModalList = list;
             currentModalIndex = list.indexOf(item);
@@ -527,17 +660,18 @@
         function renderModalContent() {
             const item = currentModalList[currentModalIndex];
             const s = getStatusInfo(item.me, item.her);
-            const isYouTubeLogo = item.category === 'YOUTUBE' && item.title === 'YouTube Random Pick';
-            const heroStyle = isYouTubeLogo ? `background-image: url('${item.image}'); background-size: 30%; background-repeat: no-repeat; background-color: #ff0000;` : `background-image: url('${item.image}')`;
+            const isYT = item.category === 'YOUTUBE' && item.title.includes('Random');
+            const heroStyle = isYT ? `background-image: url('${item.image}'); background-size: 30%; background-repeat: no-repeat; background-color: #ff0000;` : `background-image: url('${item.image}')`;
 
             document.getElementById('mHero').style.cssText = heroStyle;
             document.getElementById('mTitle').innerText = item.title;
-            let categoryText = item.category;
-            if (item.group) categoryText = item.group; 
+            
+            let catText = item.group ? item.group : prettyCat(item.category);
             const tagsHtml = item.tags ? item.tags.split(', ').map(tag => `<span class="tag-pill">${tag}</span>`).join('') : '';
 
-            // Added Year to the modal display here too!
-            document.getElementById('mTags').innerHTML = `<span class="${s.class}" style="font-weight:bold;">${s.text}</span> • ${categoryText} • ${item.year > 0 ? item.year : ''} • ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}<br><br>${tagsHtml}`;
+            document.getElementById('mTags').innerHTML = `
+                <span class="${s.class}" style="font-weight:bold;">${s.text}</span> • ${catText} • ${item.year > 0 ? item.year : ''} • ${item.imdb > 0 ? `⭐ ${item.imdb}` : ''}<br><br>${tagsHtml}
+            `;
             document.getElementById('mDesc').innerText = item.desc;
             
             const noteBox = document.getElementById('mNoteBox');
@@ -550,9 +684,11 @@
         }
 
         function closeModal(e) {
-            if (!e || e.target.id === 'infoModal' || e.target.classList.contains('close-btn-float')) document.getElementById('infoModal').style.display = 'none';
+            if (!e || e.target.id === 'infoModal' || e.target.classList.contains('close-btn-float')) 
+                document.getElementById('infoModal').style.display = 'none';
         }
 
+        // Swipe to navigate modal
         let touchstartX = 0;
         let touchendX = 0;
         const modalEl = document.getElementById('infoModal');
@@ -563,20 +699,21 @@
             if (touchendX > touchstartX + 50) navigateModal(-1);
         });
 
+        // --- ROULETTE LOGIC ---
         function startRoulette() {
-            const genreFilter = document.getElementById('genreFilter').value; 
             const statusFilter = document.getElementById('statusFilter').value;
+            const genreFilter = document.getElementById('genreFilter').value;
 
-            const candidates = mediaList.filter(i => {
-                const isFilteredCat = currentCategory === 'all' || i.category.includes(currentCategory);
+            const candidates = currentList.filter(i => {
                 const s = getStatusInfo(i.me, i.her).code;
                 const matchesStatus = statusFilter === 'all' ? s !== 'done' : s === statusFilter;
-                const validStatus = statusFilter === 'done' ? true : s !== 'done';
+                const validStatus = statusFilter === 'done' ? true : s !== 'done'; // Default: don't roll completed stuff
                 const matchesGenre = genreFilter === 'all' || (i.tags && i.tags.includes(genreFilter));
-                return isFilteredCat && matchesStatus && matchesGenre && validStatus;
+                const matchesCat = currentCategory === 'all' || i.category.includes(currentCategory);
+                return matchesCat && matchesStatus && matchesGenre && validStatus;
             });
             
-            if (candidates.length === 0) { alert("Nothing found to roll! Change your filters! (✧ω✧)"); return; }
+            if (candidates.length === 0) { alert("Nothing found to roll! (✧ω✧)"); return; }
 
             document.getElementById('rouletteModal').style.display = 'flex';
             document.getElementById('rWinner').style.opacity = '0';
@@ -611,8 +748,8 @@
             }, 50);
         }
 
-        populateGenres();
-        updateUI();
+        // Initialize (Show Hub initially)
+        // No init function needed, HTML handles the hub overlay by default
     </script>
 </body>
 </html>
