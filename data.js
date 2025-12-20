@@ -1,4 +1,4 @@
-const mediaList = [
+const watchList = [
 
     // --- ANIME ---
     { category: "ANIME", title: "Frieren", year: 2023, me: false, her: false, imdb: 8.9, tags: "Animation, Adventure, Drama, Fantasy", image: "https://m.media-amazon.com/images/M/MV5BZTI4ZGMxN2UtODlkYS00MTBjLWE1YzctYzc3NDViMGI0ZmJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc: "The elven mage Frieren, who was part of the hero's party that defeated the Demon King, faces a new journey as she comes to terms with the fleeting lives of her human companions.", note: "" },
