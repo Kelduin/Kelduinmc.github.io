@@ -239,12 +239,8 @@
 
         /* COLORS */
         .s-new { color: var(--green); } .d-new { background: var(--green); }
-        .s-paused { color: #ffa00a; } .d-paused { background: #ffa00a; }
-        .s-me { color: #a55eea; } .d-me { background: #a55eea; }
-        .s-her { color: #fd79a8; } .d-her { background: #fd79a8; }
         .s-done { color: #666; } .d-done { background: #666; }
-        .s-together { color: var(--pink); } .d-together { background: var(--pink); }
-        .s-check { color: var(--yellow); } .d-check { background: var(--yellow); }
+        .s-note { color: var(--yellow); } .d-note { background: var(--yellow); }
 
         /* --- MODAL --- */
         .modal-overlay {
@@ -328,15 +324,7 @@
         <div class="dropdown-row">
             <div class="select-wrapper">
                 <select id="statusFilter" onchange="updateUI()">
-                    <option value="all">Status: All</option>
-                    <option value="new">✨ New</option>
-                    <option value="together">💞 Together</option>
-                    <option value="paused">⏸️ Paused</option>
-                    <option value="me">👤 Me</option>
-                    <option value="her">💕 Her</option>
-                    <option value="done">✅ Done</option>
-                    <option value="check">⚠️ Note</option>
-                </select>
+                    </select>
             </div>
             
             <div class="select-wrapper">
@@ -415,19 +403,38 @@
             currentMode = mode;
             document.getElementById('hubScreen').style.display = 'none';
 
-            // Load correct data
+            // Load correct data & Filters
+            const statusSel = document.getElementById('statusFilter');
+            statusSel.innerHTML = "";
+
             if (mode === 'watch') {
                 currentList = typeof watchList !== 'undefined' ? watchList : [];
                 document.getElementById('appTitle').innerText = "Our Watchlist";
                 document.querySelector('.btn-roulette').style.background = "linear-gradient(135deg, #ff4b4b, #e50914)";
+                
+                statusSel.innerHTML += `<option value="all">Status: All</option>`;
+                statusSel.innerHTML += `<option value="new">✨ New</option>`;
+                statusSel.innerHTML += `<option value="note">⚠️ Note</option>`;
+                statusSel.innerHTML += `<option value="done">✅ Done</option>`;
+
             } else if (mode === 'play-together') {
                 currentList = typeof gamesTogether !== 'undefined' ? gamesTogether : [];
                 document.getElementById('appTitle').innerText = "Games: Together";
                 document.querySelector('.btn-roulette').style.background = "linear-gradient(135deg, #ff69b4, #e056fd)";
+
+                statusSel.innerHTML += `<option value="all">Status: All</option>`;
+                statusSel.innerHTML += `<option value="new">✨ New</option>`;
+                statusSel.innerHTML += `<option value="note">⚠️ Note</option>`;
+
             } else {
                 currentList = typeof gamesAlone !== 'undefined' ? gamesAlone : [];
                 document.getElementById('appTitle').innerText = "My Backlog";
                 document.querySelector('.btn-roulette').style.background = "linear-gradient(135deg, #fdd835, #f0932b)";
+
+                statusSel.innerHTML += `<option value="all">Status: All</option>`;
+                statusSel.innerHTML += `<option value="new">✨ New</option>`;
+                statusSel.innerHTML += `<option value="note">⚠️ Note</option>`;
+                statusSel.innerHTML += `<option value="done">🏆 Played</option>`;
             }
 
             // Reset filters
@@ -442,14 +449,30 @@
 
         // --- CORE LOGIC ---
         function getStatusInfo(me, her) {
-            if (me === "together" || her === "together") return { text: "Together", class: "s-together", dot: "d-together", code: "together" };
-            if (me === "check" || her === "check") return { text: "Note", class: "s-check", dot: "d-check", code: "check" };
-            if (me === "50/50" || her === "50/50") return { text: "Paused", class: "s-paused", dot: "d-paused", code: "paused" };
-            if (me === true && her === true) return { text: "Completed", class: "s-done", dot: "d-done", code: "done" };
-            if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
-            if (me === true && her === false) return { text: "Only Me", class: "s-me", dot: "d-me", code: "me" };
-            if (me === false && her === true) return { text: "Only Her", class: "s-her", dot: "d-her", code: "her" };
-            return { text: "Unknown", class: "s-paused", dot: "d-paused", code: "paused" };
+            // WATCH LOGIC
+            if (currentMode === 'watch') {
+                if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
+                if (me === true && her === true) return { text: "Done", class: "s-done", dot: "d-done", code: "done" };
+                // Any mixed state (one watched, paused, check, etc) becomes NOTE
+                return { text: "Note", class: "s-note", dot: "d-note", code: "note" };
+            }
+            
+            // GAMES TOGETHER LOGIC
+            if (currentMode === 'play-together') {
+                // If neither has played, it's New. Everything else is Note (implies playing or played).
+                if (me === false && her === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
+                return { text: "Note", class: "s-note", dot: "d-note", code: "note" };
+            }
+
+            // GAMES SOLO LOGIC
+            if (currentMode === 'play-alone') {
+                if (me === true) return { text: "Played", class: "s-done", dot: "d-done", code: "done" };
+                if (me === false) return { text: "New", class: "s-new", dot: "d-new", code: "new" };
+                // 50/50, checks etc
+                return { text: "Note", class: "s-note", dot: "d-note", code: "note" };
+            }
+
+            return { text: "Unknown", class: "s-note", dot: "d-note", code: "note" };
         }
 
         function updateCategoryChips() {
@@ -748,8 +771,6 @@
             }, 50);
         }
 
-        // Initialize (Show Hub initially)
-        // No init function needed, HTML handles the hub overlay by default
     </script>
 </body>
 </html>
