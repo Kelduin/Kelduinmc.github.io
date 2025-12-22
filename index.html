@@ -583,7 +583,8 @@
                 let franchiseItems = filtered.filter(i => i.group);
                 let singularItems = filtered.filter(i => !i.group);
 
-                if (singularItems.length > 0) renderRow('Library', singularItems, main, false); // False = Grid view
+                // FIXED: Changed false to true so it uses row view instead of grid
+                if (singularItems.length > 0) renderRow('Library', singularItems, main, true); 
 
                 if (franchiseItems.length > 0) {
                     const visibleGroups = Array.from(new Set(franchiseItems.map(i => i.group)));
