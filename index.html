@@ -51,7 +51,7 @@
             transition: opacity 0.5s ease;
         }
         
-       .hub-title {
+      .hub-title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 3rem; font-weight: 700;
             background: linear-gradient(to right, #fff, #999);
@@ -59,9 +59,9 @@
             margin-bottom: 2rem; text-transform: uppercase; letter-spacing: -1px;
         }
 
-       .hub-options { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 800px; }
+      .hub-options { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 800px; }
 
-       .hub-card {
+      .hub-card {
             background: var(--glass-panel);
             border: 1px solid var(--glass-border);
             padding: 3rem 2rem;
@@ -73,10 +73,10 @@
             position: relative; overflow: hidden;
         }
 
-       .hub-card:hover { transform: translateY(-10px); border-color: var(--active-color); box-shadow: 0 0 30px var(--glow-color); }
-       .hub-card i { display: block; margin: 0 auto 1.5rem; transition: transform 0.3s; }
-       .hub-card:hover i { transform: scale(1.2); }
-       .hub-label { font-family: 'Space Grotesk'; font-size: 1.5rem; font-weight: 700; }
+      .hub-card:hover { transform: translateY(-10px); border-color: var(--active-color); box-shadow: 0 0 30px var(--glow-color); }
+      .hub-card i { display: block; margin: 0 auto 1.5rem; transition: transform 0.3s; }
+      .hub-card:hover i { transform: scale(1.2); }
+      .hub-label { font-family: 'Space Grotesk'; font-size: 1.5rem; font-weight: 700; }
 
         /* --- APP HEADER --- */
         header {
@@ -88,20 +88,20 @@
             display: flex; align-items: center; justify-content: space-between;
         }
 
-       .app-brand { 
+      .app-brand { 
             font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.25rem; 
             display: flex; align-items: center; gap: 10px; cursor: pointer;
         }
 
-       .nav-actions { display: flex; gap: 10px; }
+      .nav-actions { display: flex; gap: 10px; }
 
         /* --- CONTROLS & FILTERS --- */
-       .controls {
+      .controls {
             padding: 1.5rem;
             display: flex; flex-direction: column; gap: 1.5rem;
         }
 
-       .roulette-btn {
+      .roulette-btn {
             background: linear-gradient(135deg, var(--bg-surface), var(--bg-deep));
             border: 1px solid var(--glass-border);
             color: var(--neon-gold);
@@ -111,62 +111,62 @@
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-       .roulette-btn:hover { border-color: var(--neon-gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+      .roulette-btn:hover { border-color: var(--neon-gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
 
-       .filter-row {
+      .filter-row {
             display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;
             scrollbar-width: none;
         }
-       .filter-row::-webkit-scrollbar { display: none; }
+      .filter-row::-webkit-scrollbar { display: none; }
 
-       .chip {
+      .chip {
             background: var(--glass-panel); border: 1px solid var(--glass-border);
             padding: 8px 16px; border-radius: 50px;
             font-size: 0.85rem; color: #aaa; white-space: nowrap; cursor: pointer;
             transition: all 0.2s;
         }
-       .chip.active { background: #fff; color: #000; border-color: #fff; font-weight: 600; }
-       .chip:hover:not(.active) { border-color: #666; color: #fff; }
+      .chip.active { background: #fff; color: #000; border-color: #fff; font-weight: 600; }
+      .chip:hover:not(.active) { border-color: #666; color: #fff; }
 
         /* --- GRID LAYOUT --- */
-       .grid {
+      .grid {
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(var(--grid-min), 1fr));
             gap: 1.5rem; padding: 0 1.5rem 4rem;
         }
 
-       .card {
+      .card {
             position: relative; aspect-ratio: 2/3;
             background: var(--bg-surface); border-radius: 12px; overflow: hidden;
             cursor: pointer; transition: transform 0.3s var(--ease-elastic);
             will-change: transform;
         }
-       .card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-       .card.dimmed { opacity: 0.3; filter: grayscale(1); }
+      .card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+      .card.dimmed { opacity: 0.3; filter: grayscale(1); }
 
-       .card img { width: 100%; height: 100%; object-fit: cover; }
+      .card img { width: 100%; height: 100%; object-fit: cover; }
         
-       .card-overlay {
+      .card-overlay {
             position: absolute; inset: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 60%);
             display: flex; flex-direction: column; justify-content: flex-end; padding: 1rem;
             opacity: 0; transition: 0.3s;
         }
-       .card:hover.card-overlay { opacity: 1; }
+      .card:hover.card-overlay { opacity: 1; }
 
         /* Mobile overrides for hover */
         @media(hover: none) {
-           .card-overlay { opacity: 1; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 40%); }
+          .card-overlay { opacity: 1; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 40%); }
         }
 
-       .card-title { font-weight: 700; font-size: 0.95rem; line-height: 1.2; margin-bottom: 4px; }
-       .card-meta { font-size: 0.75rem; color: #ccc; display: flex; gap: 6px; align-items: center; }
-       .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+      .card-title { font-weight: 700; font-size: 0.95rem; line-height: 1.2; margin-bottom: 4px; }
+      .card-meta { font-size: 0.75rem; color: #ccc; display: flex; gap: 6px; align-items: center; }
+      .status-dot { width: 6px; height: 6px; border-radius: 50%; }
 
         /* Status Colors */
-       .st-new { color: var(--neon-green); }.bg-new { background: var(--neon-green); }
-       .st-note { color: var(--neon-gold); }.bg-note { background: var(--neon-gold); }
-       .st-done { color: #555; }.bg-done { background: #555; }
+      .st-new { color: var(--neon-green); }.bg-new { background: var(--neon-green); }
+      .st-note { color: var(--neon-gold); }.bg-note { background: var(--neon-gold); }
+      .st-done { color: #555; }.bg-done { background: #555; }
 
         /* --- MODALS --- */
         dialog {
@@ -177,35 +177,35 @@
         dialog::backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
 
         /* Details Modal */
-       .modal-hero { height: 200px; background-size: cover; position: relative; }
-       .modal-hero::after { content:''; position: absolute; inset: 0; background: linear-gradient(to top, #111, transparent); }
-       .modal-content { padding: 1.5rem; position: relative; }
-       .modal-close { 
+      .modal-hero { height: 200px; background-size: cover; position: relative; }
+      .modal-hero::after { content:''; position: absolute; inset: 0; background: linear-gradient(to top, #111, transparent); }
+      .modal-content { padding: 1.5rem; position: relative; }
+      .modal-close { 
             position: absolute; top: 1rem; right: 1rem; 
             background: rgba(0,0,0,0.5); border: none; color: #fff; 
             width: 32px; height: 32px; border-radius: 50%; cursor: pointer; 
             z-index: 10; display: flex; align-items: center; justify-content: center;
         }
-       .tag { background: #222; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; color: #999; }
-       .note-box { background: rgba(255, 215, 0, 0.1); border-left: 3px solid var(--neon-gold); padding: 10px; margin-top: 15px; font-size: 0.9rem; color: #ddd; }
+      .tag { background: #222; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; color: #999; }
+      .note-box { background: rgba(255, 215, 0, 0.1); border-left: 3px solid var(--neon-gold); padding: 10px; margin-top: 15px; font-size: 0.9rem; color: #ddd; }
 
         /* Add Form */
-       .form-group { margin-bottom: 1rem; }
-       .form-input { 
+      .form-group { margin-bottom: 1rem; }
+      .form-input { 
             width: 100%; background: #222; border: 1px solid #333; color: #fff;
             padding: 10px; border-radius: 8px; font-family: inherit;
         }
-       .form-input:focus { border-color: var(--neon-cyan); outline: none; }
-       .btn-submit { 
+      .form-input:focus { border-color: var(--neon-cyan); outline: none; }
+      .btn-submit { 
             width: 100%; padding: 12px; background: var(--neon-cyan); border: none;
             border-radius: 8px; font-weight: 700; cursor: pointer; color: #000;
         }
 
         /* Roulette */
-       .roulette-track { display: flex; height: 150px; border: 2px solid var(--neon-gold); overflow: hidden; position: relative; border-radius: 12px; background: #000; }
-       .r-strip { display: flex; height: 100%; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); }
-       .r-item { width: 120px; height: 100%; background-size: cover; flex-shrink: 0; border-right: 1px solid #222; }
-       .r-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--neon-gold); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 10px var(--neon-gold); }
+      .roulette-track { display: flex; height: 150px; border: 2px solid var(--neon-gold); overflow: hidden; position: relative; border-radius: 12px; background: #000; }
+      .r-strip { display: flex; height: 100%; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); }
+      .r-item { width: 120px; height: 100%; background-size: cover; flex-shrink: 0; border-right: 1px solid #222; }
+      .r-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--neon-gold); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 10px var(--neon-gold); }
     </style>
 </head>
 <body>
@@ -294,6 +294,9 @@
                     <input class="form-input" name="tags" placeholder="Tags (comma separated)">
                 </div>
                 <div class="form-group">
+                    <input class="form-input" name="desc" placeholder="Description (Optional)">
+                </div>
+                <div class="form-group">
                     <input class="form-input" name="note" placeholder="Note (Optional)">
                 </div>
                 <button type="submit" class="btn-submit">Generate JSON & Copy</button>
@@ -329,30 +332,39 @@
             },
 
             getStatus: (item) => {
-                // Logic derived from your original code
                 const { me, her } = item;
+                // Normalize "note" string to truthy for boolean logic if needed, 
+                // but specific "note" checks should come last if we want strict New/Done first.
+                
+                // WATCH LOGIC
                 if(app.mode === 'watch') {
-                    if(!me &&!her) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
-                    if(me && her) return { text:'Done', color:'st-done', dot:'bg-done', code:'done' };
+                    if(me === false && her === false) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
+                    if(me === true && her === true) return { text:'Done', color:'st-done', dot:'bg-done', code:'done' };
                     return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
                 }
-                // Games
+                
+                // SOLO GAMES
                 if(app.mode === 'play-alone') {
                     if(me === true) return { text:'Played', color:'st-done', dot:'bg-done', code:'done' };
                     if(me === false) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
                     return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
                 }
-                // Together
-                if(!me &&!her) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
+                
+                // CO-OP GAMES
+                if(app.mode === 'play-together') {
+                    if(me === false && her === false) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
+                    // If either is true or "note", it's in progress/note
+                    return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
+                }
+                
                 return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
             },
 
             renderFilters: () => {
                 const cats =.sort();
                 const container = document.getElementById('filterContainer');
-                container.innerHTML = cats.map(c => 
-                    `<button class="chip ${c === 'All'? 'active' : ''}" onclick="app.setFilter('${c}', this)">${c}</button>`
-                ).join('');
+                container.innerHTML = `<button class="chip active" onclick="app.setFilter('All', this)">All</button>` + 
+                    cats.map(c => `<button class="chip" onclick="app.setFilter('${c}', this)">${c}</button>`).join('');
             },
 
             setFilter: (cat, btn) => {
@@ -364,17 +376,27 @@
 
             renderGrid: () => {
                 const grid = document.getElementById('grid');
+                // Filter by category
                 const filtered = app.data.filter(i => app.filter === 'All' |
 
 | i.category === app.filter);
                 
-                grid.innerHTML = filtered.map((item, index) => {
-                    const status = app.getStatus(item);
-                    return `
-                    <div class="card ${status.code === 'done'? 'dimmed' : ''}" onclick="app.openDetail(${index})">
-                        <img src="${item.image |
+                // Sort: "New" stuff first, then "Note", then "Done"
+                filtered.sort((a, b) => {
+                    const statusA = app.getStatus(a).code;
+                    const statusB = app.getStatus(b).code;
+                    const score = { 'new': 1, 'note': 2, 'done': 3 };
+                    return score[statusA] - score;
+                });
 
-| 'https://placehold.co/400x600/111/444?text=No+Image'}" loading="lazy">
+                grid.innerHTML = filtered.map((item) => {
+                    const status = app.getStatus(item);
+                    // Use placeholders if image is empty
+                    const img = (item.image && item.image.length > 5)? item.image : 'https://placehold.co/400x600/111/444?text=No+Image';
+                    
+                    return `
+                    <div class="card ${status.code === 'done'? 'dimmed' : ''}" onclick='app.openDetail("${item.title.replace(/'/g, "&apos;")}")'>
+                        <img src="${img}" loading="lazy" alt="${item.title}">
                         <div class="card-overlay">
                             <div class="card-title">${item.title}</div>
                             <div class="card-meta">
@@ -387,20 +409,16 @@
                 }).join('');
             },
 
-            openDetail: (idx) => {
-                // Find item in current filtered view or full list? 
-                // Simple approach: find by title since we don't have IDs
-                // Better: Pass the object directly if we were using React, but here index of filtered array is risky.
-                // Let's just find the item in the main data array.
-                // Actually, let's use the click handler properly. 
-                // Re-finding strictly for this demo:
-                const item = app.data.find(i => i.title === document.querySelectorAll('.card-title')[idx].innerText);
+            openDetail: (title) => {
+                // Decode HTML entity if needed, but find should work
+                const item = app.data.find(i => i.title === title.replace(/&apos;/g, "'"));
                 if(!item) return;
 
                 const d = document.getElementById('detailModal');
                 const s = app.getStatus(item);
-                
-                document.getElementById('mHero').style.backgroundImage = `url('${item.image}')`;
+                const img = (item.image && item.image.length > 5)? item.image : 'https://placehold.co/400x600/111/444?text=No+Image';
+
+                document.getElementById('mHero').style.backgroundImage = `url('${img}')`;
                 document.getElementById('mTitle').innerText = item.title;
                 document.getElementById('mDesc').innerText = item.desc |
 
@@ -425,44 +443,48 @@
             },
 
             spinRoulette: () => {
-                // Filter eligible candidates (not done)
                 const pool = app.data.filter(i => {
                     const s = app.getStatus(i);
+                    // Only roll things that are NOT done
                     return s.code!== 'done';
                 });
                 
-                if(pool.length === 0) return alert("Nothing left to play/watch!");
+                if(pool.length === 0) return alert("Everything is done! Add more stuff.");
 
                 const modal = document.getElementById('rouletteModal');
                 const strip = document.getElementById('rStrip');
                 const resultText = document.getElementById('rResult');
                 
-                // Build Strip
-                let html = '';
-                const cardWidth = 120;
-                const winsAt = 30; // Index of winner
-                const total = 40;
-                
-                // Pick winner
-                const winner = pool[Math.floor(Math.random() * pool.length)];
-
-                for(let i=0; i<total; i++) {
-                    const item = (i === winsAt)? winner : pool[Math.floor(Math.random() * pool.length)];
-                    html += `<div class="r-item" style="background-image:url('${item.image}')"></div>`;
-                }
-                
-                strip.innerHTML = html;
+                // Reset
                 strip.style.transition = 'none';
                 strip.style.transform = 'translateX(0)';
                 resultText.style.opacity = '0';
                 
+                // Build Strip
+                let html = '';
+                const cardWidth = 120; 
+                const winsAt = 30; // The 30th item will be the winner
+                const total = 40;  // Render 40 items total
+                
+                const winner = pool[Math.floor(Math.random() * pool.length)];
+
+                for(let i=0; i<total; i++) {
+                    // Force the winner at the specific index
+                    const item = (i === winsAt)? winner : pool[Math.floor(Math.random() * pool.length)];
+                    const img = (item.image && item.image.length > 5)? item.image : 'https://placehold.co/120x180/222/444?text=?';
+                    html += `<div class="r-item" style="background-image:url('${img}')"></div>`;
+                }
+                
+                strip.innerHTML = html;
                 modal.showModal();
 
-                // Spin
+                // Trigger Animation
                 setTimeout(() => {
-                    const centerOffset = (modal.clientWidth / 2); // approximate
-                    const target = (winsAt * cardWidth) + (cardWidth / 2) - 150; // 150 is half track width
-                    const jitter = Math.random() * 20;
+                    const trackWidth = document.querySelector('.roulette-track').clientWidth;
+                    // Calculate offset to center the winning card
+                    // Position = (Index * Width) + (Half Card) - (Half Track)
+                    const target = (winsAt * cardWidth) + (cardWidth / 2) - (trackWidth / 2); 
+                    const jitter = (Math.random() * 40) - 20; // +/- 20px randomness
                     
                     strip.style.transition = 'transform 4s cubic-bezier(0.1, 0, 0.1, 1)';
                     strip.style.transform = `translateX(-${target + jitter}px)`;
@@ -470,6 +492,11 @@
                     setTimeout(() => {
                         resultText.innerText = winner.title;
                         resultText.style.opacity = '1';
+                        // Optional: Open detail after delay
+                        setTimeout(() => {
+                            modal.close();
+                            app.openDetail(winner.title);
+                        }, 2000);
                     }, 4000);
                 }, 100);
             },
@@ -479,26 +506,39 @@
             handleAdd: (e) => {
                 e.preventDefault();
                 const f = new FormData(e.target);
+                
+                // Construct object matching your schema
                 const newItem = {
-                    category: app.filter === 'All'? 'MOVIE' : app.filter, // Default
+                    category: app.filter === 'All'? (app.mode === 'watch'? 'MOVIE' : 'GAME') : app.filter,
                     title: f.get('title'),
-                    image: f.get('image'),
                     year: parseInt(f.get('year')) |
 
-| 0,
+| new Date().getFullYear(),
+                    me: false, 
+                    her: false,
                     imdb: parseFloat(f.get('imdb')) |
 
 | 0,
-                    me: false, her: false,
                     tags: f.get('tags'),
-                    desc: "Added via App",
-                    note: f.get('note')
+                    image: f.get('image'),
+                    desc: f.get('desc') |
+
+| "",
+                    note: f.get('note') |
+
+| ""
                 };
                 
-                const json = JSON.stringify(newItem, null, 2) + ",";
+                // Format nicely for copy-paste
+                const json = JSON.stringify(newItem, null, 4) + ",";
+                
                 navigator.clipboard.writeText(json).then(() => {
-                    alert("JSON copied to clipboard! Paste it into data.js");
+                    alert("Copied to clipboard!\n\nOpen 'data.js' and paste this at the top of the list.");
                     document.getElementById('addModal').close();
+                    e.target.reset();
+                }).catch(err => {
+                    alert("Could not copy automatically. Check console for JSON.");
+                    console.log(json);
                 });
             }
         };
