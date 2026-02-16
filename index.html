@@ -2,546 +2,437 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXUS | Our Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Our Hub</title>
     
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-
     <style>
-        /* --- DESIGN TOKENS --- */
+        /* --- 1. CORE VARIABLES & RESET --- */
         :root {
-            --bg-deep: #050505;
-            --bg-surface: #0a0a0a;
-            --glass-panel: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --blur: 16px;
-            
-            --neon-cyan: #00f3ff;
-            --neon-magenta: #bd00ff;
-            --neon-green: #39ff14;
-            --neon-gold: #ffd700;
-            
-            --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --grid-min: 160px;
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+            --primary: #e50914; 
+            --accent: #46d369;  
+            --text: #ffffff;
+            --text-dim: #888888;
+            --nav-height: 70px;
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        /* --- BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: var(--bg-deep);
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(189, 0, 255, 0.04), transparent 30%),
-                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.04), transparent 30%);
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 0;
+            padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
             overflow-x: hidden;
         }
 
-        /* --- HUB SCREEN (LANDING) --- */
-        #hubScreen {
-            position: fixed; inset: 0; z-index: 2000;
-            background: var(--bg-deep);
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; gap: 2rem;
-            transition: opacity 0.5s ease;
-        }
-        
-      .hub-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3rem; font-weight: 700;
-            background: linear-gradient(to right, #fff, #999);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 2rem; text-transform: uppercase; letter-spacing: -1px;
-        }
-
-      .hub-options { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 800px; }
-
-      .hub-card {
-            background: var(--glass-panel);
-            border: 1px solid var(--glass-border);
-            padding: 3rem 2rem;
-            border-radius: 24px;
-            width: 280px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s var(--ease-elastic);
-            position: relative; overflow: hidden;
-        }
-
-      .hub-card:hover { transform: translateY(-10px); border-color: var(--active-color); box-shadow: 0 0 30px var(--glow-color); }
-      .hub-card i { display: block; margin: 0 auto 1.5rem; transition: transform 0.3s; }
-      .hub-card:hover i { transform: scale(1.2); }
-      .hub-label { font-family: 'Space Grotesk'; font-size: 1.5rem; font-weight: 700; }
-
-        /* --- APP HEADER --- */
+        /* --- 2. HEADER --- */
         header {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(5, 5, 5, 0.85);
-            backdrop-filter: blur(var(--blur));
-            border-bottom: 1px solid var(--glass-border);
-            padding: 1rem 1.5rem;
-            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 15px 20px 10px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; gap: 15px;
         }
 
-      .app-brand { 
-            font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.25rem; 
-            display: flex; align-items: center; gap: 10px; cursor: pointer;
-        }
-
-      .nav-actions { display: flex; gap: 10px; }
-
-        /* --- CONTROLS & FILTERS --- */
-      .controls {
-            padding: 1.5rem;
-            display: flex; flex-direction: column; gap: 1.5rem;
-        }
-
-      .roulette-btn {
-            background: linear-gradient(135deg, var(--bg-surface), var(--bg-deep));
-            border: 1px solid var(--glass-border);
-            color: var(--neon-gold);
-            padding: 1rem; border-radius: 12px;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-      .roulette-btn:hover { border-color: var(--neon-gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
-
-      .filter-row {
-            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;
-            scrollbar-width: none;
-        }
-      .filter-row::-webkit-scrollbar { display: none; }
-
-      .chip {
-            background: var(--glass-panel); border: 1px solid var(--glass-border);
-            padding: 8px 16px; border-radius: 50px;
-            font-size: 0.85rem; color: #aaa; white-space: nowrap; cursor: pointer;
-            transition: all 0.2s;
-        }
-      .chip.active { background: #fff; color: #000; border-color: #fff; font-weight: 600; }
-      .chip:hover:not(.active) { border-color: #666; color: #fff; }
-
-        /* --- GRID LAYOUT --- */
-      .grid {
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(var(--grid-min), 1fr));
-            gap: 1.5rem; padding: 0 1.5rem 4rem;
-        }
-
-      .card {
-            position: relative; aspect-ratio: 2/3;
-            background: var(--bg-surface); border-radius: 12px; overflow: hidden;
-            cursor: pointer; transition: transform 0.3s var(--ease-elastic);
-            will-change: transform;
-        }
-      .card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-      .card.dimmed { opacity: 0.3; filter: grayscale(1); }
-
-      .card img { width: 100%; height: 100%; object-fit: cover; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px; }
         
-      .card-overlay {
+        .dice-btn {
+            font-size: 1.4rem; background: rgba(255,255,255,0.1); 
+            border: none; cursor: pointer; border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .dice-btn:active { transform: rotate(180deg) scale(0.9); background: rgba(255,255,255,0.2); }
+
+        /* Chips Scroll */
+        .chip-scroll {
+            display: flex; gap: 8px; overflow-x: auto;
+            padding-bottom: 5px; scrollbar-width: none;
+        }
+        .chip-scroll::-webkit-scrollbar { display: none; }
+
+        .chip {
+            background: var(--surface); border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-dim); padding: 6px 14px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600; white-space: nowrap;
+            transition: all 0.2s; cursor: pointer;
+        }
+        .chip.active {
+            background: var(--text); color: var(--bg); border-color: var(--text);
+        }
+
+        /* --- 3. THE GRID --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
+            gap: 12px;
+            padding: 15px;
+        }
+
+        .card {
+            background: var(--surface); border-radius: 12px; overflow: hidden;
+            position: relative; aspect-ratio: 2/3;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.15s; cursor: pointer;
+        }
+        .card:active { transform: scale(0.96); }
+
+        .card-img {
+            width: 100%; height: 100%; object-fit: cover;
+            background: #222; transition: opacity 0.3s;
+        }
+
+        /* --- 4. AVATAR STATUS LOGIC --- */
+        .card-overlay {
             position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 60%);
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 1rem;
-            opacity: 0; transition: 0.3s;
-        }
-      .card:hover.card-overlay { opacity: 1; }
-
-        /* Mobile overrides for hover */
-        @media(hover: none) {
-          .card-overlay { opacity: 1; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 40%); }
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 10%, rgba(0,0,0,0.4) 40%, transparent 80%);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 10px;
         }
 
-      .card-title { font-weight: 700; font-size: 0.95rem; line-height: 1.2; margin-bottom: 4px; }
-      .card-meta { font-size: 0.75rem; color: #ccc; display: flex; gap: 6px; align-items: center; }
-      .status-dot { width: 6px; height: 6px; border-radius: 50%; }
-
-        /* Status Colors */
-      .st-new { color: var(--neon-green); }.bg-new { background: var(--neon-green); }
-      .st-note { color: var(--neon-gold); }.bg-note { background: var(--neon-gold); }
-      .st-done { color: #555; }.bg-done { background: #555; }
-
-        /* --- MODALS --- */
-        dialog {
-            background: #111; color: #fff; border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 0; width: 90%; max-width: 500px;
-            margin: auto; box-shadow: 0 0 50px rgba(0,0,0,0.8);
-        }
-        dialog::backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
-
-        /* Details Modal */
-      .modal-hero { height: 200px; background-size: cover; position: relative; }
-      .modal-hero::after { content:''; position: absolute; inset: 0; background: linear-gradient(to top, #111, transparent); }
-      .modal-content { padding: 1.5rem; position: relative; }
-      .modal-close { 
-            position: absolute; top: 1rem; right: 1rem; 
-            background: rgba(0,0,0,0.5); border: none; color: #fff; 
-            width: 32px; height: 32px; border-radius: 50%; cursor: pointer; 
-            z-index: 10; display: flex; align-items: center; justify-content: center;
-        }
-      .tag { background: #222; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; color: #999; }
-      .note-box { background: rgba(255, 215, 0, 0.1); border-left: 3px solid var(--neon-gold); padding: 10px; margin-top: 15px; font-size: 0.9rem; color: #ddd; }
-
-        /* Add Form */
-      .form-group { margin-bottom: 1rem; }
-      .form-input { 
-            width: 100%; background: #222; border: 1px solid #333; color: #fff;
-            padding: 10px; border-radius: 8px; font-family: inherit;
-        }
-      .form-input:focus { border-color: var(--neon-cyan); outline: none; }
-      .btn-submit { 
-            width: 100%; padding: 12px; background: var(--neon-cyan); border: none;
-            border-radius: 8px; font-weight: 700; cursor: pointer; color: #000;
+        .card-title {
+            font-size: 0.8rem; font-weight: 700; text-shadow: 0 2px 4px black;
+            margin-bottom: 8px; line-height: 1.2;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
 
-        /* Roulette */
-      .roulette-track { display: flex; height: 150px; border: 2px solid var(--neon-gold); overflow: hidden; position: relative; border-radius: 12px; background: #000; }
-      .r-strip { display: flex; height: 100%; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); }
-      .r-item { width: 120px; height: 100%; background-size: cover; flex-shrink: 0; border-right: 1px solid #222; }
-      .r-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--neon-gold); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 10px var(--neon-gold); }
+        .status-row {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            width: 100%;
+        }
+
+        .avatar-group { display: flex; gap: -5px; } /* Overlap effect */
+        
+        .avatar { 
+            width: 24px; height: 24px; border-radius: 50%; 
+            border: 2px solid var(--surface);
+            background-size: cover; background-position: center;
+            transition: all 0.3s ease;
+            
+            /* Ghost State (Unwatched) */
+            filter: grayscale(100%) opacity(0.5); 
+            transform: scale(0.9);
+        }
+
+        .avatar.watched {
+            /* Active State (Watched) */
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.1);
+            border-color: var(--accent);
+            z-index: 2;
+        }
+
+        .badge-rating {
+            font-size: 0.7rem; font-weight: bold; color: #f5c518;
+            background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* --- 5. BOTTOM NAV --- */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: calc(var(--nav-height) + var(--safe-bottom));
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex; justify-content: space-around;
+            padding-top: 12px; z-index: 100;
+        }
+
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: var(--text-dim); background: none; border: none;
+            font-size: 0.7rem; font-weight: 600; width: 33%; cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-icon { font-size: 1.5rem; transition: transform 0.2s; }
+        .nav-item.active { color: var(--text); }
+        .nav-item.active .nav-icon { transform: scale(1.1); color: var(--primary); }
+        /* Different color for Game Mode */
+        .nav-item.game-active.active .nav-icon { color: #d63031; }
+
+        /* --- 6. MODAL --- */
+        .modal {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .modal.open { display: flex; opacity: 1; }
+
+        .modal-content {
+            width: 90%; max-width: 450px; max-height: 85vh;
+            background: var(--surface); border-radius: 24px;
+            overflow-y: auto; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp { from { transform: translateY(50px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+
+        .hero-img {
+            width: 100%; height: 250px; object-fit: cover;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+
+        .modal-body { padding: 0 25px 30px 25px; margin-top: -60px; position: relative; }
+        
+        .modal-title { font-size: 1.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        .meta-row { display: flex; gap: 10px; margin-bottom: 20px; color: #ccc; font-size: 0.85rem; font-weight: 600; }
+        .pill { background: #333; padding: 4px 10px; border-radius: 20px; }
+        
+        .desc-text { line-height: 1.6; color: #b0b0b0; margin-bottom: 25px; font-size: 0.95rem; }
+        
+        .note-box {
+            background: rgba(255, 215, 0, 0.05); border-left: 3px solid #ffd700;
+            padding: 15px; border-radius: 0 8px 8px 0; font-style: italic; color: #e6e6e6;
+        }
+
+        .close-btn {
+            position: absolute; top: 15px; right: 15px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.2);
+            font-size: 1rem; cursor: pointer; z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Loader */
+        .loader { 
+            position: fixed; inset: 0; background: var(--bg); z-index: 999;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--text-dim); font-weight: bold; letter-spacing: 1px;
+            transition: opacity 0.5s;
+        }
+
     </style>
 </head>
 <body>
 
-    <div id="hubScreen">
-        <h1 class="hub-title">Nexus Hub</h1>
-        <div class="hub-options">
-            <div class="hub-card" onclick="app.init('watch')" style="--active-color: var(--neon-cyan); --glow-color: rgba(0, 243, 255, 0.3)">
-                <i data-lucide="clapperboard" size="48" color="#00f3ff"></i>
-                <div class="hub-label" style="color:#00f3ff">Watch</div>
-                <div style="color:#666; font-size:0.9rem; margin-top:5px;">Movies & Shows</div>
-            </div>
-            
-            <div class="hub-card" onclick="app.init('play-together')" style="--active-color: var(--neon-magenta); --glow-color: rgba(189, 0, 255, 0.3)">
-                <i data-lucide="gamepad-2" size="48" color="#bd00ff"></i>
-                <div class="hub-label" style="color:#bd00ff">Co-op</div>
-                <div style="color:#666; font-size:0.9rem; margin-top:5px;">Play Together</div>
-            </div>
+    <div class="loader" id="loader">SYNCING...</div>
 
-            <div class="hub-card" onclick="app.init('play-alone')" style="--active-color: var(--neon-green); --glow-color: rgba(57, 255, 20, 0.3)">
-                <i data-lucide="user" size="48" color="#39ff14"></i>
-                <div class="hub-label" style="color:#39ff14">Solo</div>
-                <div style="color:#666; font-size:0.9rem; margin-top:5px;">My Backlog</div>
-            </div>
+    <header>
+        <div class="header-top">
+            <h1 id="pageTitle">Watchlist</h1>
+            <button class="dice-btn" onclick="spinRoulette()">🎲</button>
         </div>
-    </div>
+        <div class="chip-scroll" id="chipContainer"></div>
+    </header>
 
-    <div id="app" style="display: none;">
-        <header>
-            <div class="app-brand" onclick="location.reload()">
-                <i data-lucide="chevron-left"></i> <span id="headerTitle">Library</span>
-            </div>
-            <div class="nav-actions">
-                <button class="chip" onclick="app.openAddModal()" style="background: var(--neon-cyan); color: #000; border:none; font-weight:bold;">+ Add</button>
-            </div>
-        </header>
+    <div class="grid" id="mainGrid"></div>
 
-        <div class="controls">
-            <button class="roulette-btn" onclick="app.spinRoulette()">
-                <i data-lucide="dices"></i> Spin the Wheel
-            </button>
-            
-            <div class="filter-row" id="filterContainer"></div>
-        </div>
+    <nav class="nav-bar">
+        <button class="nav-item active" id="navWatch" onclick="switchMode('Watch', this)">
+            <span class="nav-icon">🍿</span>
+            <span>Watch</span>
+        </button>
+        <button class="nav-item" id="navGame" onclick="switchMode('Game', this)">
+            <span class="nav-icon">🎮</span>
+            <span>Games</span>
+        </button>
+    </nav>
 
-        <div class="grid" id="grid"></div>
-    </div>
-
-    <dialog id="detailModal">
-        <button class="modal-close" onclick="document.getElementById('detailModal').close()">✕</button>
-        <div class="modal-hero" id="mHero"></div>
+    <div class="modal" id="infoModal" onclick="closeModal(event)">
         <div class="modal-content">
-            <h2 id="mTitle" style="font-family:'Space Grotesk'; font-size:1.5rem; margin-bottom:10px;"></h2>
-            <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px;" id="mTags"></div>
-            <p id="mDesc" style="color:#ccc; line-height:1.6; font-size:0.95rem;"></p>
-            <div id="mNote" class="note-box" style="display:none"></div>
-        </div>
-    </dialog>
-
-    <dialog id="rouletteModal" style="background:transparent; box-shadow:none; border:none;">
-        <div style="text-align:center; padding: 20px;">
-            <div class="roulette-track">
-                <div class="r-strip" id="rStrip"></div>
-                <div class="r-line"></div>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <img src="" class="hero-img" id="mImg">
+            <div class="modal-body">
+                <div class="modal-title" id="mTitle"></div>
+                <div class="meta-row">
+                    <span class="pill" id="mYear"></span>
+                    <span class="pill" id="mCat"></span>
+                    <span class="pill" id="mImdb" style="color:#f5c518"></span>
+                </div>
+                <div class="desc-text" id="mDesc"></div>
+                <div class="note-box" id="mNote"></div>
             </div>
-            <h1 id="rResult" style="margin-top:20px; font-family:'Space Grotesk'; opacity:0; transition:0.5s; text-shadow:0 0 20px black;">Winner!</h1>
-            <button onclick="document.getElementById('rouletteModal').close()" style="margin-top:20px; padding:10px 30px; background:#333; color:#fff; border:none; border-radius:20px; cursor:pointer;">Close</button>
         </div>
-    </dialog>
+    </div>
 
-    <dialog id="addModal">
-        <div style="padding:20px;">
-            <h2 style="margin-bottom:20px; font-family:'Space Grotesk'">Add New Entry</h2>
-            <form id="addForm" onsubmit="app.handleAdd(event)">
-                <div class="form-group">
-                    <input class="form-input" name="title" placeholder="Title" required>
-                </div>
-                <div class="form-group">
-                    <input class="form-input" name="image" placeholder="Image URL" required>
-                </div>
-                <div class="form-group" style="display:flex; gap:10px;">
-                    <input class="form-input" name="year" type="number" placeholder="Year" style="flex:1">
-                    <input class="form-input" name="imdb" type="number" step="0.1" placeholder="Rating" style="flex:1">
-                </div>
-                <div class="form-group">
-                    <input class="form-input" name="tags" placeholder="Tags (comma separated)">
-                </div>
-                <div class="form-group">
-                    <input class="form-input" name="desc" placeholder="Description (Optional)">
-                </div>
-                <div class="form-group">
-                    <input class="form-input" name="note" placeholder="Note (Optional)">
-                </div>
-                <button type="submit" class="btn-submit">Generate JSON & Copy</button>
-            </form>
-        </div>
-    </dialog>
-
-    <script src="data.js"></script>
     <script>
-        const app = {
-            data:,
-            mode: '',
-            filter: 'All',
+        // ==========================================
+        //  ⚙️ YOUR CONFIGURATION (EDIT THIS PART)
+        // ==========================================
 
-            init: (mode) => {
-                app.mode = mode;
-                document.getElementById('hubScreen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('hubScreen').style.display = 'none';
-                    document.getElementById('app').style.display = 'block';
-                }, 500);
+        // 1. Paste your Google Sheet CSV Link here:
+        const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6tOms_iF0Jp-Bw6LKyUCDOXvB2O1JtTC3Cgd9C1uGzHO6yEQJvtb6q07cVMK_C7K4sErvvICu7D4-/pub?output=csv";
+        
+        // 2. Paste links to your Avatar images here:
+        const MY_AVATAR = "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"; // Example: Boy icon
+        const HER_AVATAR = "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"; // Example: Girl icon
 
-                // Load correct list based on user selection
-                if(mode === 'watch') app.data = watchList;
-                else if(mode === 'play-together') app.data = gamesTogether;
-                else app.data = gamesAlone;
+        // ==========================================
 
-                document.getElementById('headerTitle').innerText = mode === 'watch'? 'Watchlist' : (mode === 'play-together'? 'Co-op Games' : 'Solo Backlog');
+        let allData = [];
+        let currentMode = "Watch"; 
+        let currentFilter = "All";
+
+        async function init() {
+            try {
+                const response = await fetch(SHEET_URL);
+                const csvText = await response.text();
+                allData = parseCSV(csvText);
                 
-                app.renderFilters();
-                app.renderGrid();
-                lucide.createIcons();
-            },
-
-            getStatus: (item) => {
-                const { me, her } = item;
-                // Normalize "note" string to truthy for boolean logic if needed, 
-                // but specific "note" checks should come last if we want strict New/Done first.
+                // Hide loader
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
                 
-                // WATCH LOGIC
-                if(app.mode === 'watch') {
-                    if(me === false && her === false) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
-                    if(me === true && her === true) return { text:'Done', color:'st-done', dot:'bg-done', code:'done' };
-                    return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
-                }
-                
-                // SOLO GAMES
-                if(app.mode === 'play-alone') {
-                    if(me === true) return { text:'Played', color:'st-done', dot:'bg-done', code:'done' };
-                    if(me === false) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
-                    return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
-                }
-                
-                // CO-OP GAMES
-                if(app.mode === 'play-together') {
-                    if(me === false && her === false) return { text:'New', color:'st-new', dot:'bg-new', code:'new' };
-                    // If either is true or "note", it's in progress/note
-                    return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
-                }
-                
-                return { text:'Note', color:'st-note', dot:'bg-note', code:'note' };
-            },
-
-            renderFilters: () => {
-                const cats =.sort();
-                const container = document.getElementById('filterContainer');
-                container.innerHTML = `<button class="chip active" onclick="app.setFilter('All', this)">All</button>` + 
-                    cats.map(c => `<button class="chip" onclick="app.setFilter('${c}', this)">${c}</button>`).join('');
-            },
-
-            setFilter: (cat, btn) => {
-                app.filter = cat;
-                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                app.renderGrid();
-            },
-
-            renderGrid: () => {
-                const grid = document.getElementById('grid');
-                // Filter by category
-                const filtered = app.data.filter(i => app.filter === 'All' |
-
-| i.category === app.filter);
-                
-                // Sort: "New" stuff first, then "Note", then "Done"
-                filtered.sort((a, b) => {
-                    const statusA = app.getStatus(a).code;
-                    const statusB = app.getStatus(b).code;
-                    const score = { 'new': 1, 'note': 2, 'done': 3 };
-                    return score[statusA] - score;
-                });
-
-                grid.innerHTML = filtered.map((item) => {
-                    const status = app.getStatus(item);
-                    // Use placeholders if image is empty
-                    const img = (item.image && item.image.length > 5)? item.image : 'https://placehold.co/400x600/111/444?text=No+Image';
-                    
-                    return `
-                    <div class="card ${status.code === 'done'? 'dimmed' : ''}" onclick='app.openDetail("${item.title.replace(/'/g, "&apos;")}")'>
-                        <img src="${img}" loading="lazy" alt="${item.title}">
-                        <div class="card-overlay">
-                            <div class="card-title">${item.title}</div>
-                            <div class="card-meta">
-                                <span class="status-dot ${status.dot}"></span>
-                                <span class="${status.color}">${status.text}</span>
-                                ${item.imdb? `• ⭐ ${item.imdb}` : ''}
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-            },
-
-            openDetail: (title) => {
-                // Decode HTML entity if needed, but find should work
-                const item = app.data.find(i => i.title === title.replace(/&apos;/g, "'"));
-                if(!item) return;
-
-                const d = document.getElementById('detailModal');
-                const s = app.getStatus(item);
-                const img = (item.image && item.image.length > 5)? item.image : 'https://placehold.co/400x600/111/444?text=No+Image';
-
-                document.getElementById('mHero').style.backgroundImage = `url('${img}')`;
-                document.getElementById('mTitle').innerText = item.title;
-                document.getElementById('mDesc').innerText = item.desc |
-
-| "No description provided.";
-                
-                let tags = `<span class="tag" style="color:var(--neon-cyan)">${s.text}</span>`;
-                if(item.year) tags += `<span class="tag">${item.year}</span>`;
-                if(item.category) tags += `<span class="tag">${item.category}</span>`;
-                if(item.tags) item.tags.split(',').forEach(t => tags += `<span class="tag">${t.trim()}</span>`);
-                
-                document.getElementById('mTags').innerHTML = tags;
-
-                const noteEl = document.getElementById('mNote');
-                if(item.note) {
-                    noteEl.style.display = 'block';
-                    noteEl.innerText = "Note: " + item.note;
-                } else {
-                    noteEl.style.display = 'none';
-                }
-
-                d.showModal();
-            },
-
-            spinRoulette: () => {
-                const pool = app.data.filter(i => {
-                    const s = app.getStatus(i);
-                    // Only roll things that are NOT done
-                    return s.code!== 'done';
-                });
-                
-                if(pool.length === 0) return alert("Everything is done! Add more stuff.");
-
-                const modal = document.getElementById('rouletteModal');
-                const strip = document.getElementById('rStrip');
-                const resultText = document.getElementById('rResult');
-                
-                // Reset
-                strip.style.transition = 'none';
-                strip.style.transform = 'translateX(0)';
-                resultText.style.opacity = '0';
-                
-                // Build Strip
-                let html = '';
-                const cardWidth = 120; 
-                const winsAt = 30; // The 30th item will be the winner
-                const total = 40;  // Render 40 items total
-                
-                const winner = pool[Math.floor(Math.random() * pool.length)];
-
-                for(let i=0; i<total; i++) {
-                    // Force the winner at the specific index
-                    const item = (i === winsAt)? winner : pool[Math.floor(Math.random() * pool.length)];
-                    const img = (item.image && item.image.length > 5)? item.image : 'https://placehold.co/120x180/222/444?text=?';
-                    html += `<div class="r-item" style="background-image:url('${img}')"></div>`;
-                }
-                
-                strip.innerHTML = html;
-                modal.showModal();
-
-                // Trigger Animation
-                setTimeout(() => {
-                    const trackWidth = document.querySelector('.roulette-track').clientWidth;
-                    // Calculate offset to center the winning card
-                    // Position = (Index * Width) + (Half Card) - (Half Track)
-                    const target = (winsAt * cardWidth) + (cardWidth / 2) - (trackWidth / 2); 
-                    const jitter = (Math.random() * 40) - 20; // +/- 20px randomness
-                    
-                    strip.style.transition = 'transform 4s cubic-bezier(0.1, 0, 0.1, 1)';
-                    strip.style.transform = `translateX(-${target + jitter}px)`;
-                    
-                    setTimeout(() => {
-                        resultText.innerText = winner.title;
-                        resultText.style.opacity = '1';
-                        // Optional: Open detail after delay
-                        setTimeout(() => {
-                            modal.close();
-                            app.openDetail(winner.title);
-                        }, 2000);
-                    }, 4000);
-                }, 100);
-            },
-
-            openAddModal: () => document.getElementById('addModal').showModal(),
-
-            handleAdd: (e) => {
-                e.preventDefault();
-                const f = new FormData(e.target);
-                
-                // Construct object matching your schema
-                const newItem = {
-                    category: app.filter === 'All'? (app.mode === 'watch'? 'MOVIE' : 'GAME') : app.filter,
-                    title: f.get('title'),
-                    year: parseInt(f.get('year')) |
-
-| new Date().getFullYear(),
-                    me: false, 
-                    her: false,
-                    imdb: parseFloat(f.get('imdb')) |
-
-| 0,
-                    tags: f.get('tags'),
-                    image: f.get('image'),
-                    desc: f.get('desc') |
-
-| "",
-                    note: f.get('note') |
-
-| ""
-                };
-                
-                // Format nicely for copy-paste
-                const json = JSON.stringify(newItem, null, 4) + ",";
-                
-                navigator.clipboard.writeText(json).then(() => {
-                    alert("Copied to clipboard!\n\nOpen 'data.js' and paste this at the top of the list.");
-                    document.getElementById('addModal').close();
-                    e.target.reset();
-                }).catch(err => {
-                    alert("Could not copy automatically. Check console for JSON.");
-                    console.log(json);
-                });
+                renderApp();
+            } catch (err) {
+                document.getElementById('loader').innerText = "ERROR LOADING DATA";
+                console.error(err);
             }
-        };
+        }
+
+        // CSV Parser that handles commas inside descriptions
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(l => l.trim() !== '');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            
+            // Regex to match CSV fields including quoted strings
+            const regex = /(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))/g;
+            
+            return lines.slice(1).map(line => {
+                let matches = [];
+                let match;
+                while ((match = regex.exec(line)) !== null) {
+                    // Fix empty matches at end of line
+                    if (match.index === regex.lastIndex) regex.lastIndex++; 
+                    if(match[1]) matches.push(match[1].replace(/^"|"$/g, '').replace(/""/g, '"')); 
+                }
+                // Cleanup matches to match header length
+                matches = matches.filter(m => m !== undefined).slice(0, headers.length);
+                
+                let entry = {};
+                headers.forEach((h, i) => entry[h] = matches[i] ? matches[i].trim() : "");
+                
+                // Convert Booleans
+                entry.Me = entry.Me && entry.Me.toLowerCase() === 'true';
+                entry.Her = entry.Her && entry.Her.toLowerCase() === 'true';
+                
+                return entry;
+            });
+        }
+
+        function switchMode(mode, btn) {
+            currentMode = mode;
+            currentFilter = "All";
+            
+            // Update Nav Styles
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Theme Coloring
+            document.documentElement.style.setProperty('--primary', mode === 'Watch' ? '#e50914' : '#d63031');
+            document.getElementById('pageTitle').innerText = mode === 'Watch' ? 'Watchlist' : 'Game Library';
+            
+            renderApp();
+        }
+
+        function renderApp() {
+            const data = allData.filter(item => item.Type === currentMode);
+            const grid = document.getElementById('mainGrid');
+            const chipContainer = document.getElementById('chipContainer');
+
+            // 1. Chips
+            const categories = ['All', ...new Set(data.map(i => i.Category))].sort();
+            chipContainer.innerHTML = '';
+            categories.forEach(cat => {
+                const chip = document.createElement('button');
+                chip.className = `chip ${currentFilter === cat ? 'active' : ''}`;
+                chip.innerText = cat;
+                chip.onclick = () => { currentFilter = cat; renderApp(); };
+                chipContainer.appendChild(chip);
+            });
+
+            // 2. Grid
+            grid.innerHTML = '';
+            const filtered = currentFilter === 'All' ? data : data.filter(i => i.Category === currentFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:#555">Nothing found... yet.</div>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openModal(item);
+
+                // Fallback image
+                const imgUrl = item.Image.includes('http') ? item.Image : 'https://placehold.co/400x600/222/999?text=' + item.Title;
+                
+                // Avatar Classes
+                const meClass = item.Me ? 'watched' : '';
+                const herClass = item.Her ? 'watched' : '';
+
+                card.innerHTML = `
+                    <img src="${imgUrl}" class="card-img" loading="lazy">
+                    <div class="card-overlay">
+                        <div class="card-title">${item.Title}</div>
+                        <div class="status-row">
+                            <div class="avatar-group">
+                                <div class="avatar ${meClass}" style="background-image: url('${MY_AVATAR}')"></div>
+                                <div class="avatar ${herClass}" style="background-image: url('${HER_AVATAR}')"></div>
+                            </div>
+                            ${item.IMDB ? `<div class="badge-rating">★ ${item.IMDB}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openModal(item) {
+            document.getElementById('mImg').src = item.Image;
+            document.getElementById('mTitle').innerText = item.Title;
+            document.getElementById('mYear').innerText = item.Year || 'N/A';
+            document.getElementById('mCat').innerText = item.Category || 'General';
+            document.getElementById('mImdb').innerText = item.IMDB ? `★ ${item.IMDB}` : '';
+            document.getElementById('mDesc').innerText = item.Desc || 'No description available.';
+            
+            const noteDiv = document.getElementById('mNote');
+            if(item.Note) {
+                noteDiv.style.display = 'block';
+                noteDiv.innerText = "Note: " + item.Note;
+            } else {
+                noteDiv.style.display = 'none';
+            }
+            document.getElementById('infoModal').classList.add('open');
+        }
+
+        function closeModal(e) {
+            if (!e || e.target.classList.contains('modal') || e.target.classList.contains('close-btn')) {
+                document.getElementById('infoModal').classList.remove('open');
+            }
+        }
+
+        function spinRoulette() {
+            const data = allData.filter(item => item.Type === currentMode);
+            // Only pick items that at least ONE person hasn't seen
+            const pending = data.filter(i => (!i.Me || !i.Her)); 
+
+            if(pending.length === 0) {
+                alert("You two have finished everything in this list! Time to add more rows.");
+                return;
+            }
+            const winner = pending[Math.floor(Math.random() * pending.length)];
+            alert(`🎲 Destiny has chosen:\n\n${winner.Title}`);
+            openModal(winner);
+        }
+
+        init();
     </script>
 </body>
 </html>
