@@ -138,13 +138,10 @@
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2500; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-glow { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(60px) saturate(150%); opacity: 0.3; z-index: 0; transform: scale(1.1); pointer-events: none; }
         .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; display: flex; align-items: center; justify-content: center;}
         
         .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 2600; cursor: pointer; }
-        .nav-left { left: 0; } .nav-right { right: 0; }
-
-        .info-card { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; overflow-y: auto; position: relative;}
-        .info-hero { height: 40vh; width: 100%; background-size: cover; background-position: center; position: relative; flex-shrink: 0; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #0a0a0a 5%, transparent); }
         .info-content { padding: 20px 25px 80px 25px; }
         .info-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
@@ -230,6 +227,7 @@
 
     <!-- INFO MODAL -->
     <div class="modal-overlay" id="infoModal" onclick="window.closeModalBackground(event)">
+        <div id="modalGlow" class="modal-glow"></div>
         <button class="close-btn-float" onclick="window.closeAllModals()">✕</button>
         <div class="nav-zone nav-left" onclick="window.navigateModal(-1)"></div>
         <div class="nav-zone nav-right" onclick="window.navigateModal(1)"></div>
@@ -314,6 +312,13 @@
 
             <input type="text" id="addTitle" class="form-input" placeholder="Title">
             
+            <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+                <div style="font-size:0.9rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="addStarted" style="width: 18px; height: 18px;"> 
+                    <label for="addStarted">Currently Watching/Playing (Pin to top)</label>
+                </div>
+            </div>
+
             <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
                 <div class="select-wrapper" style="flex:1;">
                     <select id="addGroupSelect" class="form-input" style="margin:0;" onchange="window.handleGroupChange()">
@@ -559,6 +564,7 @@
             document.getElementById('addListType').value = currentMode;
             document.getElementById('addCat').value = currentMode.includes('watch') ? 'MOVIE' : 'RPG';
             document.getElementById('addTitle').value = "";
+            document.getElementById('addStarted').checked = false;
             document.getElementById('addYear').value = "";
             document.getElementById('addMe').value = "new";
             document.getElementById('addHer').value = "new";
@@ -587,6 +593,7 @@
             document.getElementById('addListType').value = item.listType || currentMode;
             document.getElementById('addCat').value = item.category || 'MOVIE';
             document.getElementById('addTitle').value = item.title || '';
+            document.getElementById('addStarted').checked = item.isStarted === true;
             document.getElementById('addYear').value = item.year || '';
             document.getElementById('addMe').value = sStr(item.me);
             document.getElementById('addHer').value = sStr(item.her);
@@ -618,6 +625,7 @@
                 listType: document.getElementById('addListType').value,
                 category: document.getElementById('addCat').value,
                 title: document.getElementById('addTitle').value.trim(),
+                isStarted: document.getElementById('addStarted').checked,
                 year: parseInt(document.getElementById('addYear').value) || 0,
                 me: pStatus(document.getElementById('addMe').value),
                 her: pStatus(document.getElementById('addHer').value),
@@ -721,6 +729,14 @@
             main.innerHTML = "";
             if (filtered.length === 0) { main.innerHTML = "<div style='padding:50px; text-align:center; color:#666;'>Empty.</div>"; return; }
 
+            // 1. PINNED ROW (Started Items)
+            let startedItems = filtered.filter(i => i.isStarted === true && getStatusInfo(i).code !== 'done');
+            if (startedItems.length > 0) {
+                const pinnedTitle = currentMode.includes('watch') ? '📺 Continue Watching' : '🎮 Continue Playing';
+                renderRow(pinnedTitle, startedItems, main);
+            }
+
+            // 2. NORMAL GROUPS/CATEGORIES
             if (currentCategory === 'all') {
                 const catsInView = [...new Set(filtered.map(i => i.category))].sort();
                 catsInView.forEach(c => {
@@ -736,7 +752,11 @@
                 const groups = [...new Set(grouped.map(i => i.group))].sort();
                 groups.forEach(g => {
                     let items = grouped.filter(i => i.group === g).sort((a,b) => (a.year||0) - (b.year||0));
-                    if(items.length > 0) renderRow(g, items, main);
+                    if(items.length > 0) {
+                        let doneCount = items.filter(i => getStatusInfo(i).code === 'done').length;
+                        let groupTitle = `${g} <span style="font-size:0.85rem; color:#888; font-weight:normal;">(${doneCount}/${items.length} Done)</span>`;
+                        renderRow(groupTitle, items, main);
+                    }
                 });
             }
         };
@@ -820,6 +840,7 @@
                 
                 const bgImage = item.image ? item.image : 'https://placehold.co/300x450?text=No+Image';
                 document.getElementById('mHero').style.backgroundImage = `url('${bgImage}')`;
+                document.getElementById('modalGlow').style.backgroundImage = `url('${bgImage}')`;
                 document.getElementById('mTitle').innerText = item.title || 'Unknown Title';
                 
                 const tagsStr = item.tags ? String(item.tags) : '';
