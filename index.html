@@ -419,7 +419,7 @@
     <div class="modal-overlay" id="loginModal" onclick="window.closeModal(event)">
         <div class="form-box" onclick="event.stopPropagation()">
             <h2>Admin Login</h2>
-            <input type="email" id="loginEmail" class="form-input" placeholder="Email" value="admin@ourhub.com">
+            <input type="email" id="loginEmail" class="form-input" placeholder="Email">
             <input type="password" id="loginPass" class="form-input" placeholder="Password">
             <button class="form-btn" onclick="window.submitLogin()">Login</button>
         </div>
@@ -483,6 +483,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Exposed temporarily so the console script works
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
 
         let watchList = [];
         let gamesTogether = [];
