@@ -149,7 +149,7 @@
         .search-box { display: flex; gap: 8px; margin-bottom: 10px; }
         .search-btn { background: #333; color: white; border: none; border-radius: 12px; padding: 0 15px; font-weight: bold; cursor: pointer; }
 
-        .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 200px; overflow-y: auto; }
+        .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 300px; overflow-y: auto; }
         .tmdb-item { display: flex; gap: 10px; background: #1a1a1a; padding: 8px; border-radius: 8px; cursor: pointer; align-items: center; border: 1px solid #333; }
         .tmdb-item:active { background: #333; }
         .tmdb-item img { width: 40px; height: 60px; object-fit: cover; border-radius: 4px; }
@@ -219,12 +219,12 @@
 
     <button id="addBtnFloat" class="add-float-btn" onclick="window.openAddModal()">+</button>
 
-    <!-- INFO MODAL (Fixed Nav Zones & Buttons) -->
-    <div class="modal-overlay" id="infoModal">
-        <button class="close-btn-float" onclick="window.closeModal(event)">✕</button>
+    <!-- INFO MODAL -->
+    <div class="modal-overlay" id="infoModal" onclick="window.closeModalBackground(event)">
+        <button class="close-btn-float" onclick="window.closeAllModals()">✕</button>
         <div class="nav-zone nav-left" onclick="window.navigateModal(-1)"></div>
         <div class="nav-zone nav-right" onclick="window.navigateModal(1)"></div>
-        <div class="info-card" id="infoCard">
+        <div class="info-card" id="infoCard" onclick="event.stopPropagation()">
             <div class="info-hero" id="mHero"></div>
             <div class="info-content">
                 <div class="info-title" id="mTitle"></div>
@@ -242,27 +242,30 @@
     </div>
 
     <!-- ROULETTE MODAL -->
-    <div class="modal-overlay" id="rouletteModal">
-        <div style="text-align:center; width: 100%;">
+    <div class="modal-overlay" id="rouletteModal" onclick="window.closeModalBackground(event)">
+        <div style="text-align:center; width: 100%;" onclick="event.stopPropagation()">
             <h2 style="color:var(--gold); margin-bottom:20px;">Rolling...</h2>
             <div class="roulette-wrapper"><div class="r-line"></div><div class="roulette-track" id="rTrack"></div></div>
             <h1 id="rWinner" style="color:white; margin-top:25px; opacity:0; transition:0.5s;">???</h1>
-            <button class="chip" style="margin-top:20px; background:#333; color:white; border:none;" onclick="document.getElementById('rouletteModal').style.display='none'">Close</button>
+            <button class="chip" style="margin-top:20px; background:#333; color:white; border:none;" onclick="window.closeAllModals()">Close</button>
         </div>
     </div>
 
     <!-- LOGIN MODAL -->
-    <div class="modal-overlay" id="loginModal" onclick="window.closeModal(event)">
+    <div class="modal-overlay" id="loginModal" onclick="window.closeModalBackground(event)">
         <div class="form-box" onclick="event.stopPropagation()">
             <h2>Admin Login</h2>
             <input type="email" id="loginEmail" class="form-input" placeholder="Email">
-            <input type="password" id="loginPass" class="form-input" placeholder="Password">
+            <div style="position: relative;">
+                <input type="password" id="loginPass" class="form-input" placeholder="Password" style="margin-bottom: 12px; padding-right: 40px;">
+                <button onclick="window.togglePassword()" style="position: absolute; right: 10px; top: 10px; background: none; border: none; font-size: 1rem; cursor: pointer;">👁️</button>
+            </div>
             <button class="form-btn" onclick="window.submitLogin()">Login</button>
         </div>
     </div>
 
     <!-- ADD/EDIT MODAL -->
-    <div class="modal-overlay" id="addModal" onclick="window.closeModal(event)">
+    <div class="modal-overlay" id="addModal" onclick="window.closeModalBackground(event)">
         <div class="form-box" onclick="event.stopPropagation()">
             <h2 id="addModalTitle">Add New</h2>
             
@@ -302,7 +305,6 @@
 
             <input type="text" id="addTitle" class="form-input" placeholder="Title">
             
-            <!-- Grouping Logic -->
             <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
                 <div class="select-wrapper" style="flex:1;">
                     <select id="addGroupSelect" class="form-input" style="margin:0;" onchange="window.handleGroupChange()">
@@ -425,16 +427,23 @@
             });
         }
 
+        // --- AUTH & MISC ---
         window.submitLogin = async () => {
             try {
                 await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPass').value);
                 document.getElementById('loginEmail').value = ""; document.getElementById('loginPass').value = "";
-                document.getElementById('loginModal').style.display = 'none';
+                window.closeAllModals();
             } catch (e) { alert("Login failed"); }
         };
 
         window.submitLogout = async () => {
             await signOut(auth); await signInAnonymously(auth);
+            window.closeAllModals();
+        };
+
+        window.togglePassword = () => {
+            const input = document.getElementById('loginPass');
+            input.type = input.type === 'password' ? 'text' : 'password';
         };
 
         // --- TMDb Integration ---
@@ -449,8 +458,11 @@
                 resDiv.innerHTML = "";
                 if (!data.results || data.results.length === 0) { resDiv.innerHTML = "No results found."; return; }
                 
-                data.results.slice(0, 5).forEach(item => {
-                    if (item.media_type !== 'movie' && item.media_type !== 'tv') return;
+                let validResults = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
+                // Sort by popularity so you don't just see obscure 1980s movies
+                validResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
+                validResults.slice(0, 12).forEach(item => {
                     const title = item.title || item.name;
                     const year = (item.release_date || item.first_air_date || "").substring(0, 4);
                     const img = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
@@ -540,7 +552,7 @@
             window.handleGroupChange();
             if (item.group) document.getElementById('addGroupSelect').value = item.group;
 
-            document.getElementById('infoModal').style.display = 'none';
+            window.closeAllModals();
             document.getElementById('addModal').style.display = 'flex';
         };
 
@@ -571,8 +583,7 @@
                 const colRef = collection(db, 'artifacts', 'our-hub', 'public', 'data', 'media');
                 if (editingItemId) await updateDoc(doc(colRef, editingItemId), itemData);
                 else { itemData.timestamp = Date.now(); await addDoc(colRef, itemData); }
-                document.getElementById('addModal').style.display = 'none';
-                editingItemId = null;
+                window.closeAllModals();
             } catch (e) { alert("Error saving."); }
             btn.disabled = false;
         };
@@ -581,14 +592,14 @@
             const item = currentModalList[currentModalIndex];
             if (!item.id) return;
             await updateDoc(doc(db, 'artifacts', 'our-hub', 'public', 'data', 'media', item.id), { me: true, her: true });
-            document.getElementById('infoModal').style.display = 'none';
+            window.closeAllModals();
         };
 
         window.deleteItem = async () => {
             const item = currentModalList[currentModalIndex];
             if (!item.id || !confirm(`Delete "${item.title}"?`)) return;
             await deleteDoc(doc(db, 'artifacts', 'our-hub', 'public', 'data', 'media', item.id));
-            document.getElementById('infoModal').style.display = 'none';
+            window.closeAllModals();
         };
 
         // --- Navigation ---
@@ -722,6 +733,18 @@
             return el;
         }
 
+        // Modal Management
+        window.closeAllModals = () => {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+            editingItemId = null;
+        };
+
+        window.closeModalBackground = (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                window.closeAllModals();
+            }
+        };
+
         window.openModal = (item, list) => {
             currentModalList = list;
             currentModalIndex = list.indexOf(item);
@@ -780,12 +803,6 @@
             }
         }
 
-        window.closeModal = (e) => {
-            if (!e || e.target.classList.contains('modal-overlay') || e.target.classList.contains('close-btn-float')) {
-                document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-            }
-        };
-
         let touchstartX = 0;
         let touchendX = 0;
         const infoModalEl = document.getElementById('infoModal');
@@ -840,7 +857,7 @@
                 setTimeout(() => {
                     document.getElementById('rWinner').innerText = winner.title;
                     document.getElementById('rWinner').style.opacity = '1';
-                    setTimeout(() => { window.closeModal(); window.openModal(winner, candidates); document.getElementById('rouletteModal').style.display = 'none'; }, 1500);
+                    setTimeout(() => { window.closeAllModals(); window.openModal(winner, candidates); document.getElementById('rouletteModal').style.display = 'none'; }, 1500);
                 }, 4500);
             }, 50);
         };
