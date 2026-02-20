@@ -89,11 +89,12 @@
         .login-btn { background: #222; border: none; color: white; padding: 8px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
 
         .controls { padding: 15px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
-        .btn-roulette { background: #222; border: 1px solid #444; color: white; padding: 12px 40px; font-weight: 700; border-radius: 50px; cursor: pointer; width: 100%; max-width: 300px; }
+        .btn-roulette { background: #222; border: 1px solid #444; color: white; padding: 12px 40px; font-weight: 700; border-radius: 50px; cursor: pointer; width: 100%; max-width: 300px; transition: transform 0.1s; }
+        .btn-roulette:active { transform: scale(0.96); }
         
         .filter-scroll { display: flex; gap: 8px; overflow-x: auto; width: 100%; padding-bottom: 5px; scrollbar-width: none; }
         .filter-scroll::-webkit-scrollbar { display: none; }
-        .chip { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; }
+        .chip { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; transition: all 0.2s;}
         .chip.active { background: white; color: black; border-color: white; }
 
         .dropdown-row { display: flex; gap: 8px; width: 100%; }
@@ -102,19 +103,25 @@
         .select-wrapper::after { content: '▼'; font-size: 0.5rem; color: #666; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 
         /* --- LAYOUTS & CARDS --- */
-        .section-header { padding: 0 20px; margin-top: 25px; margin-bottom: 10px; font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        .row-container { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 10px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .section-header { padding: 0 20px; margin-top: 25px; margin-bottom: 10px; font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between;}
+        
+        .scroll-arrows { display: none; gap: 8px; }
+        @media (hover: hover) { .scroll-arrows { display: flex; } }
+        .arrow-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+
+        .row-container { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 10px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
         .row-container::-webkit-scrollbar { display: none; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 12px; padding: 0 20px; margin-top: 15px; }
 
-        .card { flex: 0 0 var(--card-width); height: var(--card-height); background: #111; border-radius: var(--radius); overflow: hidden; position: relative; scroll-snap-align: start; cursor: pointer; }
+        .card { flex: 0 0 var(--card-width); height: var(--card-height); background: #111; border-radius: var(--radius); overflow: hidden; position: relative; scroll-snap-align: start; cursor: pointer; transition: transform 0.1s; }
+        .card:active { transform: scale(0.96); }
         .card.dimmed { opacity: 0.35; filter: grayscale(100%); }
         .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; }
-        .imdb-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--gold); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; }
+        .imdb-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--gold); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; backdrop-filter: blur(4px); z-index: 5; }
         .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
-        .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+        .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; text-shadow: 0 2px 4px black; }
         .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; font-weight: 600; }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 5px currentColor; }
 
         .s-new { color: var(--green); } .d-new { background: var(--green); }
         .s-done { color: #888; } .d-done { background: #888; }
@@ -122,17 +129,20 @@
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2500; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .close-btn-float { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; }
+        .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; }
+        
+        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 2600; cursor: pointer; }
+        .nav-left { left: 0; } .nav-right { right: 0; }
 
-        .info-card { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; overflow-y: auto; }
-        .info-hero { height: 40vh; width: 100%; background-size: cover; background-position: center; position: relative; }
+        .info-card { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; overflow-y: auto; position: relative;}
+        .info-hero { height: 40vh; width: 100%; background-size: cover; background-position: center; position: relative; flex-shrink: 0; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #0a0a0a 5%, transparent); }
         .info-content { padding: 20px 25px 80px 25px; }
         .info-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
         .tag-pill { background: #222; border: 1px solid #333; padding: 4px 10px; border-radius: 8px; color: #ccc; font-size: 0.75rem; display: inline-block; margin: 0 5px 5px 0; }
         .info-desc { color: #bbb; line-height: 1.5; margin: 15px 0; font-size: 0.95rem; }
         
-        .form-box { background: #111; border: 1px solid #222; border-radius: 20px; padding: 25px; width: 90%; max-width: 450px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; }
+        .form-box { background: #111; border: 1px solid #222; border-radius: 20px; padding: 25px; width: 90%; max-width: 450px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; position: relative; z-index: 2601; }
         .form-box h2 { margin: 0 0 15px 0; font-size: 1.4rem; }
         .form-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
         
@@ -144,7 +154,7 @@
         .tmdb-item:active { background: #333; }
         .tmdb-item img { width: 40px; height: 60px; object-fit: cover; border-radius: 4px; }
 
-        .add-float-btn { position: fixed; bottom: 30px; right: 20px; background: var(--accent); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(229,9,20,0.5); cursor: pointer; z-index: 1000; }
+        .add-float-btn { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: 20px; background: var(--accent); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(229,9,20,0.5); cursor: pointer; z-index: 1000; }
 
         .roulette-wrapper { width: 95%; max-width: 500px; height: 180px; border: 2px solid #333; background: #000; overflow: hidden; position: relative; margin: 0 auto; border-radius: 16px;}
         .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
@@ -209,9 +219,11 @@
 
     <button id="addBtnFloat" class="add-float-btn" onclick="window.openAddModal()">+</button>
 
-    <!-- INFO MODAL -->
+    <!-- INFO MODAL (Fixed Nav Zones & Buttons) -->
     <div class="modal-overlay" id="infoModal">
         <button class="close-btn-float" onclick="window.closeModal(event)">✕</button>
+        <div class="nav-zone nav-left" onclick="window.navigateModal(-1)"></div>
+        <div class="nav-zone nav-right" onclick="window.navigateModal(1)"></div>
         <div class="info-card" id="infoCard">
             <div class="info-hero" id="mHero"></div>
             <div class="info-content">
@@ -220,7 +232,7 @@
                 <div class="info-desc" id="mDesc"></div>
                 <div id="mNoteBox" style="display:none;"><div style="background:#1a1a1a; padding:15px; border-left:3px solid var(--accent); color:#ccc; font-style:italic;" id="mNote"></div></div>
                 
-                <div id="adminActions" style="display:none; margin-top: 25px; gap: 8px; flex-wrap: wrap;">
+                <div id="adminActions" style="display:none; margin-top: 25px; gap: 8px; flex-wrap: wrap; position: relative; z-index: 2700;">
                     <button id="markDoneBtn" class="form-btn" style="background: var(--green); flex: 1;" onclick="window.markItemDone()">✔ Done</button>
                     <button class="form-btn" style="background: #3b82f6; flex: 1;" onclick="window.openEditModal()">✎ Edit</button>
                     <button class="form-btn" style="background: #d32f2f; flex: 1;" onclick="window.deleteItem()">🗑 Del</button>
@@ -357,6 +369,8 @@
         let currentMode = 'watch_shared'; 
         let isAdmin = false;
         let editingItemId = null; 
+        let currentModalList = [];
+        let currentModalIndex = 0;
         
         const listTitles = {
             'watch_shared': 'Our Watchlist', 'watch_kacper': "Kacper's Watchlist", 'watch_scarlett': "Scarlett's Watchlist",
@@ -644,14 +658,12 @@
 
             // Grouping logic for clean UI
             if (currentCategory === 'all') {
-                // Show rows by Category
                 const catsInView = [...new Set(filtered.map(i => i.category))].sort();
                 catsInView.forEach(c => {
                     let items = filtered.filter(i => i.category === c);
                     if(items.length > 0) renderRow(c, items, main);
                 });
             } else {
-                // Inside a category, show standalone items in "Library", and groups in their own rows
                 let grouped = filtered.filter(i => i.group);
                 let standalone = filtered.filter(i => !i.group);
 
@@ -667,7 +679,13 @@
 
         function renderRow(title, items, container, isRow=true) {
             const wrap = document.createElement('div');
-            wrap.innerHTML = `<div class="section-header">${title}</div><div class="${isRow ? 'row-container' : 'grid-container'}"></div>`;
+            wrap.innerHTML = `
+                <div class="section-header">
+                    ${title}
+                    ${isRow ? `<div class="scroll-arrows"><button class="arrow-btn" onclick="window.scrollRow(this, -1)">‹</button><button class="arrow-btn" onclick="window.scrollRow(this, 1)">›</button></div>` : ''}
+                </div>
+                <div class="${isRow ? 'row-container' : 'grid-container'}"></div>
+            `;
             const content = wrap.querySelector('div:nth-child(2)');
             items.forEach(i => content.appendChild(createCard(i, items)));
             container.appendChild(wrap);
@@ -691,7 +709,7 @@
             const clss = isDone ? 's-done' : (isNew ? 's-new' : 's-note');
 
             el.className = `card ${isDone ? 'dimmed' : ''}`;
-            el.onclick = () => window.openModal(item, list);
+            el.addEventListener('click', () => window.openModal(item, list));
             const bg = item.image || 'https://placehold.co/150x220?text=NA';
             
             el.innerHTML = `
@@ -707,8 +725,8 @@
         window.openModal = (item, list) => {
             currentModalList = list;
             currentModalIndex = list.indexOf(item);
-            renderModalContent();
             document.getElementById('infoModal').style.display = 'flex';
+            renderModalContent();
         };
 
         window.navigateModal = (direction) => {
@@ -720,27 +738,45 @@
         };
 
         function renderModalContent() {
-            const item = currentModalList[currentModalIndex];
-            if (!item) return;
+            try {
+                const item = currentModalList[currentModalIndex];
+                if (!item) return;
 
-            const isDone = (item.me === true && item.her === true);
-            const isNew = (item.me === false && item.her === false);
-            const txt = isDone ? 'Done' : (isNew ? 'New' : 'Note');
-            const clss = isDone ? 's-done' : (isNew ? 's-new' : 's-note');
-            
-            document.getElementById('mHero').style.backgroundImage = `url('${item.image || ''}')`;
-            document.getElementById('mTitle').innerText = item.title;
-            const tgs = item.tags ? item.tags.split(',').map(t=>`<span class="tag-pill">${t.trim()}</span>`).join('') : '';
-            document.getElementById('mTags').innerHTML = `<span class="${clss}" style="font-weight:bold;">${txt}</span> • ${item.category} ${item.year?'• '+item.year:''} ${item.imdb?'• ⭐ '+item.imdb:''}<br><br>${tgs}`;
-            document.getElementById('mDesc').innerText = item.desc || '';
-            document.getElementById('mNoteBox').style.display = item.note ? 'block' : 'none';
-            document.getElementById('mNote').innerText = item.note || '';
+                const isDone = (item.me === true && item.her === true);
+                const isNew = (item.me === false && item.her === false);
+                const txt = isDone ? 'Done' : (isNew ? 'New' : 'Note');
+                const clss = isDone ? 's-done' : (isNew ? 's-new' : 's-note');
+                
+                const bgImage = item.image ? item.image : 'https://placehold.co/300x450?text=No+Image';
+                document.getElementById('mHero').style.backgroundImage = `url('${bgImage}')`;
+                document.getElementById('mTitle').innerText = item.title || 'Unknown Title';
+                
+                const tagsStr = item.tags ? String(item.tags) : '';
+                const tgs = tagsStr ? tagsStr.split(',').map(t=>`<span class="tag-pill">${t.trim()}</span>`).join('') : '';
+                const catText = item.group ? item.group : (item.category || '');
+                
+                document.getElementById('mTags').innerHTML = `<span class="${clss}" style="font-weight:bold;">${txt}</span> • ${catText} ${item.year?'• '+item.year:''} ${item.imdb?'• ⭐ '+item.imdb:''}<br><br>${tgs}`;
+                document.getElementById('mDesc').innerText = item.desc || '';
+                
+                const noteBox = document.getElementById('mNoteBox');
+                if (item.note) {
+                    noteBox.style.display = 'block';
+                    document.getElementById('mNote').innerText = item.note;
+                } else {
+                    noteBox.style.display = 'none';
+                }
 
-            if (isAdmin) {
-                document.getElementById('adminActions').style.display = 'flex';
-                document.getElementById('markDoneBtn').style.display = isDone ? 'none' : 'block';
-            } else { 
-                document.getElementById('adminActions').style.display = 'none'; 
+                const adminActions = document.getElementById('adminActions');
+                const markDoneBtn = document.getElementById('markDoneBtn');
+                
+                if (isAdmin) {
+                    adminActions.style.display = 'flex';
+                    markDoneBtn.style.display = isDone ? 'none' : 'block';
+                } else { 
+                    adminActions.style.display = 'none'; 
+                }
+            } catch (e) {
+                console.error("Error rendering modal popup:", e);
             }
         }
 
