@@ -233,8 +233,6 @@
     <div class="modal-overlay" id="infoModal" onclick="window.closeModalBackground(event)">
         <div id="modalGlow" class="modal-glow"></div>
         <button class="close-btn-float" onclick="window.closeAllModals()">✕</button>
-        <div class="nav-zone nav-left" onclick="window.navigateModal(-1)"></div>
-        <div class="nav-zone nav-right" onclick="window.navigateModal(1)"></div>
         <div class="info-card" id="infoCard" onclick="event.stopPropagation()">
             <div class="info-hero" id="mHero"></div>
             <div class="info-content">
@@ -767,14 +765,16 @@
 
         function renderRow(title, items, container, isRow=true) {
             const wrap = document.createElement('div');
+            // FIX: Using a distinct class to grab the correct container div and wrapping the title securely
+            const rowClass = isRow ? 'row-container' : 'grid-container';
             wrap.innerHTML = `
                 <div class="section-header">
-                    ${title}
+                    <div>${title}</div>
                     ${isRow ? `<div class="scroll-arrows"><button class="arrow-btn" onclick="window.scrollRow(this, -1)">‹</button><button class="arrow-btn" onclick="window.scrollRow(this, 1)">›</button></div>` : ''}
                 </div>
-                <div class="${isRow ? 'row-container' : 'grid-container'}"></div>
+                <div class="${rowClass} js-row-content"></div>
             `;
-            const content = wrap.querySelector('div:nth-child(2)');
+            const content = wrap.querySelector('.js-row-content');
             items.forEach(i => content.appendChild(createCard(i, items)));
             container.appendChild(wrap);
         }
@@ -828,6 +828,8 @@
         };
 
         window.navigateModal = (direction) => {
+            /* Since we disabled invisible edge clicks, this is only used for roulette right now, 
+               but kept safe just in case we add real buttons later */
             const newIndex = currentModalIndex + direction;
             if (newIndex >= 0 && newIndex < currentModalList.length) {
                 currentModalIndex = newIndex;
@@ -878,16 +880,6 @@
                 console.error("Error rendering modal popup:", e);
             }
         }
-
-        let touchstartX = 0;
-        let touchendX = 0;
-        const infoModalEl = document.getElementById('infoModal');
-        infoModalEl.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
-        infoModalEl.addEventListener('touchend', e => {
-            touchendX = e.changedTouches[0].screenX;
-            if (touchendX < touchstartX - 50) window.navigateModal(1);
-            if (touchendX > touchstartX + 50) window.navigateModal(-1);
-        });
 
         window.startRoulette = () => {
             const stat = document.getElementById('statusFilter').value;
