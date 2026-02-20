@@ -387,7 +387,7 @@
 
     <div id="mainContent"></div>
 
-    <button id="addBtnFloat" class="add-float-btn" onclick="document.getElementById('addModal').style.display='flex'">+</button>
+    <button id="addBtnFloat" class="add-float-btn" onclick="window.openAddModal()">+</button>
 
     <div class="modal-overlay" id="infoModal">
         <button class="close-btn-float" onclick="window.closeModal(event)">✕</button>
@@ -400,6 +400,12 @@
                 <div class="info-tags" id="mTags"></div>
                 <div class="info-desc" id="mDesc"></div>
                 <div id="mNoteBox" style="display:none;"><div class="info-note" id="mNote"></div></div>
+                
+                <div id="adminActions" style="display:none; margin-top: 25px; gap: 10px; flex-wrap: wrap;">
+                    <button id="markDoneBtn" class="form-btn" style="background: var(--green); flex: 1;" onclick="window.markItemDone()">✔ Mark as Done</button>
+                    <button class="form-btn" style="background: #3b82f6; flex: 1;" onclick="window.openEditModal()">✎ Edit</button>
+                    <button class="form-btn" style="background: #d32f2f; flex: 1;" onclick="window.deleteItem()">🗑 Delete</button>
+                </div>
             </div>
         </div>
     </div>
@@ -427,7 +433,7 @@
 
     <div class="modal-overlay" id="addModal" onclick="window.closeModal(event)">
         <div class="form-box" onclick="event.stopPropagation()">
-            <h2>Add New</h2>
+            <h2 id="addModalTitle">Add New</h2>
             <div class="select-wrapper" style="margin-bottom:12px;">
                 <select id="addType" class="form-input" style="margin:0;">
                     <option value="watch">Watchlist</option>
@@ -469,7 +475,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyC9KrLCdD_UXrz3EyT0KodSD27hd60VTGM",
@@ -484,11 +490,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Exposed temporarily so the console script works
-        window.db = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
-
         let watchList = [];
         let gamesTogether = [];
         let gamesAlone = [];
@@ -497,17 +498,19 @@
         let currentModalList = [];
         let currentModalIndex = 0;
         let currentMode = 'watch'; 
+        let isAdmin = false;
+        let editingItemId = null; // Tracks if we are editing an existing item
 
         onAuthStateChanged(auth, (user) => {
             const authBtn = document.getElementById('authBtn');
             if (user && !user.isAnonymous) {
-                // Logged in as real user
+                isAdmin = true;
                 document.getElementById('addBtnFloat').style.display = 'flex';
                 document.getElementById('loginModal').style.display = 'none';
                 authBtn.innerText = "Logout";
                 authBtn.onclick = () => window.submitLogout();
             } else {
-                // Anonymous or not logged in
+                isAdmin = false;
                 document.getElementById('addBtnFloat').style.display = 'none';
                 authBtn.innerText = "Login";
                 authBtn.onclick = () => document.getElementById('loginModal').style.display='flex';
@@ -558,6 +561,8 @@
             const pass = document.getElementById('loginPass').value;
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
+                document.getElementById('loginEmail').value = "";
+                document.getElementById('loginPass').value = "";
             } catch (error) {
                 alert("Login failed: " + error.message);
             }
@@ -566,11 +571,62 @@
         window.submitLogout = async () => {
             try {
                 await signOut(auth);
-                // Re-authenticate as anonymous right after logout so we can still read the database
                 await signInAnonymously(auth);
             } catch (error) {
                 console.error("Logout error", error);
             }
+        };
+
+        // Opens the form clean for adding a new item
+        window.openAddModal = () => {
+            editingItemId = null;
+            document.getElementById('addModalTitle').innerText = "Add New";
+            document.getElementById('saveItemBtn').innerText = "Save Item";
+            
+            document.getElementById('addType').value = "watch";
+            document.getElementById('addCat').value = "";
+            document.getElementById('addTitle').value = "";
+            document.getElementById('addYear').value = "";
+            document.getElementById('addMe').value = "new";
+            document.getElementById('addHer').value = "new";
+            document.getElementById('addImdb').value = "";
+            document.getElementById('addTags').value = "";
+            document.getElementById('addImage').value = "";
+            document.getElementById('addDesc').value = "";
+            document.getElementById('addNote').value = "";
+            
+            document.getElementById('addModal').style.display = 'flex';
+        };
+
+        // Opens the form pre-filled to edit an existing item
+        window.openEditModal = () => {
+            const item = currentModalList[currentModalIndex];
+            if (!item || !item.id) return;
+
+            editingItemId = item.id;
+            document.getElementById('addModalTitle').innerText = "Edit Item";
+            document.getElementById('saveItemBtn').innerText = "Update Item";
+
+            const statusToStr = (status) => {
+                if (status === true) return 'done';
+                if (status === false) return 'new';
+                return 'note';
+            };
+
+            document.getElementById('addType').value = item.type || 'watch';
+            document.getElementById('addCat').value = item.category || '';
+            document.getElementById('addTitle').value = item.title || '';
+            document.getElementById('addYear').value = item.year || '';
+            document.getElementById('addMe').value = statusToStr(item.me);
+            document.getElementById('addHer').value = statusToStr(item.her);
+            document.getElementById('addImdb').value = item.imdb || '';
+            document.getElementById('addTags').value = item.tags || '';
+            document.getElementById('addImage').value = item.image || '';
+            document.getElementById('addDesc').value = item.desc || '';
+            document.getElementById('addNote').value = item.note || '';
+
+            document.getElementById('infoModal').style.display = 'none';
+            document.getElementById('addModal').style.display = 'flex';
         };
 
         window.submitAddItem = async () => {
@@ -584,7 +640,7 @@
                 return 'note';
             };
 
-            const newItem = {
+            const itemData = {
                 type: document.getElementById('addType').value,
                 category: document.getElementById('addCat').value.toUpperCase().trim(),
                 title: document.getElementById('addTitle').value.trim(),
@@ -595,26 +651,60 @@
                 tags: document.getElementById('addTags').value.trim(),
                 image: document.getElementById('addImage').value.trim(),
                 desc: document.getElementById('addDesc').value.trim(),
-                note: document.getElementById('addNote').value.trim(),
-                timestamp: Date.now() 
+                note: document.getElementById('addNote').value.trim()
             };
 
             try {
-                const mediaCollection = collection(db, 'artifacts', 'our-hub', 'public', 'data', 'media');
-                await addDoc(mediaCollection, newItem);
-                
-                document.getElementById('addTitle').value = "";
-                document.getElementById('addImage').value = "";
-                document.getElementById('addDesc').value = "";
-                document.getElementById('addNote').value = "";
+                if (editingItemId) {
+                    const itemRef = doc(db, 'artifacts', 'our-hub', 'public', 'data', 'media', editingItemId);
+                    await updateDoc(itemRef, itemData);
+                } else {
+                    itemData.timestamp = Date.now(); 
+                    const mediaCollection = collection(db, 'artifacts', 'our-hub', 'public', 'data', 'media');
+                    await addDoc(mediaCollection, itemData);
+                }
                 
                 document.getElementById('addModal').style.display = 'none';
+                editingItemId = null;
             } catch (error) {
                 alert("Error saving: " + error.message);
             }
 
-            btn.innerText = "Save Item";
+            btn.innerText = editingItemId ? "Update Item" : "Save Item";
             btn.disabled = false;
+        };
+
+        window.markItemDone = async () => {
+            const item = currentModalList[currentModalIndex];
+            if (!item.id) return;
+            try {
+                const itemRef = doc(db, 'artifacts', 'our-hub', 'public', 'data', 'media', item.id);
+                await updateDoc(itemRef, { me: true, her: true });
+                
+                item.me = true;
+                item.her = true;
+                renderModalContent();
+            } catch (error) {
+                alert("Error updating status: " + error.message);
+            }
+        };
+
+        window.deleteItem = async () => {
+            const item = currentModalList[currentModalIndex];
+            if (!item.id) return;
+            
+            if (!confirm(`Are you absolutely sure you want to delete "${item.title}"?`)) return;
+            
+            try {
+                const itemRef = doc(db, 'artifacts', 'our-hub', 'public', 'data', 'media', item.id);
+                await deleteDoc(itemRef);
+                
+                // Hide modal overlay completely
+                document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+                editingItemId = null;
+            } catch (error) {
+                alert("Error deleting item: " + error.message);
+            }
         };
 
         window.showGameOptions = () => {
@@ -913,11 +1003,26 @@
             } else {
                 noteBox.style.display = 'none';
             }
+
+            const adminActions = document.getElementById('adminActions');
+            const markDoneBtn = document.getElementById('markDoneBtn');
+            
+            if (isAdmin) {
+                adminActions.style.display = 'flex';
+                if (s.code === 'done') {
+                    markDoneBtn.style.display = 'none';
+                } else {
+                    markDoneBtn.style.display = 'block';
+                }
+            } else {
+                adminActions.style.display = 'none';
+            }
         }
 
         window.closeModal = (e) => {
             if (!e || e.target.classList.contains('modal-overlay') || e.target.classList.contains('close-btn-float')) {
                 document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+                editingItemId = null; 
             }
         };
 
