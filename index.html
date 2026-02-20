@@ -121,15 +121,24 @@
         .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
         .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; text-shadow: 0 2px 4px black; }
         .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; font-weight: 600; }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 5px currentColor; }
-
-        .s-new { color: var(--green); } .d-new { background: var(--green); }
-        .s-done { color: #888; } .d-done { background: #888; }
-        .s-note { color: var(--yellow); } .d-note { background: var(--yellow); }
+        
+        /* DYNAMIC DOT COLORS */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .d-kacper { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; }
+        .d-scarlett { background: var(--pink); box-shadow: 0 0 5px var(--pink); }
+        .d-note { background: var(--yellow); box-shadow: 0 0 5px var(--yellow); }
+        .d-new { background: var(--green); box-shadow: 0 0 5px var(--green); }
+        .d-done { background: #888; box-shadow: 0 0 5px #888; }
+        
+        .s-kacper { color: #3b82f6; }
+        .s-scarlett { color: var(--pink); }
+        .s-note { color: var(--yellow); }
+        .s-new { color: var(--green); }
+        .s-done { color: #888; }
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2500; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; }
+        .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; display: flex; align-items: center; justify-content: center;}
         
         .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 2600; cursor: pointer; }
         .nav-left { left: 0; } .nav-right { right: 0; }
@@ -258,7 +267,7 @@
             <input type="email" id="loginEmail" class="form-input" placeholder="Email">
             <div style="position: relative;">
                 <input type="password" id="loginPass" class="form-input" placeholder="Password" style="margin-bottom: 12px; padding-right: 40px;">
-                <button onclick="window.togglePassword()" style="position: absolute; right: 10px; top: 10px; background: none; border: none; font-size: 1rem; cursor: pointer;">👁️</button>
+                <button onclick="window.togglePassword()" style="position: absolute; right: 10px; top: 10px; background: none; border: none; font-size: 1.2rem; cursor: pointer;">👁️</button>
             </div>
             <button class="form-btn" onclick="window.submitLogin()">Login</button>
         </div>
@@ -406,7 +415,6 @@
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     let listType = data.listType;
-                    // Legacy migration logic
                     if (!listType) {
                         if (data.type === 'watch') listType = 'watch_shared';
                         else if (data.type === 'together') listType = 'game_shared';
@@ -446,6 +454,48 @@
             input.type = input.type === 'password' ? 'text' : 'password';
         };
 
+        // --- NEW DYNAMIC STATUS LOGIC ---
+        function getStatusInfo(item) {
+            let isDone = (item.me === true && item.her === true);
+            let isNew = (item.me === false && item.her === false);
+            let hasTextNote = !!(item.note && item.note.trim() !== "");
+
+            let dots = [];
+            let text = "";
+            let textClass = "";
+
+            if (isDone && !hasTextNote) {
+                return { html: `<span class="status-dot d-done"></span><span class="s-done">Done</span>`, code: 'done' };
+            }
+            if (isNew && !hasTextNote) {
+                return { html: `<span class="status-dot d-new"></span><span class="s-new">New</span>`, code: 'new' };
+            }
+
+            // Collect necessary dots
+            if (item.me === true || item.me === 'note') dots.push('d-kacper');
+            if (item.her === true || item.her === 'note') dots.push('d-scarlett');
+            if (item.me === 'note' || item.her === 'note' || hasTextNote) dots.push('d-note');
+
+            // Remove duplicate dots
+            dots = [...new Set(dots)];
+
+            // Decide primary text
+            if (hasTextNote || item.me === 'note' || item.her === 'note') {
+                text = "Note"; textClass = "s-note";
+            } else if (item.me === true && item.her === false) {
+                text = "Kacper"; textClass = "s-kacper";
+            } else if (item.me === false && item.her === true) {
+                text = "Scarlett"; textClass = "s-scarlett";
+            } else {
+                text = "Done"; textClass = "s-done";
+            }
+
+            let dotsHtml = dots.map(d => `<span class="status-dot ${d}"></span>`).join('');
+            let sortCode = (text === 'Done') ? 'done' : (text === 'New' ? 'new' : 'note');
+            
+            return { html: `${dotsHtml} <span class="${textClass}">${text}</span>`, code: sortCode };
+        }
+
         // --- TMDb Integration ---
         window.searchTMDb = async () => {
             const query = document.getElementById('tmdbSearchInput').value.trim();
@@ -459,7 +509,6 @@
                 if (!data.results || data.results.length === 0) { resDiv.innerHTML = "No results found."; return; }
                 
                 let validResults = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
-                // Sort by popularity so you don't just see obscure 1980s movies
                 validResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
                 validResults.slice(0, 12).forEach(item => {
@@ -552,7 +601,8 @@
             window.handleGroupChange();
             if (item.group) document.getElementById('addGroupSelect').value = item.group;
 
-            window.closeAllModals();
+            // Notice we are NOT clearing editingItemId here.
+            document.getElementById('infoModal').style.display = 'none';
             document.getElementById('addModal').style.display = 'flex';
         };
 
@@ -581,8 +631,15 @@
 
             try {
                 const colRef = collection(db, 'artifacts', 'our-hub', 'public', 'data', 'media');
-                if (editingItemId) await updateDoc(doc(colRef, editingItemId), itemData);
-                else { itemData.timestamp = Date.now(); await addDoc(colRef, itemData); }
+                if (editingItemId) {
+                    await updateDoc(doc(colRef, editingItemId), itemData);
+                } else { 
+                    itemData.timestamp = Date.now(); 
+                    await addDoc(colRef, itemData); 
+                }
+                
+                // Clear out editing state on successful save
+                editingItemId = null;
                 window.closeAllModals();
             } catch (e) { alert("Error saving."); }
             btn.disabled = false;
@@ -619,7 +676,6 @@
             document.getElementById('hubScreen').style.display = 'none';
             document.getElementById('appTitle').innerText = listTitles[mode] || "Our Hub";
             
-            // Filter global data to current list type
             currentList = allData.filter(i => i.listType === mode);
 
             if(!isRefresh) {
@@ -651,10 +707,8 @@
             const sort = document.getElementById('sortOrder').value;
 
             let filtered = currentList.filter(i => {
-                const isDone = (i.me === true && i.her === true);
-                const isNew = (i.me === false && i.her === false);
-                const sCode = isDone ? 'done' : (isNew ? 'new' : 'note');
-                if (stat !== 'all' && sCode !== stat) return false;
+                const sInfo = getStatusInfo(i);
+                if (stat !== 'all' && sInfo.code !== stat) return false;
                 if (currentCategory !== 'all' && i.category !== currentCategory) return false;
                 return true;
             }).sort((a, b) => {
@@ -667,7 +721,6 @@
             main.innerHTML = "";
             if (filtered.length === 0) { main.innerHTML = "<div style='padding:50px; text-align:center; color:#666;'>Empty.</div>"; return; }
 
-            // Grouping logic for clean UI
             if (currentCategory === 'all') {
                 const catsInView = [...new Set(filtered.map(i => i.category))].sort();
                 catsInView.forEach(c => {
@@ -713,13 +766,9 @@
 
         function createCard(item, list) {
             const el = document.createElement('div');
-            const isDone = (item.me === true && item.her === true);
-            const isNew = (item.me === false && item.her === false);
-            const dot = isDone ? 'd-done' : (isNew ? 'd-new' : 'd-note');
-            const txt = isDone ? 'Done' : (isNew ? 'New' : 'Note');
-            const clss = isDone ? 's-done' : (isNew ? 's-new' : 's-note');
+            const sInfo = getStatusInfo(item);
 
-            el.className = `card ${isDone ? 'dimmed' : ''}`;
+            el.className = `card ${sInfo.code === 'done' ? 'dimmed' : ''}`;
             el.addEventListener('click', () => window.openModal(item, list));
             const bg = item.image || 'https://placehold.co/150x220?text=NA';
             
@@ -728,7 +777,7 @@
                 ${item.imdb ? `<div class="imdb-badge">⭐ ${item.imdb}</div>` : ''}
                 <div class="card-overlay">
                     <div class="card-title">${item.title}</div>
-                    <div class="card-status"><span class="status-dot ${dot}"></span><span class="${clss}">${txt}</span></div>
+                    <div class="card-status">${sInfo.html}</div>
                 </div>`;
             return el;
         }
@@ -736,12 +785,14 @@
         // Modal Management
         window.closeAllModals = () => {
             document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-            editingItemId = null;
+            // Deliberately NOT resetting editingItemId here to preserve the Edit sequence.
         };
 
         window.closeModalBackground = (e) => {
             if (e.target.classList.contains('modal-overlay')) {
                 window.closeAllModals();
+                // Safe to reset here since background clicking means user aborted the edit
+                editingItemId = null;
             }
         };
 
@@ -765,10 +816,7 @@
                 const item = currentModalList[currentModalIndex];
                 if (!item) return;
 
-                const isDone = (item.me === true && item.her === true);
-                const isNew = (item.me === false && item.her === false);
-                const txt = isDone ? 'Done' : (isNew ? 'New' : 'Note');
-                const clss = isDone ? 's-done' : (isNew ? 's-new' : 's-note');
+                const sInfo = getStatusInfo(item);
                 
                 const bgImage = item.image ? item.image : 'https://placehold.co/300x450?text=No+Image';
                 document.getElementById('mHero').style.backgroundImage = `url('${bgImage}')`;
@@ -778,7 +826,10 @@
                 const tgs = tagsStr ? tagsStr.split(',').map(t=>`<span class="tag-pill">${t.trim()}</span>`).join('') : '';
                 const catText = item.group ? item.group : (item.category || '');
                 
-                document.getElementById('mTags').innerHTML = `<span class="${clss}" style="font-weight:bold;">${txt}</span> • ${catText} ${item.year?'• '+item.year:''} ${item.imdb?'• ⭐ '+item.imdb:''}<br><br>${tgs}`;
+                document.getElementById('mTags').innerHTML = `
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:bold;">${sInfo.html}</div>
+                    ${catText} ${item.year?'• '+item.year:''} ${item.imdb?'• ⭐ '+item.imdb:''}<br><br>${tgs}
+                `;
                 document.getElementById('mDesc').innerText = item.desc || '';
                 
                 const noteBox = document.getElementById('mNoteBox');
@@ -794,7 +845,7 @@
                 
                 if (isAdmin) {
                     adminActions.style.display = 'flex';
-                    markDoneBtn.style.display = isDone ? 'none' : 'block';
+                    markDoneBtn.style.display = sInfo.code === 'done' ? 'none' : 'block';
                 } else { 
                     adminActions.style.display = 'none'; 
                 }
@@ -817,11 +868,9 @@
             const stat = document.getElementById('statusFilter').value;
             
             const candidates = currentList.filter(i => {
-                const isDone = (i.me === true && i.her === true);
-                const isNew = (i.me === false && i.her === false);
-                const sCode = isDone ? 'done' : (isNew ? 'new' : 'note');
-                const matchesStatus = stat === 'all' ? sCode !== 'done' : sCode === stat;
-                const validStatus = stat === 'done' ? true : sCode !== 'done'; 
+                const sInfo = getStatusInfo(i);
+                const matchesStatus = stat === 'all' ? sInfo.code !== 'done' : sInfo.code === stat;
+                const validStatus = stat === 'done' ? true : sInfo.code !== 'done'; 
                 const matchesCat = currentCategory === 'all' || i.category === currentCategory;
                 return matchesCat && matchesStatus && validStatus;
             });
