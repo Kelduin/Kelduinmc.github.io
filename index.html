@@ -655,15 +655,22 @@
                         document.getElementById('addImdb').value = finalRating;
                         document.getElementById('addImage').value = img;
 
-                        // Smart Category Mapping
+                        // Smart Category Mapping (Prioritize the FIRST genre)
                         let category = 'OTHER';
-                        if (item.genres) {
-                            const genreNames = item.genres.map(g => g.name.toLowerCase());
-                            if (genreNames.includes('rpg') || genreNames.includes('role-playing')) category = 'RPG';
-                            else if (genreNames.includes('strategy')) category = 'STRATEGY';
-                            else if (genreNames.includes('racing')) category = 'RACING';
-                            else if (genreNames.includes('simulation')) category = 'SIMULATOR';
-                            else if (genreNames.includes('action') || genreNames.includes('shooter') || genreNames.includes('adventure')) category = 'ACTION';
+                        if (item.genres && item.genres.length > 0) {
+                            const primaryGenre = item.genres[0].name.toLowerCase();
+                            
+                            if (primaryGenre.includes('rpg') || primaryGenre.includes('role-playing')) {
+                                category = 'RPG';
+                            } else if (primaryGenre.includes('strategy')) {
+                                category = 'STRATEGY';
+                            } else if (primaryGenre.includes('racing')) {
+                                category = 'RACING';
+                            } else if (primaryGenre.includes('simulation') || primaryGenre.includes('sports')) {
+                                category = 'SIMULATOR';
+                            } else if (primaryGenre.includes('action') || primaryGenre.includes('shooter') || primaryGenre.includes('adventure') || primaryGenre.includes('fighting') || primaryGenre.includes('platformer')) {
+                                category = 'ACTION';
+                            }
                         }
                         document.getElementById('addCat').value = category;
 
