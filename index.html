@@ -92,7 +92,7 @@
         .btn-roulette { background: #222; border: 1px solid #444; color: white; padding: 12px 40px; font-weight: 700; border-radius: 50px; cursor: pointer; width: 100%; max-width: 300px; transition: transform 0.1s; }
         .btn-roulette:active { transform: scale(0.96); }
         
-        .filter-scroll { display: flex; gap: 8px; overflow-x: auto; width: 100%; padding-bottom: 5px; scrollbar-width: none; }
+        .filter-scroll { display: flex; gap: 8px; overflow-x: auto; width: 100%; padding-bottom: 5px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .filter-scroll::-webkit-scrollbar { display: none; }
         .chip { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; transition: all 0.2s;}
         .chip.active { background: white; color: black; border-color: white; }
@@ -109,7 +109,7 @@
         @media (hover: hover) { .scroll-arrows { display: flex; } }
         .arrow-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: bold; }
 
-        .row-container { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 10px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+        .row-container { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 10px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
         .row-container::-webkit-scrollbar { display: none; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 12px; padding: 0 20px; margin-top: 15px; }
 
@@ -141,10 +141,7 @@
         .modal-glow { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(80px) saturate(200%); opacity: 0.4; z-index: 0; transform: scale(1.1); pointer-events: none; }
         .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; display: flex; align-items: center; justify-content: center;}
         
-        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 2600; cursor: pointer; }
-        .nav-left { left: 0; } .nav-right { right: 0; }
-
-        .info-card { width: 92%; max-width: 420px; max-height: 85vh; background: #141414; border: 1px solid #2a2a2a; border-radius: 20px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .info-card { width: 92%; max-width: 420px; max-height: 85vh; background: #141414; border: 1px solid #2a2a2a; border-radius: 20px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.8); -webkit-overflow-scrolling: touch; }
         .info-hero { height: 280px; width: 100%; background-size: cover; background-position: top center; position: relative; flex-shrink: 0; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #141414 0%, rgba(20,20,20,0.4) 50%, transparent); }
         .info-content { padding: 0 25px 25px 25px; margin-top: -30px; position: relative; z-index: 5; }
@@ -152,14 +149,14 @@
         .tag-pill { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 8px; color: #ddd; font-size: 0.75rem; display: inline-block; margin: 0 5px 5px 0; backdrop-filter: blur(4px); }
         .info-desc { color: #bbb; line-height: 1.5; margin: 15px 0; font-size: 0.95rem; }
         
-        .form-box { background: #111; border: 1px solid #222; border-radius: 20px; padding: 25px; width: 90%; max-width: 450px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; position: relative; z-index: 2601; }
+        .form-box { background: #111; border: 1px solid #222; border-radius: 20px; padding: 25px; width: 90%; max-width: 450px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; position: relative; z-index: 2601; -webkit-overflow-scrolling: touch; }
         .form-box h2 { margin: 0 0 15px 0; font-size: 1.4rem; }
         .form-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
         
         .search-box { display: flex; gap: 8px; margin-bottom: 10px; }
         .search-btn { background: #333; color: white; border: none; border-radius: 12px; padding: 0 15px; font-weight: bold; cursor: pointer; }
 
-        .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 300px; overflow-y: auto; }
+        .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .tmdb-item { display: flex; gap: 10px; background: #1a1a1a; padding: 8px; border-radius: 8px; cursor: pointer; align-items: center; border: 1px solid #333; }
         .tmdb-item:active { background: #333; }
         .tmdb-item img { width: 40px; height: 60px; object-fit: cover; border-radius: 4px; }
@@ -279,8 +276,9 @@
             <h2 id="addModalTitle">Add New</h2>
             
             <div class="search-box">
-                <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0;" placeholder="Search TMDb for autofill...">
-                <button class="search-btn" onclick="window.searchTMDb()">Search</button>
+                <!-- Mobile keyboard Enter key support added here -->
+                <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0;" placeholder="Search TMDb for autofill..." onkeydown="if(event.key === 'Enter') { window.searchTMDb(); return false; }">
+                <button class="search-btn" type="button" onclick="window.searchTMDb()">Search</button>
             </div>
             <div id="tmdbResults" class="tmdb-results"></div>
 
@@ -478,15 +476,12 @@
                 return { html: `<span class="status-dot d-new"></span><span class="s-new">New</span>`, code: 'new' };
             }
 
-            // Collect necessary dots
             if (item.me === true || item.me === 'note') dots.push('d-kacper');
             if (item.her === true || item.her === 'note') dots.push('d-scarlett');
             if (item.me === 'note' || item.her === 'note' || hasTextNote) dots.push('d-note');
 
-            // Remove duplicate dots
             dots = [...new Set(dots)];
 
-            // Decide primary text
             if (hasTextNote || item.me === 'note' || item.her === 'note') {
                 text = "Note"; textClass = "s-note";
             } else if (item.me === true && item.her === false) {
@@ -505,10 +500,15 @@
 
         // --- TMDb Integration ---
         window.searchTMDb = async () => {
-            const query = document.getElementById('tmdbSearchInput').value.trim();
+            const searchInput = document.getElementById('tmdbSearchInput');
+            const query = searchInput.value.trim();
             if (!query) return;
             const resDiv = document.getElementById('tmdbResults');
             resDiv.innerHTML = "Searching...";
+            
+            // Hide mobile keyboard while loading results
+            searchInput.blur();
+
             try {
                 const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}`);
                 const data = await res.json();
@@ -533,7 +533,7 @@
                         document.getElementById('addImage').value = img;
                         document.getElementById('addDesc').value = item.overview || "";
                         resDiv.innerHTML = "";
-                        document.getElementById('tmdbSearchInput').value = "";
+                        searchInput.value = "";
                     };
                     resDiv.appendChild(div);
                 });
@@ -610,7 +610,6 @@
             window.handleGroupChange();
             if (item.group) document.getElementById('addGroupSelect').value = item.group;
 
-            // Notice we are NOT clearing editingItemId here.
             document.getElementById('infoModal').style.display = 'none';
             document.getElementById('addModal').style.display = 'flex';
         };
@@ -648,7 +647,6 @@
                     await addDoc(colRef, itemData); 
                 }
                 
-                // Clear out editing state on successful save
                 editingItemId = null;
                 window.closeAllModals();
             } catch (e) { alert("Error saving."); }
@@ -731,14 +729,14 @@
             main.innerHTML = "";
             if (filtered.length === 0) { main.innerHTML = "<div style='padding:50px; text-align:center; color:#666;'>Empty.</div>"; return; }
 
-            // 1. PINNED ROW (Started Items)
+            // 1. PINNED ROW
             let startedItems = filtered.filter(i => i.isStarted === true && getStatusInfo(i).code !== 'done');
             if (startedItems.length > 0) {
                 const pinnedTitle = currentMode.includes('watch') ? '📺 Continue Watching' : '🎮 Continue Playing';
                 renderRow(pinnedTitle, startedItems, main);
             }
 
-            // 2. NORMAL GROUPS/CATEGORIES
+            // 2. NORMAL GROUPS
             if (currentCategory === 'all') {
                 const catsInView = [...new Set(filtered.map(i => i.category))].sort();
                 catsInView.forEach(c => {
@@ -765,7 +763,6 @@
 
         function renderRow(title, items, container, isRow=true) {
             const wrap = document.createElement('div');
-            // FIX: Using a distinct class to grab the correct container div and wrapping the title securely
             const rowClass = isRow ? 'row-container' : 'grid-container';
             wrap.innerHTML = `
                 <div class="section-header">
@@ -806,16 +803,13 @@
             return el;
         }
 
-        // Modal Management
         window.closeAllModals = () => {
             document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-            // Deliberately NOT resetting editingItemId here to preserve the Edit sequence.
         };
 
         window.closeModalBackground = (e) => {
             if (e.target.classList.contains('modal-overlay')) {
                 window.closeAllModals();
-                // Safe to reset here since background clicking means user aborted the edit
                 editingItemId = null;
             }
         };
@@ -825,16 +819,6 @@
             currentModalIndex = list.indexOf(item);
             document.getElementById('infoModal').style.display = 'flex';
             renderModalContent();
-        };
-
-        window.navigateModal = (direction) => {
-            /* Since we disabled invisible edge clicks, this is only used for roulette right now, 
-               but kept safe just in case we add real buttons later */
-            const newIndex = currentModalIndex + direction;
-            if (newIndex >= 0 && newIndex < currentModalList.length) {
-                currentModalIndex = newIndex;
-                renderModalContent();
-            }
         };
 
         function renderModalContent() {
