@@ -141,6 +141,9 @@
         .modal-glow { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(80px) saturate(200%); opacity: 0.4; z-index: 0; transform: scale(1.1); pointer-events: none; }
         .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; display: flex; align-items: center; justify-content: center;}
         
+        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 2600; cursor: pointer; }
+        .nav-left { left: 0; } .nav-right { right: 0; }
+
         .info-card { width: 92%; max-width: 420px; max-height: 85vh; background: #141414; border: 1px solid #2a2a2a; border-radius: 20px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.8); -webkit-overflow-scrolling: touch; }
         .info-hero { height: 280px; width: 100%; background-size: cover; background-position: top center; position: relative; flex-shrink: 0; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #141414 0%, rgba(20,20,20,0.4) 50%, transparent); }
@@ -150,8 +153,8 @@
         .info-desc { color: #bbb; line-height: 1.5; margin: 15px 0; font-size: 0.95rem; }
         
         .form-box { background: #111; border: 1px solid #222; border-radius: 20px; padding: 25px; width: 90%; max-width: 450px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; position: relative; z-index: 2601; -webkit-overflow-scrolling: touch; }
-        .form-box h2 { margin: 0 0 15px 0; font-size: 1.4rem; }
-        .form-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
+        .form-box h2 { margin: 0 0 15px 0; font-size: 1.4rem; flex-shrink: 0; }
+        .form-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; flex-shrink: 0; }
         
         .search-box { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
         .search-btn { background: #333; color: white; border: none; border-radius: 12px; padding: 0 15px; font-weight: bold; cursor: pointer; }
@@ -273,7 +276,7 @@
     <!-- ADD/EDIT MODAL -->
     <div class="modal-overlay" id="addModal" onclick="window.closeModalBackground(event)">
         <div class="form-box" onclick="event.stopPropagation()">
-            <h2 id="addModalTitle">Add New</h2>
+            <h2 id="addModalTitle" style="flex-shrink: 0;">Add New</h2>
             
             <div class="search-box">
                 <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0;" placeholder="Search TMDb for autofill..." onkeydown="if(event.key === 'Enter') { window.searchTMDb(); return false; }">
@@ -282,7 +285,7 @@
             <div id="tmdbResults" class="tmdb-results"></div>
 
             <div class="select-wrapper" style="margin-bottom:10px; flex-shrink: 0;">
-                <select id="addListType" class="form-input" style="margin:0;">
+                <select id="addListType" class="form-input" style="margin:0;" onchange="window.handleListTypeChange()">
                     <option value="watch_shared">List: Our Watchlist</option>
                     <option value="watch_kacper">List: Kacper's Watchlist</option>
                     <option value="watch_scarlett">List: Scarlett's Watchlist</option>
@@ -292,7 +295,7 @@
                 </select>
             </div>
 
-            <div class="select-wrapper" style="margin-bottom:10px;">
+            <div class="select-wrapper" style="margin-bottom:10px; flex-shrink: 0;">
                 <select id="addCat" class="form-input" style="margin:0;">
                     <option value="MOVIE">Category: MOVIE</option>
                     <option value="SHOW">Category: SHOW</option>
@@ -309,16 +312,16 @@
                 </select>
             </div>
 
-            <input type="text" id="addTitle" class="form-input" placeholder="Title">
+            <input type="text" id="addTitle" class="form-input" placeholder="Title" style="flex-shrink: 0;">
             
-            <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+            <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center; flex-shrink: 0;">
                 <div style="font-size:0.9rem; color:#fff; display:flex; align-items:center; gap:8px;">
                     <input type="checkbox" id="addStarted" style="width: 18px; height: 18px;"> 
                     <label for="addStarted">Currently Watching/Playing (Pin to top)</label>
                 </div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+            <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center; flex-shrink: 0;">
                 <div class="select-wrapper" style="flex:1;">
                     <select id="addGroupSelect" class="form-input" style="margin:0;" onchange="window.handleGroupChange()">
                         <option value="">Group: None (Library)</option>
@@ -328,32 +331,32 @@
                     <input type="checkbox" id="newGroupCheck" onchange="window.handleGroupChange()"> New
                 </div>
             </div>
-            <input type="text" id="addCustomGroup" class="form-input" placeholder="Type new group name..." style="display:none;">
+            <input type="text" id="addCustomGroup" class="form-input" placeholder="Type new group name..." style="display:none; flex-shrink: 0;">
 
-            <input type="number" id="addYear" class="form-input" placeholder="Year">
+            <input type="number" id="addYear" class="form-input" placeholder="Year" style="flex-shrink: 0;">
             
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <div class="select-wrapper">
+            <div style="display:flex; gap:10px; margin-bottom:10px; flex-shrink: 0;" id="statusDropdownsContainer">
+                <div class="select-wrapper" id="addMeWrapper">
                     <select id="addMe" class="form-input" style="margin:0;">
-                        <option value="new">My Status: New</option>
-                        <option value="note">My Status: Playing/Note</option>
-                        <option value="done">My Status: Done</option>
+                        <option value="new">Kacper: New</option>
+                        <option value="note">Kacper: Playing/Note</option>
+                        <option value="done">Kacper: Done</option>
                     </select>
                 </div>
-                <div class="select-wrapper">
+                <div class="select-wrapper" id="addHerWrapper">
                     <select id="addHer" class="form-input" style="margin:0;">
-                        <option value="new">Her Status: New</option>
-                        <option value="note">Her Status: Playing/Note</option>
-                        <option value="done">Her Status: Done</option>
+                        <option value="new">Scarlett: New</option>
+                        <option value="note">Scarlett: Playing/Note</option>
+                        <option value="done">Scarlett: Done</option>
                     </select>
                 </div>
             </div>
             
-            <input type="number" step="0.1" id="addImdb" class="form-input" placeholder="Rating (e.g. 8.5)">
-            <input type="text" id="addTags" class="form-input" placeholder="Tags (comma separated)">
-            <input type="text" id="addImage" class="form-input" placeholder="Image URL">
-            <textarea id="addDesc" class="form-input" placeholder="Description" rows="2" style="resize:none;"></textarea>
-            <input type="text" id="addNote" class="form-input" placeholder="Personal Note">
+            <input type="number" step="0.1" id="addImdb" class="form-input" placeholder="Rating (e.g. 8.5)" style="flex-shrink: 0;">
+            <input type="text" id="addTags" class="form-input" placeholder="Tags (comma separated)" style="flex-shrink: 0;">
+            <input type="text" id="addImage" class="form-input" placeholder="Image URL" style="flex-shrink: 0;">
+            <textarea id="addDesc" class="form-input" placeholder="Description" rows="2" style="resize:none; flex-shrink: 0;"></textarea>
+            <input type="text" id="addNote" class="form-input" placeholder="Personal Note" style="flex-shrink: 0;">
             
             <button class="form-btn" id="saveItemBtn" onclick="window.submitAddItem()">Save</button>
         </div>
@@ -460,39 +463,61 @@
 
         // --- NEW DYNAMIC STATUS LOGIC ---
         function getStatusInfo(item) {
-            let isDone = (item.me === true && item.her === true);
-            let isNew = (item.me === false && item.her === false);
+            let list = item.listType || 'watch_shared';
+            let isShared = list.includes('shared');
+            let isKacper = list.includes('kacper');
+            let isScarlett = list.includes('scarlett');
+
+            let isDone = false;
+            let isNew = false;
+            
+            if (isShared) {
+                isDone = (item.me === true && item.her === true);
+                isNew = (item.me === false && item.her === false);
+            } else if (isKacper) {
+                isDone = (item.me === true);
+                isNew = (item.me === false);
+            } else if (isScarlett) {
+                isDone = (item.her === true);
+                isNew = (item.her === false);
+            }
+
             let hasTextNote = !!(item.note && item.note.trim() !== "");
 
             let dots = [];
             let text = "";
             let textClass = "";
 
-            if (isDone && !hasTextNote) {
+            if (isShared) {
+                if (item.me === true || item.me === 'note') dots.push('d-kacper');
+                if (item.her === true || item.her === 'note') dots.push('d-scarlett');
+            } else if (isKacper) {
+                if (item.me === true || item.me === 'note') dots.push('d-kacper');
+            } else if (isScarlett) {
+                if (item.her === true || item.her === 'note') dots.push('d-scarlett');
+            }
+            if (item.me === 'note' || item.her === 'note' || hasTextNote) dots.push('d-note');
+            dots = [...new Set(dots)];
+
+            if (isDone && !hasTextNote && item.me !== 'note' && item.her !== 'note') {
                 return { html: `<span class="status-dot d-done"></span><span class="s-done">Done</span>`, code: 'done' };
             }
-            if (isNew && !hasTextNote) {
+            if (isNew && !hasTextNote && item.me !== 'note' && item.her !== 'note') {
                 return { html: `<span class="status-dot d-new"></span><span class="s-new">New</span>`, code: 'new' };
             }
 
-            if (item.me === true || item.me === 'note') dots.push('d-kacper');
-            if (item.her === true || item.her === 'note') dots.push('d-scarlett');
-            if (item.me === 'note' || item.her === 'note' || hasTextNote) dots.push('d-note');
-
-            dots = [...new Set(dots)];
-
             if (hasTextNote || item.me === 'note' || item.her === 'note') {
                 text = "Note"; textClass = "s-note";
-            } else if (item.me === true && item.her === false) {
+            } else if (isShared && item.me === true && item.her === false) {
                 text = "Kacper"; textClass = "s-kacper";
-            } else if (item.me === false && item.her === true) {
+            } else if (isShared && item.me === false && item.her === true) {
                 text = "Scarlett"; textClass = "s-scarlett";
             } else {
-                text = "Done"; textClass = "s-done";
+                text = "Done"; textClass = "s-done"; 
             }
 
             let dotsHtml = dots.map(d => `<span class="status-dot ${d}"></span>`).join('');
-            let sortCode = (text === 'Done') ? 'done' : (text === 'New' ? 'new' : 'note');
+            let sortCode = isDone ? 'done' : (isNew ? 'new' : 'note');
             
             return { html: `${dotsHtml} <span class="${textClass}">${text}</span>`, code: sortCode };
         }
@@ -509,7 +534,6 @@
             const resDiv = document.getElementById('tmdbResults');
             resDiv.innerHTML = "Searching...";
             
-            // Hide mobile keyboard while loading results
             searchInput.blur();
 
             try {
@@ -546,6 +570,23 @@
         };
 
         // --- Form Logic ---
+        window.handleListTypeChange = () => {
+            const listType = document.getElementById('addListType').value;
+            const meWrap = document.getElementById('addMeWrapper');
+            const herWrap = document.getElementById('addHerWrapper');
+            
+            if (listType.includes('shared')) {
+                meWrap.style.display = 'block';
+                herWrap.style.display = 'block';
+            } else if (listType.includes('kacper')) {
+                meWrap.style.display = 'block';
+                herWrap.style.display = 'none';
+            } else if (listType.includes('scarlett')) {
+                meWrap.style.display = 'none';
+                herWrap.style.display = 'block';
+            }
+        };
+
         window.handleGroupChange = () => {
             const isNew = document.getElementById('newGroupCheck').checked;
             document.getElementById('addGroupSelect').style.display = isNew ? 'none' : 'block';
@@ -583,6 +624,7 @@
             
             document.getElementById('newGroupCheck').checked = false;
             populateGroupDropdown();
+            window.handleListTypeChange();
             window.handleGroupChange();
 
             document.getElementById('addModal').style.display = 'flex';
@@ -612,6 +654,7 @@
 
             populateGroupDropdown();
             document.getElementById('newGroupCheck').checked = false;
+            window.handleListTypeChange();
             window.handleGroupChange();
             if (item.group) document.getElementById('addGroupSelect').value = item.group;
 
@@ -627,14 +670,22 @@
             const isNewGrp = document.getElementById('newGroupCheck').checked;
             const finalGroup = isNewGrp ? document.getElementById('addCustomGroup').value.trim() : document.getElementById('addGroupSelect').value;
 
+            const listType = document.getElementById('addListType').value;
+            let meStatus = pStatus(document.getElementById('addMe').value);
+            let herStatus = pStatus(document.getElementById('addHer').value);
+
+            // Clean data if submitted in a solo list
+            if (listType.includes('kacper')) herStatus = false;
+            if (listType.includes('scarlett')) meStatus = false;
+
             const itemData = {
-                listType: document.getElementById('addListType').value,
+                listType: listType,
                 category: document.getElementById('addCat').value,
                 title: document.getElementById('addTitle').value.trim(),
                 isStarted: document.getElementById('addStarted').checked,
                 year: parseInt(document.getElementById('addYear').value) || 0,
-                me: pStatus(document.getElementById('addMe').value),
-                her: pStatus(document.getElementById('addHer').value),
+                me: meStatus,
+                her: herStatus,
                 imdb: parseFloat(document.getElementById('addImdb').value) || 0,
                 tags: document.getElementById('addTags').value.trim(),
                 image: document.getElementById('addImage').value.trim(),
@@ -661,7 +712,12 @@
         window.markItemDone = async () => {
             const item = currentModalList[currentModalIndex];
             if (!item.id) return;
-            await updateDoc(doc(db, 'artifacts', 'our-hub', 'public', 'data', 'media', item.id), { me: true, her: true });
+            
+            let updateData = { me: true, her: true };
+            if (item.listType === 'watch_kacper' || item.listType === 'game_kacper') updateData = { me: true };
+            if (item.listType === 'watch_scarlett' || item.listType === 'game_scarlett') updateData = { her: true };
+
+            await updateDoc(doc(db, 'artifacts', 'our-hub', 'public', 'data', 'media', item.id), updateData);
             window.closeAllModals();
         };
 
