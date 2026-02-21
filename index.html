@@ -488,32 +488,50 @@
             let text = "";
             let textClass = "";
 
-            if (isShared) {
-                if (item.me === true || item.me === 'note') dots.push('d-kacper');
-                if (item.her === true || item.her === 'note') dots.push('d-scarlett');
-            } else if (isKacper) {
-                if (item.me === true || item.me === 'note') dots.push('d-kacper');
-            } else if (isScarlett) {
-                if (item.her === true || item.her === 'note') dots.push('d-scarlett');
-            }
-            if (item.me === 'note' || item.her === 'note' || hasTextNote) dots.push('d-note');
-            dots = [...new Set(dots)];
-
-            if (isDone && !hasTextNote && item.me !== 'note' && item.her !== 'note') {
-                return { html: `<span class="status-dot d-done"></span><span class="s-done">Done</span>`, code: 'done' };
-            }
-            if (isNew && !hasTextNote && item.me !== 'note' && item.her !== 'note') {
-                return { html: `<span class="status-dot d-new"></span><span class="s-new">New</span>`, code: 'new' };
+            // 1. Determine base dots
+            if (isNew) {
+                dots.push('d-new');
+            } else if (isDone) {
+                dots.push('d-done');
+            } else {
+                if (isShared) {
+                    if (item.me === true || item.me === 'note') dots.push('d-kacper');
+                    if (item.her === true || item.her === 'note') dots.push('d-scarlett');
+                } else if (isKacper) {
+                    if (item.me === true || item.me === 'note') dots.push('d-kacper');
+                } else if (isScarlett) {
+                    if (item.her === true || item.her === 'note') dots.push('d-scarlett');
+                }
             }
 
-            if (hasTextNote || item.me === 'note' || item.her === 'note') {
+            // 2. Add note dot if there is a text note, or if someone is actively playing ('note' status)
+            if (item.me === 'note' || item.her === 'note' || hasTextNote) {
+                dots.push('d-note');
+            }
+
+            dots = [...new Set(dots)]; // Remove duplicate dots
+
+            // 3. Determine the primary text to show next to the dots
+            if (item.me === 'note' || item.her === 'note' || hasTextNote) {
                 text = "Note"; textClass = "s-note";
+                // If it's fully unplayed but just has a text note, keep it labeled as New
+                if (isNew && item.me !== 'note' && item.her !== 'note') {
+                    text = "New"; textClass = "s-new";
+                }
+                // If it's fully done but just has a text note, keep it labeled as Done
+                if (isDone && item.me !== 'note' && item.her !== 'note') {
+                     text = "Done"; textClass = "s-done"; 
+                }
+            } else if (isNew) {
+                text = "New"; textClass = "s-new";
+            } else if (isDone) {
+                text = "Done"; textClass = "s-done";
             } else if (isShared && item.me === true && item.her === false) {
                 text = "Kacper"; textClass = "s-kacper";
             } else if (isShared && item.me === false && item.her === true) {
                 text = "Scarlett"; textClass = "s-scarlett";
             } else {
-                text = "Done"; textClass = "s-done"; 
+                text = "Note"; textClass = "s-note";
             }
 
             let dotsHtml = dots.map(d => `<span class="status-dot ${d}"></span>`).join('');
