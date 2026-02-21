@@ -103,7 +103,8 @@
         .select-wrapper::after { content: '▼'; font-size: 0.5rem; color: #666; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 
         /* --- LAYOUTS & CARDS --- */
-        .section-header { padding: 0 20px; margin-top: 25px; margin-bottom: 10px; font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between;}
+        .section-header { margin-top: 25px; margin-bottom: 10px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+        .section-title { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         
         .scroll-arrows { display: none; gap: 8px; }
         @media (hover: hover) { .scroll-arrows { display: flex; } }
@@ -118,7 +119,7 @@
         .card.dimmed { opacity: 0.35; filter: grayscale(100%); }
         .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; }
         .imdb-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--gold); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; backdrop-filter: blur(4px); z-index: 5; }
-        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
+        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 50%); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
         .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; text-shadow: 0 2px 4px black; }
         .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; font-weight: 600; }
         
@@ -137,15 +138,15 @@
         .s-done { color: #888; }
 
         /* --- MODALS --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2500; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-glow { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(80px) saturate(200%); opacity: 0.4; z-index: 0; transform: scale(1.1); pointer-events: none; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-glow { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(70px) opacity(0.35); z-index: 0; transform: scale(1.2); pointer-events: none; }
         .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; display: flex; align-items: center; justify-content: center;}
         
-        .info-card { width: 92%; max-width: 420px; max-height: 85vh; background: #141414; border: 1px solid #2a2a2a; border-radius: 20px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.8); -webkit-overflow-scrolling: touch; }
-        .info-hero { height: 280px; width: 100%; background-size: cover; background-position: top center; position: relative; flex-shrink: 0; }
-        .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #141414 0%, rgba(20,20,20,0.4) 50%, transparent); }
-        .info-content { padding: 0 25px 25px 25px; margin-top: -30px; position: relative; z-index: 5; }
-        .info-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 10px rgba(0,0,0,1); }
+        .info-card { width: 92%; max-width: 420px; max-height: 85vh; background: #1c1c1c; border: 1px solid #333; border-radius: 20px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; box-shadow: 0 20px 60px rgba(0,0,0,0.9); -webkit-overflow-scrolling: touch; }
+        .info-hero { height: 260px; width: 100%; background-size: cover; background-position: center; position: relative; flex-shrink: 0; background-color: #111; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #1c1c1c 0%, rgba(28,28,28,0.4) 60%, transparent); border-top-left-radius: 20px; border-top-right-radius: 20px;}
+        .info-content { padding: 0 25px 25px 25px; margin-top: -40px; position: relative; z-index: 5; }
+        .info-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
         .tag-pill { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 8px; color: #ddd; font-size: 0.75rem; display: inline-block; margin: 0 5px 5px 0; backdrop-filter: blur(4px); }
         .info-desc { color: #bbb; line-height: 1.5; margin: 15px 0; font-size: 0.95rem; }
         
@@ -154,9 +155,9 @@
         .form-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; flex-shrink: 0; }
         
         /* SEARCH BOX TWEAKS FOR DUAL API */
-        .search-box { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; align-items: stretch; }
-        .search-dropdown { background: #222; color: white; border: 1px solid #444; border-radius: 12px; padding: 0 5px; font-weight: 600; outline: none; font-size: 0.8rem; text-align: center; }
-        .search-btn { background: #333; color: white; border: none; border-radius: 12px; padding: 0 15px; font-weight: bold; cursor: pointer; }
+        .search-box { display: flex; gap: 8px; margin-bottom: 12px; align-items: stretch; width: 100%; flex-shrink: 0; }
+        .search-dropdown { flex: 0 0 120px; width: 120px; background: #222; color: white; border: 1px solid #444; border-radius: 12px; padding: 0 5px; font-weight: 600; outline: none; font-size: 0.85rem; cursor: pointer; text-align: center; }
+        .search-btn { flex: 0 0 auto; background: #333; color: white; border: none; border-radius: 12px; padding: 0 15px; font-weight: bold; cursor: pointer; }
 
         .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 250px; overflow-y: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
         .tmdb-item { display: flex; gap: 10px; background: #1a1a1a; padding: 8px; border-radius: 8px; cursor: pointer; align-items: center; border: 1px solid #333; flex-shrink: 0; }
@@ -921,7 +922,7 @@
                     let items = grouped.filter(i => i.group === g).sort((a,b) => (a.year||0) - (b.year||0));
                     if(items.length > 0) {
                         let doneCount = items.filter(i => getStatusInfo(i).code === 'done').length;
-                        let groupTitle = `${g} <span style="font-size:0.85rem; color:#888; font-weight:normal;">(${doneCount}/${items.length} Done)</span>`;
+                        let groupTitle = `<span>${g}</span> <span style="font-size:0.85rem; color:#888; font-weight:normal;">(${doneCount}/${items.length} Done)</span>`;
                         renderRow(groupTitle, items, main);
                     }
                 });
@@ -929,18 +930,31 @@
         };
 
         function renderRow(title, items, container, isRow=true) {
-            const wrap = document.createElement('div');
-            const rowClass = isRow ? 'row-container' : 'grid-container';
-            wrap.innerHTML = `
-                <div class="section-header">
-                    <div>${title}</div>
-                    ${isRow ? `<div class="scroll-arrows"><button class="arrow-btn" onclick="window.scrollRow(this, -1)">‹</button><button class="arrow-btn" onclick="window.scrollRow(this, 1)">›</button></div>` : ''}
-                </div>
-                <div class="${rowClass} js-row-content"></div>
-            `;
-            const content = wrap.querySelector('.js-row-content');
+            const wrapper = document.createElement('div');
+            
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'section-title';
+            titleDiv.innerHTML = title; // Programmatically builds nodes instead of parsing error-prone string
+            header.appendChild(titleDiv);
+
+            if (isRow) {
+                const arrowsDiv = document.createElement('div');
+                arrowsDiv.className = 'scroll-arrows';
+                arrowsDiv.innerHTML = `<button class="arrow-btn" onclick="window.scrollRow(this, -1)">‹</button><button class="arrow-btn" onclick="window.scrollRow(this, 1)">›</button>`;
+                header.appendChild(arrowsDiv);
+            }
+
+            const content = document.createElement('div');
+            content.className = isRow ? 'row-container' : 'grid-container';
+            
             items.forEach(i => content.appendChild(createCard(i, items)));
-            container.appendChild(wrap);
+
+            wrapper.appendChild(header);
+            wrapper.appendChild(content);
+            container.appendChild(wrapper);
         }
 
         window.scrollRow = (btn, direction) => {
