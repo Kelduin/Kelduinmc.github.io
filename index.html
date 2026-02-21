@@ -35,6 +35,7 @@
             margin: 0; padding: 0;
             padding-bottom: calc(90px + var(--safe-bottom));
             overflow-x: hidden; user-select: none;
+            transition: background-color 0.4s, color 0.4s;
         }
 
         /* --- LOADING SCREEN --- */
@@ -82,11 +83,12 @@
             padding: calc(15px + var(--safe-top)) 20px 10px 20px;
             background: rgba(5,5,5,0.95); position: sticky; top: 0; z-index: 50;
             display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #222;
+            transition: background 0.4s, border-color 0.4s;
         }
-        .home-btn { position: absolute; left: 20px; background: #222; border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
-        h1 { margin: 0; font-size: 1.2rem; font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 1px; }
+        .home-btn { position: absolute; left: 20px; background: #222; border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: background 0.4s; }
+        h1 { margin: 0; font-size: 1.2rem; font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 1px; transition: color 0.4s; }
         .header-actions { position: absolute; right: 20px; }
-        .login-btn { background: #222; border: none; color: white; padding: 8px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .login-btn { background: #222; border: none; color: white; padding: 8px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: background 0.4s; }
 
         .controls { padding: 15px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
         .btn-roulette { background: #222; border: 1px solid #444; color: white; padding: 12px 40px; font-weight: 700; border-radius: 50px; cursor: pointer; width: 100%; max-width: 300px; transition: transform 0.1s; }
@@ -98,29 +100,29 @@
         .chip.active { background: white; color: black; border-color: white; }
 
         .dropdown-row { display: flex; gap: 8px; width: 100%; }
-        select, .form-input { width: 100%; appearance: none; background: #1a1a1a; color: white; border: 1px solid #333; padding: 12px 15px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; outline: none; margin-bottom: 10px; }
+        select, .form-input { width: 100%; appearance: none; background: #1a1a1a; color: white; border: 1px solid #333; padding: 12px 15px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; outline: none; margin-bottom: 10px; transition: background 0.4s, border-color 0.4s; }
         .select-wrapper { position: relative; flex: 1; }
         .select-wrapper::after { content: '▼'; font-size: 0.5rem; color: #666; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 
         /* --- LAYOUTS & CARDS --- */
         .section-header { margin-top: 25px; margin-bottom: 10px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
-        .section-title { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .section-title { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; transition: color 0.4s; }
         
         .scroll-arrows { display: none; gap: 8px; }
         @media (hover: hover) { .scroll-arrows { display: flex; } }
-        .arrow-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .arrow-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: background 0.4s, color 0.4s; }
 
         .row-container { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 10px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
         .row-container::-webkit-scrollbar { display: none; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 12px; padding: 0 20px; margin-top: 15px; }
 
-        .card { flex: 0 0 var(--card-width); height: var(--card-height); background: #111; border-radius: var(--radius); overflow: hidden; position: relative; scroll-snap-align: start; cursor: pointer; transition: transform 0.1s; }
+        .card { flex: 0 0 var(--card-width); height: var(--card-height); background: #111; border-radius: var(--radius); overflow: hidden; position: relative; scroll-snap-align: start; cursor: pointer; transition: transform 0.1s, filter 0.3s, opacity 0.3s; }
         .card:active { transform: scale(0.96); }
         .card.dimmed { opacity: 0.35; filter: grayscale(100%); }
         .card-image { width: 100%; height: 100%; background-size: cover; background-position: center; }
         .imdb-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--gold); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; backdrop-filter: blur(4px); z-index: 5; }
         .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 50%); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
-        .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; text-shadow: 0 2px 4px black; }
+        .card-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px; text-shadow: 0 2px 4px black; color: white; }
         .card-status { font-size: 0.7rem; display: flex; align-items: center; gap: 5px; font-weight: 600; }
         
         /* DYNAMIC DOT COLORS */
@@ -130,20 +132,70 @@
         .d-note { background: var(--yellow); box-shadow: 0 0 5px var(--yellow); }
         .d-new { background: var(--green); box-shadow: 0 0 5px var(--green); }
         .d-done { background: #888; box-shadow: 0 0 5px #888; }
+        .d-rewatch { background: #d946ef; box-shadow: 0 0 5px #d946ef; } /* Vibrant Purple/Magenta */
+        .d-watching { background: #a855f7; box-shadow: 0 0 5px #a855f7; } /* Deep Purple */
         
         .s-kacper { color: #3b82f6; }
         .s-scarlett { color: var(--pink); }
         .s-note { color: var(--yellow); }
         .s-new { color: var(--green); }
         .s-done { color: #888; }
+        .s-rewatch { color: #d946ef; }
+        .s-watching { color: #a855f7; }
+
+        /* --- SCARLETT AESTHETIC PINK THEME --- */
+        body.theme-scarlett {
+            --bg-color: #fdf2f8; /* Very light pink background */
+            --text-color: #831843; /* Deep pink text */
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+        }
+        body.theme-scarlett header { background: rgba(253, 242, 248, 0.95); border-bottom: 1px solid #fbcfe8; }
+        body.theme-scarlett h1, body.theme-scarlett .home-btn, body.theme-scarlett .login-btn { color: #831843; }
+        body.theme-scarlett .home-btn, body.theme-scarlett .login-btn, body.theme-scarlett .btn-roulette {
+            background: #fbcfe8; border-color: #f9a8d4; color: #831843;
+        }
+        body.theme-scarlett .chip { background: #fbcfe8; border-color: #f9a8d4; color: #9d174d; }
+        body.theme-scarlett .chip.active { background: #ec4899; color: white; border-color: #ec4899; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3); }
+        body.theme-scarlett .section-title { color: #831843; }
+        body.theme-scarlett .arrow-btn { background: #fbcfe8; color: #831843; }
+        body.theme-scarlett .card { background: #fce7f3; }
+        body.theme-scarlett .card-overlay { background: linear-gradient(to top, rgba(131, 24, 67, 0.9) 0%, transparent 60%); }
+        body.theme-scarlett select, body.theme-scarlett .form-input {
+            background: #fdf2f8; color: #831843; border: 1px solid #f9a8d4;
+        }
+        body.theme-scarlett .form-input::placeholder { color: #f9a8d4; }
+        body.theme-scarlett .select-wrapper::after { color: #ec4899; }
+        
+        body.theme-scarlett .modal-overlay { background: rgba(253, 242, 248, 0.85); }
+        body.theme-scarlett .info-card, body.theme-scarlett .form-box, body.theme-scarlett .tmdb-item {
+            background: #fdf2f8; border-color: #fbcfe8; color: #831843; box-shadow: 0 20px 60px rgba(236, 72, 153, 0.2);
+        }
+        body.theme-scarlett .info-hero::after { background: linear-gradient(to top, #fdf2f8 0%, rgba(253,242,248,0.4) 60%, transparent); }
+        body.theme-scarlett .info-title, body.theme-scarlett .form-box h2 { color: #831843; text-shadow: none; }
+        body.theme-scarlett .info-desc { color: #9d174d; }
+        body.theme-scarlett .tag-pill { background: #fce7f3; border-color: #fbcfe8; color: #831843; }
+        body.theme-scarlett .search-dropdown, body.theme-scarlett .search-btn {
+            background: #fbcfe8; color: #831843; border-color: #f9a8d4;
+        }
+        body.theme-scarlett .search-btn { background: #ec4899; color: white; border-color: #ec4899; }
+        body.theme-scarlett .close-btn-float { background: #fbcfe8; color: #831843; border-color: #f9a8d4; }
+        body.theme-scarlett .r-card { border-right: 1px solid #fbcfe8; }
+        body.theme-scarlett .roulette-wrapper { border-color: #f9a8d4; background: #fdf2f8; }
+        body.theme-scarlett #rWinner { color: #831843 !important; }
+        body.theme-scarlett #mNoteBox > div { background: #fce7f3 !important; color: #9d174d !important; border-left-color: #ec4899 !important; }
+        body.theme-scarlett .d-watching { background: #9333ea; box-shadow: 0 0 5px #9333ea; }
+        body.theme-scarlett .s-watching { color: #9333ea; }
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-glow { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(70px) opacity(0.35); z-index: 0; transform: scale(1.2); pointer-events: none; }
         .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; display: flex; align-items: center; justify-content: center;}
         
+        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 2600; cursor: pointer; }
+        .nav-left { left: 0; } .nav-right { right: 0; }
+
         .info-card { width: 92%; max-width: 420px; max-height: 85vh; background: #1c1c1c; border: 1px solid #333; border-radius: 20px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; box-shadow: 0 20px 60px rgba(0,0,0,0.9); -webkit-overflow-scrolling: touch; }
-        .info-hero { height: 260px; width: 100%; background-size: cover; background-position: center; position: relative; flex-shrink: 0; background-color: #111; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        .info-hero { height: 260px; width: 100%; background-size: cover; background-position: top center; position: relative; flex-shrink: 0; background-color: #111; border-top-left-radius: 20px; border-top-right-radius: 20px; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #1c1c1c 0%, rgba(28,28,28,0.4) 60%, transparent); border-top-left-radius: 20px; border-top-right-radius: 20px;}
         .info-content { padding: 0 25px 25px 25px; margin-top: -40px; position: relative; z-index: 5; }
         .info-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
@@ -164,7 +216,8 @@
         .tmdb-item:active { background: #333; }
         .tmdb-item img { width: 40px; height: 60px; object-fit: cover; border-radius: 4px; }
 
-        .add-float-btn { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: 20px; background: var(--accent); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(229,9,20,0.5); cursor: pointer; z-index: 1000; }
+        /* PLUS BUTTON CENTERING FIX */
+        .add-float-btn { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: 20px; background: var(--accent); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(229,9,20,0.5); cursor: pointer; z-index: 1000; line-height: 0; padding-bottom: 4px; }
 
         .roulette-wrapper { width: 95%; max-width: 500px; height: 180px; border: 2px solid #333; background: #000; overflow: hidden; position: relative; margin: 0 auto; border-radius: 16px;}
         .roulette-track { display: flex; height: 100%; position: absolute; left: 0; }
@@ -283,7 +336,7 @@
                     <option value="tmdb">🍿 Movie/TV</option>
                     <option value="rawg">🎮 Game</option>
                 </select>
-                <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0; flex:1;" placeholder="Search for autofill..." onkeydown="if(event.key === 'Enter') { window.executeSearch(); return false; }">
+                <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0; flex:1; min-width:0;" placeholder="Search for autofill..." onkeydown="if(event.key === 'Enter') { window.executeSearch(); return false; }">
                 <button class="search-btn" type="button" onclick="window.executeSearch()">Search</button>
             </div>
             <div id="tmdbResults" class="tmdb-results"></div>
@@ -319,7 +372,7 @@
             <input type="text" id="addTitle" class="form-input" placeholder="Title" style="flex-shrink: 0;">
             
             <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center; flex-shrink: 0;">
-                <div style="font-size:0.9rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                <div style="font-size:0.9rem; display:flex; align-items:center; gap:8px;">
                     <input type="checkbox" id="addStarted" style="width: 18px; height: 18px;"> 
                     <label for="addStarted">Currently Watching/Playing (Pin to top)</label>
                 </div>
@@ -343,14 +396,18 @@
                 <div class="select-wrapper" id="addMeWrapper">
                     <select id="addMe" class="form-input" style="margin:0;">
                         <option value="new">Kacper: New</option>
-                        <option value="note">Kacper: Playing/Note</option>
+                        <option value="watching">Kacper: Watching/Playing Now</option>
+                        <option value="note">Kacper: On Hold/Note</option>
+                        <option value="rewatch">Kacper: Rewatching/Fav</option>
                         <option value="done">Kacper: Done</option>
                     </select>
                 </div>
                 <div class="select-wrapper" id="addHerWrapper">
                     <select id="addHer" class="form-input" style="margin:0;">
                         <option value="new">Scarlett: New</option>
-                        <option value="note">Scarlett: Playing/Note</option>
+                        <option value="watching">Scarlett: Watching/Playing Now</option>
+                        <option value="note">Scarlett: On Hold/Note</option>
+                        <option value="rewatch">Scarlett: Rewatching/Fav</option>
                         <option value="done">Scarlett: Done</option>
                     </select>
                 </div>
@@ -473,18 +530,30 @@
             let isKacper = list.includes('kacper');
             let isScarlett = list.includes('scarlett');
 
+            let me = item.me;
+            let her = item.her;
+
             let isDone = false;
             let isNew = false;
+            let isRewatch = false;
+            let isWatching = false;
             
             if (isShared) {
-                isDone = (item.me === true && item.her === true);
-                isNew = (item.me === false && item.her === false);
+                // Shared is only fully 'done' if both agree it's done, AND no one is actively rewatching
+                isDone = (me === true && her === true);
+                isNew = (me === false && her === false);
+                isRewatch = (me === 'rewatch' || her === 'rewatch');
+                isWatching = (me === 'watching' || her === 'watching');
             } else if (isKacper) {
-                isDone = (item.me === true);
-                isNew = (item.me === false);
+                isDone = (me === true);
+                isNew = (me === false);
+                isRewatch = (me === 'rewatch');
+                isWatching = (me === 'watching');
             } else if (isScarlett) {
-                isDone = (item.her === true);
-                isNew = (item.her === false);
+                isDone = (her === true);
+                isNew = (her === false);
+                isRewatch = (her === 'rewatch');
+                isWatching = (her === 'watching');
             }
 
             let hasTextNote = !!(item.note && item.note.trim() !== "");
@@ -493,49 +562,48 @@
             let text = "";
             let textClass = "";
 
-            if (isNew) {
-                dots.push('d-new');
-            } else if (isDone) {
-                dots.push('d-done');
-            } else {
-                if (isShared) {
-                    if (item.me === true || item.me === 'note') dots.push('d-kacper');
-                    if (item.her === true || item.her === 'note') dots.push('d-scarlett');
-                } else if (isKacper) {
-                    if (item.me === true || item.me === 'note') dots.push('d-kacper');
-                } else if (isScarlett) {
-                    if (item.her === true || item.her === 'note') dots.push('d-scarlett');
-                }
+            if (isNew && !hasTextNote && !isRewatch && !isWatching && me !== 'note' && her !== 'note') {
+                return { html: `<span class="status-dot d-new"></span><span class="s-new">New</span>`, code: 'new' };
+            }
+            if (isDone && !hasTextNote && !isRewatch && !isWatching && me !== 'note' && her !== 'note') {
+                return { html: `<span class="status-dot d-done"></span><span class="s-done">Done</span>`, code: 'done' };
             }
 
-            if (item.me === 'note' || item.her === 'note' || hasTextNote) {
-                dots.push('d-note');
+            if (isShared) {
+                if (me === true || me === 'note' || me === 'rewatch' || me === 'watching') dots.push('d-kacper');
+                if (her === true || her === 'note' || her === 'rewatch' || her === 'watching') dots.push('d-scarlett');
+            } else if (isKacper) {
+                if (me === true || me === 'note' || me === 'rewatch' || me === 'watching') dots.push('d-kacper');
+            } else if (isScarlett) {
+                if (her === true || her === 'note' || her === 'rewatch' || her === 'watching') dots.push('d-scarlett');
             }
+
+            if (me === 'note' || her === 'note' || hasTextNote) dots.push('d-note');
+            if (isRewatch) dots.push('d-rewatch');
+            if (isWatching) dots.push('d-watching');
 
             dots = [...new Set(dots)];
 
-            if (item.me === 'note' || item.her === 'note' || hasTextNote) {
+            if (isWatching) {
+                text = "Watching"; textClass = "s-watching";
+            } else if (isRewatch) {
+                text = "Rewatching"; textClass = "s-rewatch";
+            } else if (me === 'note' || her === 'note' || hasTextNote) {
                 text = "Note"; textClass = "s-note";
-                if (isNew && item.me !== 'note' && item.her !== 'note') {
-                    text = "New"; textClass = "s-new";
-                }
-                if (isDone && item.me !== 'note' && item.her !== 'note') {
-                     text = "Done"; textClass = "s-done"; 
-                }
-            } else if (isNew) {
-                text = "New"; textClass = "s-new";
+                if (isNew && me !== 'note' && her !== 'note') { text = "New"; textClass = "s-new"; }
+                if (isDone && me !== 'note' && her !== 'note') { text = "Done"; textClass = "s-done"; }
+            } else if (isShared && me === true && her === false) {
+                text = "Kacper"; textClass = "s-kacper";
+            } else if (isShared && me === false && her === true) {
+                text = "Scarlett"; textClass = "s-scarlett";
             } else if (isDone) {
                 text = "Done"; textClass = "s-done";
-            } else if (isShared && item.me === true && item.her === false) {
-                text = "Kacper"; textClass = "s-kacper";
-            } else if (isShared && item.me === false && item.her === true) {
-                text = "Scarlett"; textClass = "s-scarlett";
             } else {
-                text = "Note"; textClass = "s-note";
+                text = "New"; textClass = "s-new";
             }
 
             let dotsHtml = dots.map(d => `<span class="status-dot ${d}"></span>`).join('');
-            let sortCode = isDone ? 'done' : (isNew ? 'new' : 'note');
+            let sortCode = isDone ? 'done' : (isWatching ? 'watching' : (isRewatch ? 'rewatch' : (isNew ? 'new' : 'note')));
             
             return { html: `${dotsHtml} <span class="${textClass}">${text}</span>`, code: sortCode };
         }
@@ -645,7 +713,6 @@
                         document.getElementById('addTitle').value = title;
                         document.getElementById('addYear').value = year;
                         
-                        // Smart Rating Fallback (Metacritic first, then RAWG user rating scaled to 10)
                         let finalRating = "";
                         if (item.metacritic) {
                             finalRating = (item.metacritic / 10).toFixed(1);
@@ -655,22 +722,14 @@
                         document.getElementById('addImdb').value = finalRating;
                         document.getElementById('addImage').value = img;
 
-                        // Smart Category Mapping (Prioritize the FIRST genre)
                         let category = 'OTHER';
                         if (item.genres && item.genres.length > 0) {
                             const primaryGenre = item.genres[0].name.toLowerCase();
-                            
-                            if (primaryGenre.includes('rpg') || primaryGenre.includes('role-playing')) {
-                                category = 'RPG';
-                            } else if (primaryGenre.includes('strategy')) {
-                                category = 'STRATEGY';
-                            } else if (primaryGenre.includes('racing')) {
-                                category = 'RACING';
-                            } else if (primaryGenre.includes('simulation') || primaryGenre.includes('sports')) {
-                                category = 'SIMULATOR';
-                            } else if (primaryGenre.includes('action') || primaryGenre.includes('shooter') || primaryGenre.includes('adventure') || primaryGenre.includes('fighting') || primaryGenre.includes('platformer')) {
-                                category = 'ACTION';
-                            }
+                            if (primaryGenre.includes('rpg') || primaryGenre.includes('role-playing')) category = 'RPG';
+                            else if (primaryGenre.includes('strategy')) category = 'STRATEGY';
+                            else if (primaryGenre.includes('racing')) category = 'RACING';
+                            else if (primaryGenre.includes('simulation') || primaryGenre.includes('sports')) category = 'SIMULATOR';
+                            else if (primaryGenre.includes('action') || primaryGenre.includes('shooter') || primaryGenre.includes('adventure') || primaryGenre.includes('fighting') || primaryGenre.includes('platformer')) category = 'ACTION';
                         }
                         document.getElementById('addCat').value = category;
 
@@ -682,15 +741,12 @@
                             const detailRes = await fetch(`https://api.rawg.io/api/games/${item.id}?key=${RAWG_KEY}`);
                             const detailData = await detailRes.json();
                             
-                            // Smart Description Truncation
                             let desc = detailData.description_raw || "";
                             let paragraphs = desc.split('\n').map(p => p.trim()).filter(p => p.length > 20);
                             
                             if (paragraphs.length > 0) {
-                                desc = paragraphs[0]; // Grab just the first real paragraph
-                                if (desc.length > 250) {
-                                    desc = desc.substring(0, 247) + "..."; // Cut off insanely long first paragraphs
-                                }
+                                desc = paragraphs[0]; 
+                                if (desc.length > 250) desc = desc.substring(0, 247) + "..."; 
                             }
                             
                             document.getElementById('addDesc').value = desc;
@@ -725,7 +781,6 @@
                 herWrap.style.display = 'block';
             }
 
-            // Auto-switch the search toggle based on list type
             if (listType.includes('game')) {
                 searchApiType.value = 'rawg';
             } else {
@@ -783,7 +838,13 @@
             document.getElementById('addModalTitle').innerText = "Edit Item";
             document.getElementById('saveItemBtn').innerText = "Update";
 
-            const sStr = (s) => (s === true) ? 'done' : (s === false ? 'new' : 'note');
+            const sStr = (s) => {
+                if (s === true) return 'done';
+                if (s === false) return 'new';
+                if (s === 'rewatch') return 'rewatch';
+                if (s === 'watching') return 'watching';
+                return 'note';
+            };
 
             document.getElementById('addListType').value = item.listType || currentMode;
             document.getElementById('addCat').value = item.category || 'MOVIE';
@@ -812,7 +873,14 @@
             const btn = document.getElementById('saveItemBtn');
             btn.disabled = true;
 
-            const pStatus = (v) => v === 'done' ? true : (v === 'new' ? false : 'note');
+            const pStatus = (v) => {
+                if (v === 'done') return true;
+                if (v === 'new') return false;
+                if (v === 'rewatch') return 'rewatch';
+                if (v === 'watching') return 'watching';
+                return 'note';
+            };
+            
             const isNewGrp = document.getElementById('newGroupCheck').checked;
             const finalGroup = isNewGrp ? document.getElementById('addCustomGroup').value.trim() : document.getElementById('addGroupSelect').value;
 
@@ -890,11 +958,18 @@
             document.getElementById('hubScreen').style.display = 'none';
             document.getElementById('appTitle').innerText = listTitles[mode] || "Our Hub";
             
+            // Toggle Pink Aesthetic Theme
+            if (mode === 'watch_scarlett' || mode === 'game_scarlett') {
+                document.body.classList.add('theme-scarlett');
+            } else {
+                document.body.classList.remove('theme-scarlett');
+            }
+
             currentList = allData.filter(i => i.listType === mode);
 
             if(!isRefresh) {
                 const sFilter = document.getElementById('statusFilter');
-                sFilter.innerHTML = `<option value="all">Status: All</option><option value="new">✨ New</option><option value="note">⚠️ Note</option><option value="done">✅ Done</option>`;
+                sFilter.innerHTML = `<option value="all">Status: All</option><option value="new">✨ New</option><option value="watching">👀 Watching Now</option><option value="note">⚠️ Note</option><option value="rewatch">💖 Rewatching</option><option value="done">✅ Done</option>`;
                 currentCategory = 'all';
                 document.getElementById('statusFilter').value = 'all';
                 document.getElementById('sortOrder').value = 'default';
@@ -933,7 +1008,7 @@
             });
 
             main.innerHTML = "";
-            if (filtered.length === 0) { main.innerHTML = "<div style='padding:50px; text-align:center; color:#666;'>Empty.</div>"; return; }
+            if (filtered.length === 0) { main.innerHTML = "<div style='padding:50px; text-align:center; opacity:0.7;'>Empty.</div>"; return; }
 
             // 1. PINNED ROW
             let startedItems = filtered.filter(i => i.isStarted === true && getStatusInfo(i).code !== 'done');
@@ -959,8 +1034,8 @@
                 groups.forEach(g => {
                     let items = grouped.filter(i => i.group === g).sort((a,b) => (a.year||0) - (b.year||0));
                     if(items.length > 0) {
-                        let doneCount = items.filter(i => getStatusInfo(i).code === 'done').length;
-                        let groupTitle = `<span>${g}</span> <span style="font-size:0.85rem; color:#888; font-weight:normal;">(${doneCount}/${items.length} Done)</span>`;
+                        let doneCount = items.filter(i => getStatusInfo(i).code === 'done' || getStatusInfo(i).code === 'rewatch').length;
+                        let groupTitle = `<span>${g}</span> <span style="font-size:0.85rem; opacity:0.6; font-weight:normal;">(${doneCount}/${items.length} Done)</span>`;
                         renderRow(groupTitle, items, main);
                     }
                 });
@@ -968,31 +1043,18 @@
         };
 
         function renderRow(title, items, container, isRow=true) {
-            const wrapper = document.createElement('div');
-            
-            const header = document.createElement('div');
-            header.className = 'section-header';
-            
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'section-title';
-            titleDiv.innerHTML = title; // Programmatically builds nodes instead of parsing error-prone string
-            header.appendChild(titleDiv);
-
-            if (isRow) {
-                const arrowsDiv = document.createElement('div');
-                arrowsDiv.className = 'scroll-arrows';
-                arrowsDiv.innerHTML = `<button class="arrow-btn" onclick="window.scrollRow(this, -1)">‹</button><button class="arrow-btn" onclick="window.scrollRow(this, 1)">›</button>`;
-                header.appendChild(arrowsDiv);
-            }
-
-            const content = document.createElement('div');
-            content.className = isRow ? 'row-container' : 'grid-container';
-            
+            const wrap = document.createElement('div');
+            const rowClass = isRow ? 'row-container' : 'grid-container';
+            wrap.innerHTML = `
+                <div class="section-header">
+                    <div class="section-title">${title}</div>
+                    ${isRow ? `<div class="scroll-arrows"><button class="arrow-btn" onclick="window.scrollRow(this, -1)">‹</button><button class="arrow-btn" onclick="window.scrollRow(this, 1)">›</button></div>` : ''}
+                </div>
+                <div class="${rowClass} js-row-content"></div>
+            `;
+            const content = wrap.querySelector('.js-row-content');
             items.forEach(i => content.appendChild(createCard(i, items)));
-
-            wrapper.appendChild(header);
-            wrapper.appendChild(content);
-            container.appendChild(wrapper);
+            container.appendChild(wrap);
         }
 
         window.scrollRow = (btn, direction) => {
