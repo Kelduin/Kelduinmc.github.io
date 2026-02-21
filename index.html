@@ -141,9 +141,6 @@
         .modal-glow { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(80px) saturate(200%); opacity: 0.4; z-index: 0; transform: scale(1.1); pointer-events: none; }
         .close-btn-float { position: absolute; top: calc(20px + var(--safe-top)); right: 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 2600; display: flex; align-items: center; justify-content: center;}
         
-        .nav-zone { position: absolute; top: 0; bottom: 0; width: 15%; z-index: 2600; cursor: pointer; }
-        .nav-left { left: 0; } .nav-right { right: 0; }
-
         .info-card { width: 92%; max-width: 420px; max-height: 85vh; background: #141414; border: 1px solid #2a2a2a; border-radius: 20px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.8); -webkit-overflow-scrolling: touch; }
         .info-hero { height: 280px; width: 100%; background-size: cover; background-position: top center; position: relative; flex-shrink: 0; }
         .info-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, #141414 0%, rgba(20,20,20,0.4) 50%, transparent); }
@@ -156,7 +153,9 @@
         .form-box h2 { margin: 0 0 15px 0; font-size: 1.4rem; flex-shrink: 0; }
         .form-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; flex-shrink: 0; }
         
-        .search-box { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        /* SEARCH BOX TWEAKS FOR DUAL API */
+        .search-box { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; align-items: stretch; }
+        .search-dropdown { background: #222; color: white; border: 1px solid #444; border-radius: 12px; padding: 0 5px; font-weight: 600; outline: none; font-size: 0.8rem; text-align: center; }
         .search-btn { background: #333; color: white; border: none; border-radius: 12px; padding: 0 15px; font-weight: bold; cursor: pointer; }
 
         .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 250px; overflow-y: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
@@ -279,8 +278,12 @@
             <h2 id="addModalTitle" style="flex-shrink: 0;">Add New</h2>
             
             <div class="search-box">
-                <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0;" placeholder="Search TMDb for autofill..." onkeydown="if(event.key === 'Enter') { window.searchTMDb(); return false; }">
-                <button class="search-btn" type="button" onclick="window.searchTMDb()">Search</button>
+                <select id="searchApiType" class="search-dropdown">
+                    <option value="tmdb">🍿 Movie/TV</option>
+                    <option value="rawg">🎮 Game</option>
+                </select>
+                <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0; flex:1;" placeholder="Search for autofill..." onkeydown="if(event.key === 'Enter') { window.executeSearch(); return false; }">
+                <button class="search-btn" type="button" onclick="window.executeSearch()">Search</button>
             </div>
             <div id="tmdbResults" class="tmdb-results"></div>
 
@@ -376,6 +379,7 @@
             appId: "1:1044308960028:web:4672375eb04fc0740c50d9"
         };
         const TMDB_KEY = "651abf9776feb8aec08bc18864a9b3be";
+        const RAWG_KEY = "2eebd4c600f642c3a92cbabf2023bb61";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -488,7 +492,6 @@
             let text = "";
             let textClass = "";
 
-            // 1. Determine base dots
             if (isNew) {
                 dots.push('d-new');
             } else if (isDone) {
@@ -504,21 +507,17 @@
                 }
             }
 
-            // 2. Add note dot if there is a text note, or if someone is actively playing ('note' status)
             if (item.me === 'note' || item.her === 'note' || hasTextNote) {
                 dots.push('d-note');
             }
 
-            dots = [...new Set(dots)]; // Remove duplicate dots
+            dots = [...new Set(dots)];
 
-            // 3. Determine the primary text to show next to the dots
             if (item.me === 'note' || item.her === 'note' || hasTextNote) {
                 text = "Note"; textClass = "s-note";
-                // If it's fully unplayed but just has a text note, keep it labeled as New
                 if (isNew && item.me !== 'note' && item.her !== 'note') {
                     text = "New"; textClass = "s-new";
                 }
-                // If it's fully done but just has a text note, keep it labeled as Done
                 if (isDone && item.me !== 'note' && item.her !== 'note') {
                      text = "Done"; textClass = "s-done"; 
                 }
@@ -544,8 +543,18 @@
             28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History", 27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Sci-Fi", 10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western", 10759: "Action/Adventure", 10762: "Kids", 10763: "News", 10764: "Reality", 10765: "Sci-Fi/Fantasy", 10766: "Soap", 10767: "Talk", 10768: "War/Politics"
         };
 
-        // --- TMDb Integration ---
+        // --- Dual Search Integration (TMDb + RAWG) ---
         let isSearching = false;
+        
+        window.executeSearch = () => {
+            const apiType = document.getElementById('searchApiType').value;
+            if (apiType === 'tmdb') {
+                window.searchTMDb();
+            } else {
+                window.searchRAWG();
+            }
+        };
+
         window.searchTMDb = async () => {
             if (isSearching) return;
             const searchInput = document.getElementById('tmdbSearchInput');
@@ -554,8 +563,7 @@
 
             isSearching = true;
             const resDiv = document.getElementById('tmdbResults');
-            resDiv.innerHTML = "Searching...";
-            
+            resDiv.innerHTML = "Searching Movies/Shows...";
             searchInput.blur();
 
             try {
@@ -582,14 +590,9 @@
                         document.getElementById('addImage').value = img;
                         document.getElementById('addDesc').value = item.overview || "";
                         
-                        // Auto-set category
-                        if (item.media_type === 'movie') {
-                            document.getElementById('addCat').value = 'MOVIE';
-                        } else if (item.media_type === 'tv') {
-                            document.getElementById('addCat').value = 'SHOW';
-                        }
+                        if (item.media_type === 'movie') document.getElementById('addCat').value = 'MOVIE';
+                        else if (item.media_type === 'tv') document.getElementById('addCat').value = 'SHOW';
 
-                        // Auto-fill top 3 tags
                         let tags = [];
                         if (item.genre_ids) {
                             item.genre_ids.slice(0, 3).forEach(id => {
@@ -604,7 +607,64 @@
                     resDiv.appendChild(div);
                 });
             } catch (e) { resDiv.innerHTML = "Search failed."; }
+            isSearching = false;
+        };
+
+        window.searchRAWG = async () => {
+            if (isSearching) return;
+            const searchInput = document.getElementById('tmdbSearchInput');
+            const query = searchInput.value.trim();
+            if (!query) return;
             
+            if (!RAWG_KEY || RAWG_KEY === "YOUR_RAWG_KEY_HERE") {
+                document.getElementById('tmdbResults').innerHTML = "RAWG API Key missing. Please add it to the code.";
+                return;
+            }
+
+            isSearching = true;
+            const resDiv = document.getElementById('tmdbResults');
+            resDiv.innerHTML = "Searching Games...";
+            searchInput.blur();
+
+            try {
+                const res = await fetch(`https://api.rawg.io/api/games?key=${RAWG_KEY}&search=${encodeURIComponent(query)}&page_size=12`);
+                const data = await res.json();
+                resDiv.innerHTML = "";
+                if (!data.results || data.results.length === 0) { resDiv.innerHTML = "No results found."; isSearching = false; return; }
+
+                data.results.forEach(item => {
+                    const title = item.name;
+                    const year = item.released ? item.released.substring(0, 4) : "";
+                    const img = item.background_image || 'https://placehold.co/40x60?text=NA';
+                    
+                    const div = document.createElement('div');
+                    div.className = 'tmdb-item';
+                    div.innerHTML = `<img src="${img}"> <div><b>${title}</b> (${year})</div>`;
+                    div.onclick = async () => {
+                        document.getElementById('addTitle').value = title;
+                        document.getElementById('addYear').value = year;
+                        document.getElementById('addImdb').value = item.metacritic ? (item.metacritic / 10).toFixed(1) : "";
+                        document.getElementById('addImage').value = img;
+                        document.getElementById('addCat').value = 'RPG';
+
+                        let tags = item.genres ? item.genres.slice(0, 3).map(g => g.name) : [];
+                        document.getElementById('addTags').value = tags.join(', ');
+
+                        resDiv.innerHTML = "Loading description...";
+                        try {
+                            const detailRes = await fetch(`https://api.rawg.io/api/games/${item.id}?key=${RAWG_KEY}`);
+                            const detailData = await detailRes.json();
+                            document.getElementById('addDesc').value = detailData.description_raw || "";
+                        } catch (err) {
+                            document.getElementById('addDesc').value = "";
+                        }
+
+                        resDiv.innerHTML = "";
+                        searchInput.value = "";
+                    };
+                    resDiv.appendChild(div);
+                });
+            } catch (e) { resDiv.innerHTML = "Search failed."; }
             isSearching = false;
         };
 
@@ -613,6 +673,7 @@
             const listType = document.getElementById('addListType').value;
             const meWrap = document.getElementById('addMeWrapper');
             const herWrap = document.getElementById('addHerWrapper');
+            const searchApiType = document.getElementById('searchApiType');
             
             if (listType.includes('shared')) {
                 meWrap.style.display = 'block';
@@ -623,6 +684,13 @@
             } else if (listType.includes('scarlett')) {
                 meWrap.style.display = 'none';
                 herWrap.style.display = 'block';
+            }
+
+            // Auto-switch the search toggle based on list type
+            if (listType.includes('game')) {
+                searchApiType.value = 'rawg';
+            } else {
+                searchApiType.value = 'tmdb';
             }
         };
 
@@ -713,7 +781,6 @@
             let meStatus = pStatus(document.getElementById('addMe').value);
             let herStatus = pStatus(document.getElementById('addHer').value);
 
-            // Clean data if submitted in a solo list
             if (listType.includes('kacper')) herStatus = false;
             if (listType.includes('scarlett')) meStatus = false;
 
