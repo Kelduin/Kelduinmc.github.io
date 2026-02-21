@@ -153,11 +153,11 @@
         .form-box h2 { margin: 0 0 15px 0; font-size: 1.4rem; }
         .form-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
         
-        .search-box { display: flex; gap: 8px; margin-bottom: 10px; }
+        .search-box { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
         .search-btn { background: #333; color: white; border: none; border-radius: 12px; padding: 0 15px; font-weight: bold; cursor: pointer; }
 
-        .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        .tmdb-item { display: flex; gap: 10px; background: #1a1a1a; padding: 8px; border-radius: 8px; cursor: pointer; align-items: center; border: 1px solid #333; }
+        .tmdb-results { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 250px; overflow-y: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+        .tmdb-item { display: flex; gap: 10px; background: #1a1a1a; padding: 8px; border-radius: 8px; cursor: pointer; align-items: center; border: 1px solid #333; flex-shrink: 0; }
         .tmdb-item:active { background: #333; }
         .tmdb-item img { width: 40px; height: 60px; object-fit: cover; border-radius: 4px; }
 
@@ -276,13 +276,12 @@
             <h2 id="addModalTitle">Add New</h2>
             
             <div class="search-box">
-                <!-- Mobile keyboard Enter key support added here -->
                 <input type="text" id="tmdbSearchInput" class="form-input" style="margin:0;" placeholder="Search TMDb for autofill..." onkeydown="if(event.key === 'Enter') { window.searchTMDb(); return false; }">
                 <button class="search-btn" type="button" onclick="window.searchTMDb()">Search</button>
             </div>
             <div id="tmdbResults" class="tmdb-results"></div>
 
-            <div class="select-wrapper" style="margin-bottom:10px;">
+            <div class="select-wrapper" style="margin-bottom:10px; flex-shrink: 0;">
                 <select id="addListType" class="form-input" style="margin:0;">
                     <option value="watch_shared">List: Our Watchlist</option>
                     <option value="watch_kacper">List: Kacper's Watchlist</option>
@@ -499,10 +498,14 @@
         }
 
         // --- TMDb Integration ---
+        let isSearching = false;
         window.searchTMDb = async () => {
+            if (isSearching) return;
             const searchInput = document.getElementById('tmdbSearchInput');
             const query = searchInput.value.trim();
             if (!query) return;
+
+            isSearching = true;
             const resDiv = document.getElementById('tmdbResults');
             resDiv.innerHTML = "Searching...";
             
@@ -513,7 +516,7 @@
                 const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}`);
                 const data = await res.json();
                 resDiv.innerHTML = "";
-                if (!data.results || data.results.length === 0) { resDiv.innerHTML = "No results found."; return; }
+                if (!data.results || data.results.length === 0) { resDiv.innerHTML = "No results found."; isSearching = false; return; }
                 
                 let validResults = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
                 validResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
@@ -538,6 +541,8 @@
                     resDiv.appendChild(div);
                 });
             } catch (e) { resDiv.innerHTML = "Search failed."; }
+            
+            isSearching = false;
         };
 
         // --- Form Logic ---
